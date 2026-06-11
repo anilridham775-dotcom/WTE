@@ -7,7 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { autoRefres
 
 
 // ── DESIGN TOKENS ──────────────────────────────────────────
-export const C = {
+const C = {
   g:'#00e676', g2:'#00c853', a:'#ff9800', r:'#f44336',
   b:'#2196f3', p:'#9c27b0', c:'#00bcd4', t:'#009688',
   bg0:'#060a0f', bg1:'#0d1520', bg2:'#111d2e', bg3:'#162236',
@@ -16,11 +16,11 @@ export const C = {
   bdr:'rgba(255,255,255,.07)', bdr2:'rgba(255,255,255,.12)',
 };
 
-export const FONT = "font-family:'Segoe UI',Arial,sans-serif";
-export const MONO = "font-family:Consolas,'Courier New',monospace";
+const FONT = "font-family:'Segoe UI',Arial,sans-serif";
+const MONO = "font-family:Consolas,'Courier New',monospace";
 
 // ── BADGE ───────────────────────────────────────────────────
-export function Badge({ color = 'g', children, small }) {
+function Badge({ color = 'g', children, small }) {
   const bg = { g:'rgba(0,230,118,.15)',a:'rgba(255,152,0,.15)',r:'rgba(244,67,54,.15)',b:'rgba(33,150,243,.15)',p:'rgba(156,39,176,.15)',c:'rgba(0,188,212,.15)',t:'rgba(0,150,136,.15)',gr:'rgba(255,255,255,.08)' };
   const tc = { g:C.g,a:C.a,r:C.r,b:C.b,p:C.p,c:C.c,t:C.t,gr:C.t3 };
   return (
@@ -31,7 +31,7 @@ export function Badge({ color = 'g', children, small }) {
 }
 
 // ── BUTTON ──────────────────────────────────────────────────
-export function Btn({ onClick, color='default', size='md', children, type='button', disabled, full, icon }) {
+function Btn({ onClick, color='default', size='md', children, type='button', disabled, full, icon }) {
   const bg = { default:C.bg4,primary:C.g,danger:C.r,warning:C.a,info:C.b };
   const tc = { default:C.t1,primary:'#000',danger:'#fff',warning:'#000',info:'#fff' };
   const pad = { sm:'4px 10px',md:'7px 14px',lg:'10px 20px' };
@@ -44,7 +44,7 @@ export function Btn({ onClick, color='default', size='md', children, type='butto
 }
 
 // ── CARD ────────────────────────────────────────────────────
-export function Card({ title, extra, children, noPad, accent }) {
+function Card({ title, extra, children, noPad, accent }) {
   return (
     <div style={{ background:C.bg1,border:`1px solid ${C.bdr}`,borderRadius:12,overflow:'hidden',borderTop:accent?`2px solid ${accent}`:undefined }}>
       {title && (
@@ -59,7 +59,7 @@ export function Card({ title, extra, children, noPad, accent }) {
 }
 
 // ── STAT CARD ───────────────────────────────────────────────
-export function StatCard({ color='g', label, value, sub, icon }) {
+function StatCard({ color='g', label, value, sub, icon }) {
   return (
     <div style={{ background:C.bg1,border:`1px solid ${C.bdr}`,borderRadius:12,padding:'13px 14px',borderTop:`2px solid ${C[color]||C.g}`,position:'relative',overflow:'hidden' }}>
       {icon && <div style={{ position:'absolute',right:12,top:12,fontSize:22,opacity:.15 }}>{icon}</div>}
@@ -71,7 +71,7 @@ export function StatCard({ color='g', label, value, sub, icon }) {
 }
 
 // ── PROGRESS BAR ────────────────────────────────────────────
-export function ProgBar({ pct, color, height=5 }) {
+function ProgBar({ pct, color, height=5 }) {
   const c = color || (pct>80?C.r:pct>60?C.a:C.g);
   return (
     <div style={{ height,background:C.bg4,borderRadius:3,overflow:'hidden' }}>
@@ -81,7 +81,7 @@ export function ProgBar({ pct, color, height=5 }) {
 }
 
 // ── ALERT ───────────────────────────────────────────────────
-export function Alert({ type='a', children }) {
+function Alert({ type='a', children }) {
   const bc = { g:C.g,a:C.a,r:C.r,b:C.b };
   const bg = { g:'rgba(0,230,118,.07)',a:'rgba(255,152,0,.07)',r:'rgba(244,67,54,.07)',b:'rgba(33,150,243,.07)' };
   return (
@@ -92,7 +92,7 @@ export function Alert({ type='a', children }) {
 }
 
 // ── TABLE ───────────────────────────────────────────────────
-export function Table({ heads, rows, loading }) {
+function Table({ heads, rows, loading }) {
   if (loading) return <Loading text="Loading data..."/>;
   return (
     <div style={{ overflowX:'auto' }}>
@@ -123,7 +123,7 @@ export function Table({ heads, rows, loading }) {
 }
 
 // ── FORM FIELD ──────────────────────────────────────────────
-export function Field({ label, required, children, hint, error, half, third }) {
+function Field({ label, required, children, hint, error, half, third }) {
   const gridCol = third ? '1' : half ? '1' : undefined;
   return (
     <div style={{ display:'flex',flexDirection:'column',gap:5,gridColumn:gridCol }}>
@@ -139,13 +139,13 @@ export function Field({ label, required, children, hint, error, half, third }) {
   );
 }
 
-export const inputStyle = {
+const inputStyle = {
   background:C.bg3, border:`1px solid ${C.bdr2}`, borderRadius:8,
   color:C.t1, padding:'7px 10px', fontSize:12.5, width:'100%',
   fontFamily:'inherit', outline:'none',
 };
 
-export function Input({ value, onChange, placeholder, type='text', required, disabled, style:extra }) {
+function Input({ value, onChange, placeholder, type='text', required, disabled, style:extra }) {
   return (
     <input value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
       type={type} required={required} disabled={disabled}
@@ -156,7 +156,7 @@ export function Input({ value, onChange, placeholder, type='text', required, dis
   );
 }
 
-export function Select({ value, onChange, options, required, disabled }) {
+function Select({ value, onChange, options, required, disabled }) {
   return (
     <select value={value||''} onChange={e=>onChange(e.target.value)} required={required} disabled={disabled}
       style={{ ...inputStyle,cursor:'pointer' }}>
@@ -169,7 +169,7 @@ export function Select({ value, onChange, options, required, disabled }) {
   );
 }
 
-export function Textarea({ value, onChange, placeholder, rows=3, required }) {
+function Textarea({ value, onChange, placeholder, rows=3, required }) {
   return (
     <textarea value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
       rows={rows} required={required}
@@ -181,7 +181,7 @@ export function Textarea({ value, onChange, placeholder, rows=3, required }) {
 }
 
 // ── MODAL ───────────────────────────────────────────────────
-export function Modal({ open, onClose, title, children, footer, wide }) {
+function Modal({ open, onClose, title, children, footer, wide }) {
   if (!open) return null;
   return (
     <div onClick={e=>{if(e.target===e.currentTarget)onClose();}}
@@ -201,19 +201,19 @@ export function Modal({ open, onClose, title, children, footer, wide }) {
 }
 
 // ── FORM GRID ───────────────────────────────────────────────
-export function FormGrid({ children, cols=2 }) {
+function FormGrid({ children, cols=2 }) {
   return (
     <div style={{ display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:12 }}>
       {children}
     </div>
   );
 }
-export function FullCol({ children }) {
+function FullCol({ children }) {
   return <div style={{ gridColumn:'1/-1' }}>{children}</div>;
 }
 
 // ── SECTION DIVIDER ─────────────────────────────────────────
-export function SectionDiv({ children }) {
+function SectionDiv({ children }) {
   return (
     <div style={{ fontSize:10,fontWeight:700,letterSpacing:'1.5px',textTransform:'uppercase',color:C.t3,padding:'4px 0 8px',borderBottom:`1px solid ${C.bdr}`,margin:'14px 0 12px',gridColumn:'1/-1' }}>
       {children}
@@ -222,7 +222,7 @@ export function SectionDiv({ children }) {
 }
 
 // ── LOADING ─────────────────────────────────────────────────
-export function Loading({ text='Loading...' }) {
+function Loading({ text='Loading...' }) {
   return (
     <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:40,color:C.t3,fontSize:13 }}>
       <div style={{ width:20,height:20,border:`2px solid ${C.bdr2}`,borderTop:`2px solid ${C.g}`,borderRadius:'50%',animation:'spin 1s linear infinite' }}></div>
@@ -233,7 +233,7 @@ export function Loading({ text='Loading...' }) {
 }
 
 // ── EMPTY STATE ─────────────────────────────────────────────
-export function Empty({ icon='📭', title, desc, action }) {
+function Empty({ icon='📭', title, desc, action }) {
   return (
     <div style={{ textAlign:'center',padding:'40px 20px',color:C.t3 }}>
       <div style={{ fontSize:40,marginBottom:12 }}>{icon}</div>
@@ -245,7 +245,7 @@ export function Empty({ icon='📭', title, desc, action }) {
 }
 
 // ── PHOTO UPLOAD ZONE ───────────────────────────────────────
-export function PhotoZone({ label, onCapture, count=0, required }) {
+function PhotoZone({ label, onCapture, count=0, required }) {
   return (
     <div style={{ border:`1.5px dashed ${count>0?C.g:C.bdr2}`,borderRadius:8,padding:14,textAlign:'center',cursor:'pointer',transition:'.15s',background:count>0?'rgba(0,230,118,.04)':'transparent' }}
       onClick={()=>onCapture && onCapture()}>
@@ -258,7 +258,7 @@ export function PhotoZone({ label, onCapture, count=0, required }) {
 }
 
 // ── TABS ────────────────────────────────────────────────────
-export function Tabs({ tabs, active, onChange }) {
+function Tabs({ tabs, active, onChange }) {
   return (
     <div style={{ display:'flex',borderBottom:`1px solid ${C.bdr}`,overflowX:'auto',flexShrink:0,marginBottom:16 }}>
       {tabs.map(tab => (
@@ -272,7 +272,7 @@ export function Tabs({ tabs, active, onChange }) {
 }
 
 // ── PIN INPUT ───────────────────────────────────────────────
-export function PinInput({ value, onChange, label='Supervisor PIN' }) {
+function PinInput({ value, onChange, label='Supervisor PIN' }) {
   return (
     <Field label={label} hint="4-digit approval PIN">
       <Input type="password" value={value} onChange={onChange} placeholder="••••" style={{ letterSpacing:8,fontSize:18,textAlign:'center',width:100 }}/>
@@ -281,7 +281,7 @@ export function PinInput({ value, onChange, label='Supervisor PIN' }) {
 }
 
 // ── SEARCH INPUT ────────────────────────────────────────────
-export function SearchInput({ value, onChange, placeholder='Search...' }) {
+function SearchInput({ value, onChange, placeholder='Search...' }) {
   return (
     <div style={{ position:'relative' }}>
       <span style={{ position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:C.t3,fontSize:14 }}>🔍</span>
@@ -2076,7 +2076,7 @@ function Vehicles() {
 
 
 // ── TRIPS MODULE ────────────────────────────────────────────
-export function Trips() {
+function Trips() {
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -2195,7 +2195,7 @@ export function Trips() {
 }
 
 // ── YARD INSPECTION MODULE ──────────────────────────────────
-export function YardInspection() {
+function YardInspection() {
   const [inspections, setInspections] = useState([]);
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -2303,7 +2303,7 @@ export function YardInspection() {
 }
 
 // ── BILLING MODULE ──────────────────────────────────────────
-export function Billing() {
+function Billing() {
   const [invoices, setInvoices] = useState([]);
   const [generators, setGenerators] = useState([]);
   const [trips, setTrips] = useState([]);
