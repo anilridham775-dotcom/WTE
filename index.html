@@ -6,34 +6,34 @@
 <title>EcoLoop Pro — Waste-to-Energy ERP</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#060a0f;color:#e8f4fd;height:100vh;display:flex;overflow:hidden}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#233450;border-radius:3px}
-#sb{width:232px;min-width:232px;background:#0d1520;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1724;color:#e2eeff;height:100vh;width:100vw;display:flex;overflow:hidden;margin:0;padding:0}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#2a4066;border-radius:3px}
+#sb{width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#tb{background:#0d1520;border-bottom:1px solid rgba(255,255,255,.07);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-#ct{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#060a0f}
+#tb{background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#ct{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724;width:100%;box-sizing:border-box}
 .ni{display:flex;align-items:center;gap:8px;padding:7px 16px;cursor:pointer;font-size:12px;color:#5a7a9a;border-left:2px solid transparent}
-.ni:hover{background:rgba(255,255,255,.03);color:#9ab8d4}
+.ni:hover{background:rgba(255,255,255,.03);color:#8ab0d0}
 .ni.on{color:#00e676;border-left-color:#00e676;background:rgba(0,230,118,.07)}
 .nh{font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#2e4a65;padding:8px 16px 3px}
-.card{background:#0d1520;border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;margin-bottom:0}
-.ch{padding:11px 15px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.ct2{font-size:13px;font-weight:600;color:#e8f4fd}
+.card{background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;overflow:hidden;margin-bottom:0}
+.ch{padding:11px 15px;border-bottom:1px solid rgba(100,160,255,.1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ct2{font-size:13px;font-weight:600;color:#e2eeff}
 .cb{padding:14px}
 .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px}
-.sc{background:#0d1520;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:13px 14px;border-top:2px solid var(--c)}
+.sc{background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:13px 14px;border-top:2px solid var(--c)}
 .sl{font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#5a7a9a}
 .sv{font-size:22px;font-weight:700;margin:5px 0 2px;font-family:Consolas,monospace;color:var(--c)}
 .ss{font-size:10.5px;color:#5a7a9a}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600}
 .bg{background:rgba(0,230,118,.15);color:#00e676}.ba{background:rgba(255,152,0,.15);color:#ff9800}.br{background:rgba(244,67,54,.15);color:#f44336}.bb{background:rgba(33,150,243,.15);color:#2196f3}.bgr{background:rgba(255,255,255,.08);color:#5a7a9a}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:1px solid rgba(255,255,255,.12)}
-td{padding:9px 12px;color:#9ab8d4;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
-.prog{height:5px;background:#1c2d42;border-radius:3px;overflow:hidden}
+th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:1px solid rgba(100,160,255,.15)}
+td{padding:9px 12px;color:#8ab0d0;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+.prog{height:5px;background:#243858;border-radius:3px;overflow:hidden}
 .pf{height:100%;border-radius:3px}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#1c2d42;color:#e8f4fd;font-family:inherit;font-size:12px;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:#243858;color:#e2eeff;font-family:inherit;font-size:12px;cursor:pointer}
 .btn-g{background:#00e676;border-color:#00e676;color:#000;font-weight:700}
 .btn-sm{padding:4px 9px;font-size:11px}
 .alert{padding:9px 13px;border-radius:8px;font-size:12.5px;border-left:3px solid;margin-bottom:4px}
@@ -42,38 +42,38 @@ td{padding:9px 12px;color:#9ab8d4;border-bottom:1px solid rgba(255,255,255,.05);
 .al-g{background:rgba(0,230,118,.07);border-color:#00e676;color:#00e676}
 .al-b{background:rgba(33,150,243,.07);border-color:#2196f3;color:#2196f3}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
-.modal{background:#0d1520;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:580px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-.mh{padding:15px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600;color:#e8f4fd}
+.modal{background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;width:580px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.mh{padding:15px 18px;border-bottom:1px solid rgba(100,160,255,.1);display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600;color:#e2eeff}
 .mb{padding:18px;overflow-y:auto;flex:1}
-.mf{padding:12px 18px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px}
+.mf{padding:12px 18px;border-top:1px solid rgba(100,160,255,.1);display:flex;justify-content:flex-end;gap:10px}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fl{font-size:11.5px;color:#9ab8d4;font-weight:500;margin-bottom:4px}
-input,select,textarea{background:#162236;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e8f4fd;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit;outline:none}
+.fl{font-size:11.5px;color:#8ab0d0;font-weight:500;margin-bottom:4px}
+input,select,textarea{background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit;outline:none}
 input:focus,select:focus,textarea:focus{border-color:#00e676}
-.sec{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5a7a9a;padding:4px 0 8px;border-bottom:1px solid rgba(255,255,255,.07);margin:14px 0 12px;grid-column:1/-1}
+.sec{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5a7a9a;padding:4px 0 8px;border-bottom:1px solid rgba(100,160,255,.1);margin:14px 0 12px;grid-column:1/-1}
 .full{grid-column:1/-1}
 </style>
 </head>
 <body>
 <div id="sb">
-  <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07)">
+  <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)">
     <div style="font-size:22px;margin-bottom:4px">♻️</div>
     <div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">EcoLoop Pro</div>
     <div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div>
   </div>
   <div style="flex:1;padding:6px 0" id="nav"></div>
-  <div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.07);font-size:11px;color:#5a7a9a">
+  <div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1);font-size:11px;color:#5a7a9a">
     <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>System Online · v3.0
   </div>
 </div>
 <div id="main">
   <div id="tb">
     <div>
-      <div style="font-size:14px;font-weight:600;color:#e8f4fd" id="ptitle">Operations Dashboard</div>
+      <div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div>
       <div style="font-size:11px;color:#5a7a9a">EcoLoop Waste-to-Energy ERP · Live</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
-      <div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#162236;border-radius:20px">🟢 All Systems Online</div>
+      <div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#1e3048;border-radius:20px">🟢 All Systems Online</div>
       <button class="btn btn-g btn-sm" onclick="go('trips')">+ New Trip</button>
     </div>
   </div>
@@ -87,6 +87,1542 @@ var SB_URL='https://oddvetoasqjziohmqugg.supabase.co';
 function goTrips(){go('trips');}
 function goPage(p){go(p);}
 function gv(id){var el=document.getElementById(id);return el?el.value:'';}
+
+// ── STAFF MASTER ──────────────────────────────────────────
+async function renderStaff() {
+  var ct = document.getElementById('ct');
+  try {
+    var data = await sbFetch('staff_profiles',{select:'*',order:'created_at.desc'});
+    data = safeArr(data);
+    var rows = data.map(function(s){
+      return [
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+s.staff_code+'</strong>',
+        '<div style="font-weight:600;color:#e2eeff">'+s.full_name+'</div><div style="font-size:10px;color:#8ab0d0">'+s.mobile+'</div>',
+        s.designation,
+        s.department||'-',
+        s.city||'-',
+        badge(s.employment_type==='Permanent'?'g':s.employment_type==='Contract'?'a':'b', s.employment_type||'-'),
+        badge(s.is_active?'g':'gr', s.is_active?'Active':'Inactive'),
+        '<button class="btn btn-sm" id="es'+s.id+'">Edit</button>'
+      ];
+    });
+    ct.innerHTML = '<div class="sg">'
+      +sc('#00e676','Total Staff',data.length,'Registered')
+      +sc('#00e676','Active',data.filter(function(s){return s.is_active;}).length,'')
+      +sc('#2196f3','Drivers',data.filter(function(s){return s.designation==='Driver';}).length,'')
+      +sc('#ff9800','Inspectors',data.filter(function(s){return s.designation==='WTE-Inspector';}).length,'')
+      +'</div>'
+      +card('👥 Staff Master',
+        '<button class="btn btn-g btn-sm" onclick="newStaff()">+ Register Staff</button>',
+        tbl(['Staff Code','Name & Mobile','Designation','Department','City','Employment','Status',''],rows),true);
+    setTimeout(wireButtons,150);
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.newStaff = function() {
+  var body = '<div class="fg">'
+    +'<div class="sec">Personal Information</div>'
+    +fld('Full Name',inp('sf_name','Legal full name as per Aadhaar'),true)
+    +fld('Designation','<select id="sf_desig"><option>Driver</option><option>Cleaner</option><option>WTE-Inspector</option><option>WTE-Manager</option><option>Admin</option><option>Security</option></select>',true)
+    +fld('Mobile',inp('sf_mobile','+91 XXXXXXXXXX'),true)
+    +fld('Email',inp('sf_email','email@company.com','email'))
+    +fld('Date of Birth',inp('sf_dob','','date'))
+    +fld('Blood Group','<select id="sf_blood"><option value="">-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>')
+    +fld('Gender','<select id="sf_gender"><option value="">-</option><option>Male</option><option>Female</option><option>Other</option></select>')
+    +'<div class="sec">Aadhaar Details</div>'
+    +fld('Aadhaar Number',inp('sf_aadhaar','XXXX XXXX XXXX'))
+    +fld('Aadhaar Verified','<select id="sf_aadv"><option value="false">Pending</option><option value="true">Verified</option></select>')
+    +'<div class="sec">Address</div>'
+    +fld('Address Line 1',inp('sf_addr1','House/Flat, Street'),true)
+    +fld('Address Line 2',inp('sf_addr2','Area, Landmark'))
+    +fld('City',inp('sf_city','City'),true)
+    +fld('State',inp('sf_state','State'))
+    +fld('PIN Code',inp('sf_pin','400001'))
+    +'<div class="sec">Emergency Contact</div>'
+    +fld('Contact Name',inp('sf_ecname','Full name'))
+    +fld('Contact Mobile',inp('sf_ecmob','+91 XXXXXXXXXX'))
+    +fld('Relation',inp('sf_ecrel','Spouse / Parent / Sibling'))
+    +'<div class="sec">Employment</div>'
+    +fld('Joining Date',inp('sf_join','','date'))
+    +fld('Employment Type','<select id="sf_emp"><option>Permanent</option><option>Contract</option><option>Outsourced</option></select>')
+    +fld('Department',inp('sf_dept','Operations / Fleet / Compliance'))
+    +fld('Reporting To',inp('sf_report','Manager name'))
+    +'</div>';
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveStaff()">Register Staff</button>';
+  modal('👥 Register Staff Member',body,foot);
+};
+
+window.saveStaff = async function() {
+  var name=gv('sf_name'),mobile=gv('sf_mobile'),desig=gv('sf_desig'),city=gv('sf_city'),addr=gv('sf_addr1');
+  if(!name||!mobile||!desig||!addr||!city){alert('Name, mobile, designation, address and city required.');return;}
+  try {
+    var code = await sbRpc('next_staff_code');
+    await sbInsert('staff_profiles',{
+      staff_code:code, full_name:name, designation:desig, mobile:mobile,
+      email:gv('sf_email')||null, date_of_birth:gv('sf_dob')||null,
+      blood_group:gv('sf_blood')||null, gender:gv('sf_gender')||null,
+      aadhaar_no:gv('sf_aadhaar')||null, aadhaar_verified:gv('sf_aadv')==='true',
+      address_line1:addr, address_line2:gv('sf_addr2')||null,
+      city:city, state:gv('sf_state')||null, pincode:gv('sf_pin')||null,
+      emergency_contact_name:gv('sf_ecname')||null,
+      emergency_contact_mobile:gv('sf_ecmob')||null,
+      emergency_contact_relation:gv('sf_ecrel')||null,
+      joining_date:gv('sf_join')||null, employment_type:gv('sf_emp'),
+      department:gv('sf_dept')||null, reporting_to:gv('sf_report')||null,
+      is_active:true
+    });
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Staff '+code+' registered!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderStaff();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── ROLE PERMISSIONS ──────────────────────────────────────
+async function renderRoles() {
+  var ct = document.getElementById('ct');
+  try {
+    var data = await sbFetch('role_permissions',{select:'*',order:'role'});
+    data = safeArr(data);
+    var roles = ['admin','manager','inspector','driver','generator'];
+    var modules = ['dashboard','generators','bins','trips','billing','drivers','vehicles','cleaning','pm','rm','fuel','tyres','reports','users'];
+
+    var html = '<div class="card"><div class="ch"><span class="ct2">🔐 Role Permissions Matrix</span>'
+      +'<div style="font-size:11px;color:#8ab0d0">Green = Allowed · Click to toggle</div></div>'
+      +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px">'
+      +'<thead><tr style="border-bottom:1px solid rgba(100,160,255,.15)">'
+      +'<th style="text-align:left;padding:8px 12px;color:#8ab0d0;font-size:10px;text-transform:uppercase">Module</th>'
+      +roles.map(function(r){return '<th style="text-align:center;padding:8px 12px;color:#8ab0d0;font-size:10px;text-transform:uppercase">'+r.toUpperCase()+'</th>';}).join('')
+      +'</tr></thead><tbody>';
+
+    modules.forEach(function(mod){
+      html += '<tr style="border-bottom:1px solid rgba(100,160,255,.08)">'
+        +'<td style="padding:8px 12px;font-weight:600;color:#e2eeff">'+mod+'</td>';
+      roles.forEach(function(role){
+        var perm = data.find(function(p){return p.role===role&&p.module===mod;});
+        var hasView = perm&&perm.can_view;
+        html += '<td style="text-align:center;padding:8px 12px">'
+          +'<span style="display:inline-flex;flex-direction:column;gap:3px;align-items:center">'
+          +(hasView?'<span style="color:#00e676;font-size:16px">✓</span>':'<span style="color:#2a4066;font-size:16px">✗</span>')
+          +(perm&&perm.can_create?'<span style="font-size:9px;color:#00e676">CREATE</span>':'')
+          +(perm&&perm.can_approve?'<span style="font-size:9px;color:#ff9800">APPROVE</span>':'')
+          +'</span></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+    ct.innerHTML = html;
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+// ── GENERATOR REQUESTS ────────────────────────────────────
+async function renderGenRequests() {
+  var ct = document.getElementById('ct');
+  try {
+    var data = await sbFetch('generator_requests',{select:'*',order:'created_at.desc'});
+    data = safeArr(data);
+    var rows = data.map(function(r){
+      return [
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+r.request_code+'</strong>',
+        '<div style="font-weight:600;color:#e2eeff">'+r.company_name+'</div><div style="font-size:10px;color:#8ab0d0">'+r.industry_type+'</div>',
+        r.contact_person,
+        '<span style="font-family:Consolas,monospace;font-size:11px">'+r.mobile+'</span>',
+        r.city||'-',
+        r.waste_category||'-',
+        badge(r.status==='Approved'?'g':r.status==='Rejected'?'r':'a',r.status),
+        new Date(r.created_at).toLocaleDateString('en-IN'),
+        r.status==='Pending'
+          ? '<button class="btn btn-sm" id="edr'+r.id+'" style="cursor:pointer;margin-right:4px">✏️ Edit</button>'
+            +'<button class="btn btn-sm" style="background:#00e676;color:#000;border-color:#00e676" id="apr'+r.id+'">✓ Approve</button> '
+            +'<button class="btn btn-sm" style="background:#f44336;color:#fff;border-color:#f44336" id="rej'+r.id+'">✗ Reject</button>'
+          : badge(r.status==='Approved'?'g':'r',r.status)
+      ];
+    });
+    var regUrl = window.location.origin + (window.location.pathname||'/') + '?register=generator';
+    ct.innerHTML = '<div class="sg">'
+      +sc('#ff9800','Pending',data.filter(function(r){return r.status==='Pending';}).length,'Awaiting review')
+      +sc('#00e676','Approved',data.filter(function(r){return r.status==='Approved';}).length,'Active')
+      +sc('#f44336','Rejected',data.filter(function(r){return r.status==='Rejected';}).length,'')
+      +'</div>'
+      +'<div style="background:#1a2840;border:1px solid rgba(100,160,255,.15);border-radius:12px;padding:14px;margin-bottom:14px">'
+      +'<div style="font-size:12px;font-weight:600;color:#e2eeff;margin-bottom:6px">🔗 Generator Self-Registration URL — Share this with Generators</div>'
+      +'<div style="font-family:Consolas,monospace;font-size:12px;color:#00e676;background:#0f1724;padding:10px;border-radius:6px;word-break:break-all" id="reg-url">'+regUrl+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:8px">'
+      +'<button class="btn btn-sm btn-g" onclick="navigator.clipboard.writeText(document.getElementById(\'reg-url\').textContent).then(function(){alert(\'URL copied!\');})">📋 Copy URL</button>'
+      +'<button class="btn btn-sm" onclick="window.open(document.getElementById(\'reg-url\').textContent,\'_blank\')">🔗 Open Form</button>'
+      +'</div>'
+      +'<div style="font-size:11px;color:#8ab0d0;margin-top:8px">When approved: Generator created + Bin auto-allocated + Login account created automatically.</div>'
+      +'</div>'
+      +card('📋 Generator Registration Requests',
+        '<button class="btn btn-g btn-sm" onclick="showGenRegForm()">+ Manual Add Request</button>',
+        tbl(['Req.Code','Company','Contact','Mobile','City','Waste Cat.','Status','Date','Action'],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="apr"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){approveGen(id);};});
+      document.querySelectorAll('[id^="rej"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){rejectGen(id);};});
+      document.querySelectorAll('[id^="edr"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editGenRequest(id);};});
+    },150);
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.editGenRequest = async function(id) {
+  var req = await sbFetch('generator_requests',{select:'*',eq:{id:id}});
+  var r = req[0]; if(!r) return;
+
+  var body = '<div class="fg">'
+    +'<div style="grid-column:1/-1;padding:8px 12px;background:rgba(255,152,0,.08);border-left:3px solid #ff9800;border-radius:6px;font-size:12px;color:#ff9800;margin-bottom:4px">Editing request '+r.request_code+' — changes will be saved before approval</div>'
+    +'<div class="sec">Company Information</div>'
+    +fld('Company Name','<input id="er_name" value="'+(r.company_name||'').replace(/"/g,"&quot;")+'">',true)
+    +fld('Industry Type','<select id="er_ind"><option>Chemical</option><option>Petrochemical</option><option>Textile</option><option>Pharmaceutical</option><option>Metal/Foundry</option><option>Food Processing</option><option>Cement</option><option>Refinery</option><option>Power Plant</option><option>Other</option></select>')
+    +fld('Contact Person','<input id="er_contact" value="'+(r.contact_person||'').replace(/"/g,"&quot;")+'">',true)
+    +fld('Mobile','<input id="er_mobile" value="'+(r.mobile||'').replace(/"/g,"&quot;")+'">',true)
+    +fld('Email','<input id="er_email" type="email" value="'+(r.email||'').replace(/"/g,"&quot;")+'">') 
+    +fld('GSTIN','<input id="er_gstin" value="'+(r.gstin||'').replace(/"/g,"&quot;")+'">') 
+    +'<div class="sec">PCB Authorization</div>'
+    +fld('PCB Auth No.','<input id="er_pcb" value="'+(r.pcb_auth_no||'').replace(/"/g,"&quot;")+'">') 
+    +fld('PCB Expiry','<input id="er_pcbexp" type="date" value="'+(r.pcb_expiry||'')+'">') 
+    +'<div class="sec">Address</div>'
+    +'<div class="full">'+fld('Address','<input id="er_addr" value="'+(r.address||'').replace(/"/g,"&quot;")+'">',true)+'</div>'
+    +fld('City','<input id="er_city" value="'+(r.city||'').replace(/"/g,"&quot;")+'">',true)
+    +fld('State','<input id="er_state" value="'+(r.state||'').replace(/"/g,"&quot;")+'">') 
+    +fld('PIN Code','<input id="er_pin" value="'+(r.pincode||'').replace(/"/g,"&quot;")+'">') 
+    +'<div class="sec">GPS Location</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Plant GPS Coordinates</span><button type="button" onclick="detectGenLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Auto-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="g_lat" placeholder="Latitude" value="'+(r.latitude||'')+'"><input id="g_lng" placeholder="Longitude" value="'+(r.longitude||'')+'"></div>'
+    +'<div id="gen-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div>'
+    +(r.latitude&&r.longitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+r.latitude+','+r.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Current location on Maps →</a></div>':'')
+    +'</div>'
+    +'<div class="sec">Waste Details</div>'
+    +fld('Avg Waste/Day (kg)','<input id="er_waste" type="number" value="'+(r.avg_waste_per_day||'')+'">') 
+    +fld('Waste Category','<select id="er_cat"><option>Hazardous</option><option>Non-Hazardous</option><option>Mixed</option><option>Biomedical</option></select>',true)
+    +'<div class="full">'+fld('Review Notes','<textarea id="er_notes" rows="2" placeholder="Optional notes for approval..."></textarea>')+'</div>'
+    +'</div>';
+
+  var _eid2 = id;
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" id="segrbtn">Save Only</button><button class="btn btn-g btn-sm" id="seapbtn">Save and Approve</button>';
+  modal('Edit Generator Request', body, foot);
+  setTimeout(function(){
+    document.getElementById('er_ind').value = r.industry_type||'';
+    document.getElementById('er_cat').value = r.waste_category||'';
+    var sb2=document.getElementById('segrbtn');if(sb2)sb2.onclick=function(){saveEditGenRequest(_eid2);};
+    var ab2=document.getElementById('seapbtn');if(ab2)ab2.onclick=function(){saveEditAndApprove(_eid2);};
+  },50);
+};
+
+window.saveEditGenRequest = async function(id) {
+  try {
+    await sbUpdate('generator_requests',{
+      company_name:name, industry_type:gv('er_ind'),
+      contact_person:contact, mobile:mobile, email:gv('er_email')||null,
+      gstin:gv('er_gstin')||null, pcb_auth_no:gv('er_pcb')||null,
+      pcb_expiry:gv('er_pcbexp')||null, address:addr, city:city,
+      state:gv('er_state')||null, pincode:gv('er_pin')||null,
+      avg_waste_per_day:gv('er_waste')||null, waste_category:gv('er_cat'),
+      latitude:gv('g_lat')?parseFloat(gv('g_lat')):null,
+      longitude:gv('g_lng')?parseFloat(gv('g_lng')):null,
+    },{id:id});
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Request updated successfully!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderGenRequests();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.saveEditAndApprove = async function(id) {
+  var name=gv('er_name'),contact=gv('er_contact'),mobile=gv('er_mobile'),addr=gv('er_addr'),city=gv('er_city');
+  if(!name||!contact||!mobile||!addr||!city){alert('Please fill all required fields.');return;}
+  try {
+    // First save the edits
+    await sbUpdate('generator_requests',{
+      company_name:name, industry_type:gv('er_ind'),
+      contact_person:contact, mobile:mobile, email:gv('er_email')||null,
+      gstin:gv('er_gstin')||null, pcb_auth_no:gv('er_pcb')||null,
+      pcb_expiry:gv('er_pcbexp')||null, address:addr, city:city,
+      state:gv('er_state')||null, pincode:gv('er_pin')||null,
+      avg_waste_per_day:gv('er_waste')||null, waste_category:gv('er_cat'),
+      latitude:gv('g_lat')?parseFloat(gv('g_lat')):null,
+      longitude:gv('g_lng')?parseFloat(gv('g_lng')):null,
+    },{id:id});
+    closeModal();
+    // Then approve
+    await approveGen(id);
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.approveGen = async function(id) {
+  var notes = prompt('Approval notes (optional):') || 'Approved';
+  try {
+    var req = await sbFetch('generator_requests',{select:'*',eq:{id:id}});
+    var r = req[0]; if(!r) return;
+
+    // Step 1: Create Generator
+    var genCode = await sbRpc('next_gen_code');
+    var genResult = await sbInsert('generators',{
+      gen_code:genCode, company_name:r.company_name, industry_type:r.industry_type,
+      contact_person:r.contact_person, mobile:r.mobile, email:r.email,
+      gstin:r.gstin, pcb_auth_no:r.pcb_auth_no, pcb_expiry:r.pcb_expiry,
+      address:r.address, city:r.city, state:r.state, pincode:r.pincode,
+      avg_waste_per_day:r.avg_waste_per_day, waste_category:r.waste_category,
+      is_active:true
+    });
+    var genId = genResult[0] && genResult[0].id;
+
+    // Step 2: Auto-allocate a default bin
+    var binCode = await sbRpc('next_bin_code');
+    var wasteCategory = r.waste_category || 'Non-Hazardous';
+    var binType = wasteCategory === 'Hazardous' ? 'B' : 'A';
+    await sbInsert('bins',{
+      bin_code:binCode,
+      generator_id:genId,
+      operation_type:binType,
+      container_category:'Wheelie Bin — 240L',
+      body_material:'HDPE Plastic',
+      capacity_kg:220,
+      waste_category:wasteCategory,
+      hazard_class:'Not applicable',
+      zone:'Main Gate',
+      tag_technology:'QR Code',
+      fill_alert_threshold:80,
+      alert_channel:'WhatsApp+SMS',
+      current_fill_pct:0,
+      status:'Active'
+    });
+
+    // Step 3: Create login account for generator contact
+    if(r.email){
+      var defaultPin = r.mobile ? r.mobile.slice(-4) : '0000';
+      try {
+        await sbInsert('user_roles',{
+          full_name:r.contact_person,
+          email:r.email,
+          phone:r.mobile,
+          role:'generator',
+          pin:defaultPin,
+          is_active:true
+        });
+      } catch(ue){ console.warn('Login not created:',ue); }
+    }
+
+    // Step 4: Update request status
+    await sbUpdate('generator_requests',{
+      status:'Approved',
+      review_notes:notes,
+      reviewed_at:new Date().toISOString()
+    },{id:id});
+
+    // Show success
+    var msg = '✅ Generator '+genCode+' approved!\n'
+      +'📦 Bin '+binCode+' auto-allocated\n'
+      +(r.email ? '🔑 Login created: '+r.email+' / PIN: '+r.mobile.slice(-4) : '');
+    alert(msg);
+    renderGenRequests();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.rejectGen = async function(id) {
+  var notes = prompt('Reason for rejection:');
+  if(!notes) return;
+  await sbUpdate('generator_requests',{status:'Rejected',review_notes:notes,reviewed_at:new Date().toISOString()},{id:id});
+  renderGenRequests();
+};
+
+window.showGenRegForm = function() {
+  var body = '<div class="fg">'
+    +'<div class="sec">Company Details</div>'
+    +fld('Company Name',inp('gr_name'),true)
+    +fld('Industry Type','<select id="gr_ind"><option>Chemical</option><option>Petrochemical</option><option>Textile</option><option>Pharmaceutical</option><option>Metal/Foundry</option><option>Food Processing</option><option>Cement</option><option>Refinery</option><option>Power Plant</option><option>Other</option></select>',true)
+    +fld('Contact Person',inp('gr_contact'),true)
+    +fld('Mobile',inp('gr_mobile'),true)
+    +fld('Email',inp('gr_email','','email'))
+    +fld('GSTIN',inp('gr_gstin'))
+    +fld('PCB Auth No.',inp('gr_pcb'))
+    +fld('PCB Expiry',inp('gr_pcbexp','','date'))
+    +'<div class="sec">Location</div>'
+    +fld('Address',inp('gr_addr'),true)
+    +fld('City',inp('gr_city'),true)
+    +fld('State',inp('gr_state'))
+    +fld('PIN Code',inp('gr_pin'))
+    +fld('Latitude',inp('gr_lat','e.g. 23.0225'))
+    +fld('Longitude',inp('gr_lng','e.g. 72.5714'))
+    +'<div class="sec">Waste</div>'
+    +fld('Avg Waste/Day (kg)',inp('gr_waste','','number'))
+    +fld('Waste Category','<select id="gr_cat"><option>Hazardous</option><option>Non-Hazardous</option><option>Mixed</option><option>Biomedical</option></select>',true)
+    +'</div>';
+  modal('📋 Add Generator Request',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveGenRequest()">Submit Request</button>');
+};
+
+window.saveGenRequest = async function() {
+  var name=gv('gr_name'),contact=gv('gr_contact'),mobile=gv('gr_mobile'),addr=gv('gr_addr'),city=gv('gr_city');
+  if(!name||!contact||!mobile||!addr||!city){alert('Please fill all required fields.');return;}
+  try {
+    var code = await sbRpc('next_request_code');
+    await sbInsert('generator_requests',{
+      request_code:code, company_name:name, industry_type:gv('gr_ind'),
+      contact_person:contact, mobile:mobile, email:gv('gr_email')||null,
+      gstin:gv('gr_gstin')||null, pcb_auth_no:gv('gr_pcb')||null,
+      pcb_expiry:gv('gr_pcbexp')||null, address:addr, city:city,
+      state:gv('gr_state')||null, pincode:gv('gr_pin')||null,
+      avg_waste_per_day:gv('gr_waste')||null, waste_category:gv('gr_cat'),
+      latitude:gv('gr_lat')?parseFloat(gv('gr_lat')):null,
+      longitude:gv('gr_lng')?parseFloat(gv('gr_lng')):null,
+      status:'Pending'
+    });
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Request '+code+' submitted for review.';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderGenRequests();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── PRE-TRIP CHECKLIST ────────────────────────────────────
+async function renderChecklist() {
+  var ct = document.getElementById('ct');
+  try {
+    var [checklists, vehicles, drivers] = await Promise.all([
+      sbFetch('vehicle_checklist',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:30}),
+      sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
+      sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}),
+    ]);
+    checklists=safeArr(checklists); vehicles=safeArr(vehicles); drivers=safeArr(drivers);
+
+    var rows = checklists.map(function(c){
+      var checks = [c.fuel_ok,c.tyre_fl_ok,c.tyre_fr_ok,c.oil_level_ok,c.brake_ok,c.lights_ok,c.adas_camera_ok,c.cleaning_status==='Clean'];
+      var passed = checks.filter(Boolean).length;
+      var total = checks.length;
+      return [
+        '<strong style="font-family:Consolas,monospace">'+c.checklist_code+'</strong>',
+        (c.vehicles&&c.vehicles.reg_no)||'-',
+        (c.drivers&&c.drivers.full_name)||'-',
+        c.check_date,
+        '<span style="font-family:Consolas,monospace;color:'+(c.fuel_level_pct>=20?'#00e676':'#f44336')+'">'+(c.fuel_level_pct||0)+'%</span>',
+        passed+'/'+total+' checks',
+        badge(c.vehicle_ready?'g':'r', c.vehicle_ready?'READY':'NOT READY'),
+      ];
+    });
+    ct.innerHTML = '<div class="sg">'
+      +sc('#00e676','Today',checklists.filter(function(c){return c.check_date===new Date().toISOString().split('T')[0];}).length,'Checklists')
+      +sc('#00e676','Ready',checklists.filter(function(c){return c.vehicle_ready;}).length,'Vehicles cleared')
+      +sc('#f44336','Not Ready',checklists.filter(function(c){return !c.vehicle_ready;}).length,'Blocked')
+      +'</div>'
+      +card('✅ Pre-Trip Vehicle Checklist (360°)',
+        '<button class="btn btn-g btn-sm" onclick="newChecklist()">+ New Checklist</button>',
+        tbl(['Code','Vehicle','Driver','Date','Fuel','Checks','Status'],rows),true);
+    window._checklistData = {vehicles, drivers};
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.newChecklist = function() {
+  var d = window._checklistData||{vehicles:[],drivers:[]};
+  var vOpts = d.vehicles.map(function(v){return '<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
+  var dOpts = d.drivers.map(function(dr){return '<option value="'+dr.id+'">'+dr.full_name+'</option>';}).join('');
+  var today = new Date().toISOString().split('T')[0];
+  var checks = [
+    ['fuel_ok','Fuel Level OK (≥20%)'],
+    ['tyre_fl_ok','Front Left Tyre OK'],
+    ['tyre_fr_ok','Front Right Tyre OK'],
+    ['tyre_rlo_ok','Rear Left Outer Tyre OK'],
+    ['tyre_rli_ok','Rear Left Inner Tyre OK'],
+    ['tyre_rro_ok','Rear Right Outer Tyre OK'],
+    ['tyre_rri_ok','Rear Right Inner Tyre OK'],
+    ['oil_level_ok','Engine Oil Level OK'],
+    ['oil_filter_ok','Oil Filter OK'],
+    ['brake_ok','Brakes OK'],
+    ['lights_ok','All Lights Working'],
+    ['horn_ok','Horn Working'],
+    ['adas_camera_ok','ADAS Camera Working'],
+    ['first_aid_kit_ok','First Aid Kit Present'],
+    ['fire_extinguisher_ok','Fire Extinguisher Present'],
+    ['ppes_available','PPEs Available'],
+  ];
+  var body = '<div class="fg">'
+    +'<div class="full"><div class="fl">Vehicle *</div><select id="cl_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'
+    +'<div class="full"><div class="fl">Driver</div><select id="cl_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'
+    +fld('Check Date',inp('cl_date',today,'date'),true)
+    +fld('Fuel Level %',inp('cl_fuel','','number'))
+    +'<div class="full"><div class="fl" style="margin-bottom:8px">360° Vehicle Checks</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+    +checks.map(function(c){
+      return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:#8ab0d0;padding:6px;background:#0f1724;border-radius:6px">'
+        +'<input type="checkbox" id="'+c[0]+'" style="accent-color:#00e676">'+c[1]+'</label>';
+    }).join('')
+    +'</div></div>'
+    +fld('Cleaning Status','<select id="cl_clean"><option>Clean</option><option>Needs Cleaning</option><option>Dirty</option></select>')
+    +'<div class="full"><div class="fl">Overall Vehicle Ready?</div>'
+    +'<select id="cl_ready"><option value="true">YES — Vehicle is Ready</option><option value="false">NO — Issues Found</option></select></div>'
+    +'<div class="full">'+fld('Driver Notes','<textarea id="cl_notes" rows="2" placeholder="Any issues, observations..."></textarea>')+'</div>'
+    +'</div>';
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveChecklist()">Submit Checklist</button>';
+  modal('✅ Pre-Trip 360° Checklist',body,foot);
+};
+
+window.saveChecklist = async function() {
+  var veh=gv('cl_veh'),date=gv('cl_date');
+  if(!veh||!date){alert('Vehicle and date required.');return;}
+  function chk(id){var el=document.getElementById(id);return el?el.checked:false;}
+  try {
+    var code = await sbRpc('next_checklist_code');
+    await sbInsert('vehicle_checklist',{
+      checklist_code:code, vehicle_id:veh, driver_id:gv('cl_drv')||null,
+      check_date:date, fuel_level_pct:parseInt(gv('cl_fuel'))||0,
+      fuel_ok:chk('fuel_ok'), tyre_fl_ok:chk('tyre_fl_ok'), tyre_fr_ok:chk('tyre_fr_ok'),
+      tyre_rlo_ok:chk('tyre_rlo_ok'), tyre_rli_ok:chk('tyre_rli_ok'),
+      tyre_rro_ok:chk('tyre_rro_ok'), tyre_rri_ok:chk('tyre_rri_ok'),
+      oil_level_ok:chk('oil_level_ok'), oil_filter_ok:chk('oil_filter_ok'),
+      brake_ok:chk('brake_ok'), lights_ok:chk('lights_ok'), horn_ok:chk('horn_ok'),
+      adas_camera_ok:chk('adas_camera_ok'), first_aid_kit_ok:chk('first_aid_kit_ok'),
+      fire_extinguisher_ok:chk('fire_extinguisher_ok'), ppes_available:chk('ppes_available'),
+      cleaning_status:gv('cl_clean'), vehicle_ready:gv('cl_ready')==='true',
+      driver_notes:gv('cl_notes')||null
+    });
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Checklist '+code+' submitted!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderChecklist();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── PAYMENTS MODULE ───────────────────────────────────────
+async function renderPayments() {
+  var ct = document.getElementById('ct');
+  try {
+    var [payments, invoices] = await Promise.all([
+      sbFetch('payments',{select:'*',order:'created_at.desc',limit:50}),
+      sbFetch('invoices',{select:'id,invoice_no,total_amount,payment_status,generators(company_name)',eq:{payment_status:'Pending'},order:'invoice_date.desc',limit:50}),
+    ]);
+    payments=safeArr(payments); invoices=safeArr(invoices);
+
+    var totalPaid = payments.reduce(function(s,p){return s+(p.amount||0);},0);
+    var pendingAmt = invoices.reduce(function(s,i){return s+(i.total_amount||0);},0);
+
+    var payRows = payments.map(function(p){
+      return [
+        '<strong style="font-family:Consolas,monospace">'+p.payment_code+'</strong>',
+        p.payment_date,
+        '₹'+Number(p.amount).toLocaleString('en-IN'),
+        p.payment_mode||'-',
+        p.transaction_ref||'-',
+        p.bank_name||'-',
+        p.remarks||'-'
+      ];
+    });
+
+    ct.innerHTML = '<div class="sg">'
+      +sc('#00e676','Total Collected','₹'+(totalPaid/100000).toFixed(2)+'L','All time')
+      +sc('#ff9800','Pending','₹'+(pendingAmt/100000).toFixed(2)+'L','Unpaid invoices')
+      +sc('#2196f3','Payments',payments.length,'Recorded')
+      +'</div>'
+      +'<div class="card" style="margin-bottom:14px"><div class="ch"><span class="ct2">⏳ Pending Invoices</span></div><div class="cb">'
+      +tbl(['Invoice','Generator','Amount','Action'],
+        invoices.map(function(i){
+          return [
+            '<strong style="font-family:Consolas,monospace;color:#00e676">'+i.invoice_no+'</strong>',
+            (i.generators&&i.generators.company_name)||'-',
+            '₹'+Number(i.total_amount||0).toLocaleString('en-IN'),
+            '<button class="btn btn-sm btn-g" id="pay'+i.id+'">Record Payment</button>'
+          ];
+        }))
+      +'</div></div>'
+      +card('💳 Payment Records','<button class="btn btn-g btn-sm" onclick="newPayment()">+ Record Payment</button>',tbl(['Payment Code','Date','Amount','Mode','Txn Ref','Bank','Remarks'],payRows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="pay"]').forEach(function(b){
+        var id=b.id.slice(3);
+        var inv=invoices.find(function(i){return i.id===id;});
+        b.onclick=function(){newPaymentForInvoice(id,inv);};
+      });
+    },150);
+  } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.newPaymentForInvoice = function(invoiceId, inv) {
+  window._pay_inv = invoiceId;
+  var invNo = inv ? inv.invoice_no : "-";
+  var invAmt = inv ? Number(inv.total_amount||0).toLocaleString("en-IN") : "0";
+  var defAmt = inv ? (inv.total_amount||"") : "";
+  var today = new Date().toISOString().split("T")[0];
+  var body = "<div class=\"fg\">"
+    + "<div style=\"background:#0f1724;padding:12px;border-radius:8px;margin-bottom:12px;grid-column:1/-1\">"
+    + "<div style=\"font-size:11px;color:#8ab0d0\">Invoice</div>"
+    + "<div style=\"font-family:Consolas,monospace;font-size:14px;color:#00e676\">" + invNo + "</div>"
+    + "<div style=\"font-size:13px;font-weight:700;color:#e2eeff\">Amount Due: ₹" + invAmt + "</div>"
+    + "</div>"
+    + fld("Payment Date", "<input id=\"pay_date\" type=\"date\" value=\"" + today + "\">", true)
+    + fld("Amount (₹)", "<input id=\"pay_amt\" type=\"number\" value=\"" + defAmt + "\">", true)
+    + fld("Payment Mode", "<select id=\"pay_mode\"><option>NEFT/RTGS</option><option>UPI/QR</option><option>Cash</option><option>Cheque</option><option>IMPS</option></select>")
+    + fld("Transaction Reference", "<input id=\"pay_ref\" placeholder=\"UTR/Cheque/UPI Ref No.\">")
+    + fld("Bank Name", "<input id=\"pay_bank\" placeholder=\"Bank name\">")
+    + fld("Remarks", "<input id=\"pay_remarks\" placeholder=\"Additional notes\">")
+    + "</div>";
+  var foot = "<button class=\"btn btn-sm\" onclick=\"closeModal()\">Cancel</button>"
+    + "<button class=\"btn btn-g btn-sm\" id=\"spbtn\">Save Payment</button>";
+  modal("Record Payment", body, foot);
+  setTimeout(function(){var b=document.getElementById("spbtn");if(b){b.onclick=function(){savePayment(window._pay_inv);};}},50);
+};
+window.newPayment = function() {
+  window.newPaymentForInvoice(null,null);
+};
+
+window.savePayment = async function(invoiceId) {
+  var date=gv('pay_date'),amt=gv('pay_amt');
+  if(!date||!amt){alert('Date and amount required.');return;}
+  try {
+    var code = await sbRpc('next_payment_code');
+    await sbInsert('payments',{
+      payment_code:code, invoice_id:invoiceId||null,
+      payment_date:date, amount:parseFloat(amt),
+      payment_mode:gv('pay_mode'), transaction_ref:gv('pay_ref')||null,
+      bank_name:gv('pay_bank')||null, remarks:gv('pay_remarks')||null
+    });
+    if(invoiceId) {
+      await sbUpdate('invoices',{payment_status:'Paid',paid_at:new Date().toISOString()},{id:invoiceId});
+    }
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Payment '+code+' recorded!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderPayments();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── GENERATOR SELF-REGISTRATION (Public Form) ─────────────
+function checkPublicRegistration() {
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('register')==='generator') {
+    showPublicGenForm();
+    return true;
+  }
+  return false;
+}
+
+function showPublicGenForm() {
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;margin:0';
+  document.body.innerHTML = '<div style="width:560px;max-width:100%;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:28px">'
+    +'<div style="text-align:center;margin-bottom:24px">'
+    +'<div style="font-size:36px;margin-bottom:8px">♻️</div>'
+    +'<div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
+    +'<div style="font-size:13px;color:#8ab0d0;margin-top:4px">Waste Generator Registration</div>'
+    +'</div>'
+    +'<div id="pub-msg"></div>'
+    +'<div class="fg" style="display:grid;grid-template-columns:1fr 1fr;gap:12px" id="pub-form">'
+    +'<div style="grid-column:1/-1"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8ab0d0;padding:4px 0 8px;border-bottom:1px solid rgba(100,160,255,.1);margin-bottom:12px">Company Information</div></div>'
+    +fld('Company Name',inp('pg_name','Legal company name'),true)
+    +fld('Industry Type','<select id="pg_ind" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>Chemical</option><option>Petrochemical</option><option>Textile</option><option>Pharmaceutical</option><option>Metal/Foundry</option><option>Food Processing</option><option>Cement</option><option>Refinery</option><option>Power Plant</option><option>Other</option></select>',true)
+    +fld('Contact Person',inp('pg_contact','Full name'),true)
+    +fld('Mobile',inp('pg_mobile','+91 XXXXXXXXXX'),true)
+    +fld('Email',inp('pg_email','contact@company.com','email'))
+    +fld('GSTIN',inp('pg_gstin','22AAAAA0000A1Z5'))
+    +fld('PCB Authorization No.',inp('pg_pcb','PCB/2024/XXXX'))
+    +fld('PCB Expiry',inp('pg_pcbexp','','date'))
+    +'<div style="grid-column:1/-1"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8ab0d0;padding:4px 0 8px;border-bottom:1px solid rgba(100,160,255,.1);margin-bottom:12px">Plant Address</div></div>'
+    +fld('Address',inp('pg_addr','Full address'),true)
+    +fld('City',inp('pg_city','City'),true)
+    +fld('State',inp('pg_state','State'))
+    +fld('PIN Code',inp('pg_pin','400001'))
+    +'<div class="full">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+    +'<span style="font-size:11.5px;color:#9ab8d4;font-weight:500">📍 GPS Location (Auto-detect or enter manually)</span>'
+    +'<button type="button" onclick="detectLocation()" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Detect My Location</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<input id="pg_lat" placeholder="Latitude (e.g. 23.0225)" style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;font-family:inherit">'
+    +'<input id="pg_lng" placeholder="Longitude (e.g. 72.5714)" style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;font-family:inherit">'
+    +'</div>'
+    +'<div id="loc-status" style="font-size:11px;color:#8ab0d0;margin-top:5px"></div>'
+    +'<div id="maps-link" style="margin-top:5px"></div>'
+    +'</div>'
+    +'<div style="grid-column:1/-1"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8ab0d0;padding:4px 0 8px;border-bottom:1px solid rgba(100,160,255,.1);margin-bottom:12px">Waste Details</div></div>'
+    +fld('Avg Waste per Day (kg)',inp('pg_waste','500','number'))
+    +fld('Waste Category','<select id="pg_cat" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>Hazardous</option><option>Non-Hazardous</option><option>Mixed</option><option>Biomedical</option></select>',true)
+    +'<div style="grid-column:1/-1">'
+    +'<button onclick="submitPublicGenForm()" style="width:100%;padding:12px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">Submit Registration Request</button>'
+    +'</div></div></div>';
+}
+
+window.detectLocation = function() {
+  var status = document.getElementById('loc-status');
+  if(!status) return;
+  status.textContent = '🔄 Detecting location...';
+  if(!navigator.geolocation) {
+    status.textContent = '❌ GPS not supported. Please enter manually.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude.toFixed(6);
+      var lng = pos.coords.longitude.toFixed(6);
+      var latEl = document.getElementById('pg_lat');
+      var lngEl = document.getElementById('pg_lng');
+      if(latEl) latEl.value = lat;
+      if(lngEl) lngEl.value = lng;
+      status.innerHTML = '✅ Location detected! Accuracy: ±' + Math.round(pos.coords.accuracy) + 'm';
+      var mapsEl = document.getElementById('maps-link');
+      if(mapsEl) {
+        mapsEl.innerHTML = '<a href="https://www.google.com/maps?q=' + lat + ',' + lng + '" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ View on Google Maps →</a>';
+      }
+    },
+    function(err) {
+      var msgs = {1:'Permission denied — please allow location access',2:'Position unavailable',3:'Timeout'};
+      status.textContent = '❌ ' + (msgs[err.code] || 'Error detecting location');
+    },
+    {enableHighAccuracy:true, timeout:10000}
+  );
+};
+
+window.detectGenLocation = function() {
+  var status = document.getElementById('gen-loc-status');
+  if(status) status.textContent = 'Detecting location...';
+  if(!navigator.geolocation) {
+    if(status) status.textContent = 'GPS not supported. Enter manually.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude.toFixed(6);
+      var lng = pos.coords.longitude.toFixed(6);
+      var latEl = document.getElementById('g_lat');
+      var lngEl = document.getElementById('g_lng');
+      if(latEl) latEl.value = lat;
+      if(lngEl) lngEl.value = lng;
+      if(status) status.innerHTML = '✅ Location detected! Accuracy: ±'+Math.round(pos.coords.accuracy)+'m';
+      var mapsEl = document.getElementById('gen-maps-link');
+      if(mapsEl) mapsEl.innerHTML = '<a href="https://www.google.com/maps?q='+lat+','+lng+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Verify on Google Maps →</a>';
+    },
+    function(err) {
+      if(status) status.textContent = 'Error: ' + (err.code===1?'Permission denied':'Could not detect');
+    },
+    {enableHighAccuracy:true,timeout:10000}
+  );
+};
+
+window.submitPublicGenForm = async function() {
+  var name=gv('pg_name'),contact=gv('pg_contact'),mobile=gv('pg_mobile'),addr=gv('pg_addr'),city=gv('pg_city');
+  if(!name||!contact||!mobile||!addr||!city){
+    document.getElementById('pub-msg').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:10px 14px;border-radius:6px;color:#f44336;margin-bottom:12px">Please fill all required fields.</div>';
+    return;
+  }
+  try {
+    var code = await sbRpc('next_request_code');
+    var lat = gv('pg_lat')||null;
+    var lng = gv('pg_lng')||null;
+    await sbInsert('generator_requests',{
+      request_code:code, company_name:name, industry_type:gv('pg_ind'),
+      contact_person:contact, mobile:mobile, email:gv('pg_email')||null,
+      gstin:gv('pg_gstin')||null, pcb_auth_no:gv('pg_pcb')||null,
+      pcb_expiry:gv('pg_pcbexp')||null, address:addr, city:city,
+      state:gv('pg_state')||null, pincode:gv('pg_pin')||null,
+      avg_waste_per_day:gv('pg_waste')||null, waste_category:gv('pg_cat'),
+      latitude:lat?parseFloat(lat):null, longitude:lng?parseFloat(lng):null,
+      status:'Pending'
+    });
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;text-align:center;padding:20px">'
+      +'<div style="font-size:60px">✅</div>'
+      +'<div style="font-family:Consolas,monospace;font-size:20px;color:#00e676">Registration Submitted!</div>'
+      +'<div style="font-size:14px;color:#8ab0d0;max-width:400px">Your request <strong style="color:#e2eeff">'+code+'</strong> has been submitted. Our team will review and contact you within 24 hours.</div>'
+      +'</div>';
+  } catch(e) {
+    document.getElementById('pub-msg').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:10px 14px;border-radius:6px;color:#f44336;margin-bottom:12px">Error: '+e.message+'</div>';
+  }
+};
+
+
+// ── AUTO TRIP PLANNER ─────────────────────────────────────
+async function autoTripPlanner() {
+  // Find all bins >= 95% that don't have a pending/active trip
+  var criticalBins = await sbFetch('bins',{select:'*,generators(company_name,address,city,latitude,longitude)',order:'current_fill_pct.desc'});
+  criticalBins = safeArr(criticalBins).filter(function(b){ return b.current_fill_pct >= 95 && b.status !== 'In Transit'; });
+
+  if(criticalBins.length === 0) {
+    return {triggered:false, message:'No bins at critical level (95%+)'};
+  }
+
+  // Find available vehicles (status Active, no active trip today)
+  var vehicles = await sbFetch('vehicles',{select:'*,drivers(id,full_name,mobile)',eq:{status:'Active'}});
+  vehicles = safeArr(vehicles);
+
+  // Find vehicles with checklist done today (vehicle ready)
+  var today = new Date().toISOString().split('T')[0];
+  var checklists = await sbFetch('vehicle_checklist',{select:'vehicle_id,vehicle_ready',eq:{check_date:today}});
+  var readyVehicleIds = safeArr(checklists).filter(function(c){return c.vehicle_ready;}).map(function(c){return c.vehicle_id;});
+
+  var readyVehicles = vehicles.filter(function(v){ return readyVehicleIds.includes(v.id); });
+
+  if(readyVehicles.length === 0) {
+    return {triggered:false, message:'No vehicles have completed pre-trip checklist today. Drivers must complete 360 degree check first.'};
+  }
+
+  // Create trip for each critical bin group
+  var tripsCreated = [];
+  var vIdx = 0;
+
+  for(var i=0; i<criticalBins.length; i++) {
+    var bin = criticalBins[i];
+    var vehicle = readyVehicles[vIdx % readyVehicles.length];
+    vIdx++;
+
+    try {
+      var tripCode = await sbRpc('next_trip_code');
+      var tripResult = await sbInsert('trips',{
+        trip_code: tripCode,
+        vehicle_id: vehicle.id,
+        driver_id: vehicle.drivers ? vehicle.drivers.id : null,
+        trip_date: today,
+        route_priority: 'Urgent Fill First',
+        instructions: 'AUTO-PLANNED: Bin '+bin.bin_code+' at '+bin.current_fill_pct+'% capacity. Urgent pickup required. Generator: '+(bin.generators ? bin.generators.company_name : ''),
+        status: 'Planned',
+        auto_planned: true
+      });
+
+      var tripId = tripResult[0] && tripResult[0].id;
+      if(tripId) {
+        await sbInsert('trip_pickups',{trip_id:tripId, bin_id:bin.id, sequence_no:1, status:'Pending'});
+        await sbUpdate('bins',{status:'Trip Planned'},{id:bin.id});
+        tripsCreated.push({trip:tripCode, bin:bin.bin_code, vehicle:vehicle.reg_no, driver:vehicle.drivers ? vehicle.drivers.full_name : 'Unassigned', fill:bin.current_fill_pct});
+      }
+    } catch(e) {
+      console.error('Auto plan error:', e);
+    }
+  }
+
+  return {triggered:true, trips:tripsCreated};
+}
+
+async function renderAutoPlanner() {
+  var ct = document.getElementById('ct');
+  ct.innerHTML = '<div style="text-align:center;padding:20px;color:#8ab0d0">Checking bin levels...</div>';
+
+  try {
+    // Get all bin levels
+    var bins = await sbFetch('bins',{select:'*,generators(company_name,city)',order:'current_fill_pct.desc'});
+    bins = safeArr(bins);
+
+    var critical = bins.filter(function(b){return b.current_fill_pct >= 95;});
+    var warning = bins.filter(function(b){return b.current_fill_pct >= 80 && b.current_fill_pct < 95;});
+    var normal = bins.filter(function(b){return b.current_fill_pct < 80;});
+
+    // Get today checklist status
+    var today = new Date().toISOString().split('T')[0];
+    var checklists = await sbFetch('vehicle_checklist',{select:'vehicle_id,vehicle_ready,vehicles(reg_no)',eq:{check_date:today}});
+    var readyCount = safeArr(checklists).filter(function(c){return c.vehicle_ready;}).length;
+
+    var html = '<div class="sg">'
+      +sc('#f44336','Critical 95%+',critical.length,'Auto-plan triggered')
+      +sc('#ff9800','Warning 80-94%',warning.length,'Plan soon')
+      +sc('#00e676','Normal <80%',normal.length,'OK')
+      +sc('#2196f3','Vehicles Ready',readyCount,'Checklist done today')
+      +'</div>';
+
+    // Auto plan button
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:12px;padding:16px;margin-bottom:4px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +'<div>'
+      +'<div style="font-size:14px;font-weight:700;color:#e2eeff">🤖 Auto Trip Planner</div>'
+      +'<div style="font-size:11px;color:#8ab0d0;margin-top:3px">Automatically creates trips for bins at 95%+ fill level</div>'
+      +'</div>'
+      +(critical.length > 0
+        ? '<button class="btn btn-g btn-sm" onclick="runAutoPlanner()" style="background:#f44336;border-color:#f44336;animation:pulse 1.5s infinite">🚨 Run Auto Planner ('+critical.length+' critical)</button>'
+        : '<button class="btn btn-sm" onclick="runAutoPlanner()">Run Auto Planner</button>')
+      +'</div>';
+
+    // Show critical bins
+    if(critical.length > 0) {
+      html += '<div style="background:rgba(244,67,54,.08);border:1px solid rgba(244,67,54,.2);border-radius:8px;padding:12px;margin-bottom:8px">'
+        +'<div style="font-size:12px;font-weight:700;color:#f44336;margin-bottom:8px">🔴 CRITICAL — Immediate Pickup Required</div>';
+      critical.forEach(function(b) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(244,67,54,.1)">'
+          +'<div><div style="font-family:Consolas,monospace;font-size:12px;font-weight:700;color:#f44336">'+b.bin_code+'</div>'
+          +'<div style="font-size:11px;color:#8ab0d0">'+(b.generators?b.generators.company_name:'')+(b.generators&&b.generators.city?' · '+b.generators.city:'')+'</div></div>'
+          +'<div style="font-family:Consolas,monospace;font-weight:700;font-size:16px;color:#f44336">'+b.current_fill_pct+'%</div></div>';
+      });
+      html += '</div>';
+    }
+
+    if(warning.length > 0) {
+      html += '<div style="background:rgba(255,152,0,.08);border:1px solid rgba(255,152,0,.2);border-radius:8px;padding:12px">'
+        +'<div style="font-size:12px;font-weight:700;color:#ff9800;margin-bottom:8px">⚠️ WARNING — Plan Pickup Soon</div>';
+      warning.forEach(function(b) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,152,0,.1)">'
+          +'<div><div style="font-family:Consolas,monospace;font-size:12px;font-weight:700;color:#ff9800">'+b.bin_code+'</div>'
+          +'<div style="font-size:11px;color:#8ab0d0">'+(b.generators?b.generators.company_name:'')+'</div></div>'
+          +'<div style="font-family:Consolas,monospace;font-weight:700;font-size:15px;color:#ff9800">'+b.current_fill_pct+'%</div></div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div id="planner-result" style="margin-top:10px"></div></div>';
+
+    // All bins status bar chart
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px">'
+      +'<div style="font-size:13px;font-weight:600;color:#e2eeff;margin-bottom:12px">📊 All Bin Fill Levels</div>'
+      +'<div style="display:flex;flex-direction:column;gap:8px">';
+
+    bins.forEach(function(b) {
+      var color = b.current_fill_pct >= 95 ? '#f44336' : b.current_fill_pct >= 80 ? '#ff9800' : b.current_fill_pct >= 60 ? '#2196f3' : '#00e676';
+      html += '<div>'
+        +'<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">'
+        +'<span style="font-family:Consolas,monospace;color:#e2eeff">'+b.bin_code+'</span>'
+        +'<span style="color:#8ab0d0">'+(b.generators?b.generators.company_name:'')+'</span>'
+        +'<span style="font-family:Consolas,monospace;font-weight:700;color:'+color+'">'+b.current_fill_pct+'%</span>'
+        +'</div>'
+        +'<div style="height:6px;background:#0f1724;border-radius:3px"><div style="height:100%;width:'+b.current_fill_pct+'%;background:'+color+';border-radius:3px;transition:width .5s"></div></div>'
+        +'</div>';
+    });
+
+    html += '</div></div>';
+    ct.innerHTML = html;
+
+  } catch(e) { ct.innerHTML = '<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.runAutoPlanner = async function() {
+  var resultEl = document.getElementById('planner-result');
+  if(resultEl) resultEl.innerHTML = '<div style="color:#ff9800;font-size:12px;padding:8px">🔄 Running auto planner...</div>';
+
+  var result = await autoTripPlanner();
+
+  if(!result.triggered) {
+    if(resultEl) resultEl.innerHTML = '<div style="background:rgba(33,150,243,.08);border:1px solid rgba(33,150,243,.2);border-radius:8px;padding:12px;font-size:12px;color:#2196f3">ℹ️ '+result.message+'</div>';
+    return;
+  }
+
+  var html = '<div style="background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:12px">'
+    +'<div style="font-size:13px;font-weight:700;color:#00e676;margin-bottom:8px">✅ '+result.trips.length+' Trip(s) Auto-Created!</div>';
+
+  result.trips.forEach(function(t) {
+    html += '<div style="background:#0f1724;border-radius:6px;padding:8px;margin-bottom:6px;font-size:12px">'
+      +'<div style="font-family:Consolas,monospace;color:#00e676;font-weight:700">'+t.trip+'</div>'
+      +'<div style="color:#8ab0d0;margin-top:3px">Bin: '+t.bin+' ('+t.fill+'%) → Vehicle: '+t.vehicle+' → Driver: '+t.driver+'</div>'
+      +'</div>';
+  });
+
+  html += '<div style="font-size:11px;color:#8ab0d0;margin-top:6px">Trips pushed to driver app. Drivers will see these after completing their daily checklist.</div></div>';
+  if(resultEl) resultEl.innerHTML = html;
+
+  // Refresh after 2 seconds
+  setTimeout(renderAutoPlanner, 2000);
+};
+
+// ── GENERATOR PORTAL ──────────────────────────────────────
+function showGeneratorPortal() {
+  var user = CURRENT_USER;
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
+  document.body.innerHTML =
+    '<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)">'
+    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop</div>'
+    +'<div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div>'
+    +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
+    +'</div>'
+    +'<div id="gen-portal-content" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px"></div>';
+  renderGeneratorPortal();
+}
+
+async function renderGeneratorPortal() {
+  var gpc = document.getElementById('gen-portal-content');
+  if(!gpc) return;
+  gpc.innerHTML = '<div style="text-align:center;padding:20px;color:#8ab0d0">Loading your bins...</div>';
+
+  try {
+    // Find generator by email
+    var user = CURRENT_USER;
+    var gens = await sbFetch('generators',{select:'*',eq:{email:user.email}});
+    var gen = safeArr(gens)[0];
+
+    if(!gen) {
+      gpc.innerHTML = '<div style="text-align:center;padding:40px">'
+        +'<div style="font-size:48px;margin-bottom:12px">🏭</div>'
+        +'<div style="font-size:15px;font-weight:600;color:#e2eeff">No Generator Found</div>'
+        +'<div style="font-size:12px;color:#8ab0d0;margin-top:8px">Your account is not linked to a generator profile. Please contact EcoLoop support.</div>'
+        +'</div>';
+      return;
+    }
+
+    // Get bins for this generator
+    var bins = await sbFetch('bins',{select:'*',eq:{generator_id:gen.id},order:'bin_code'});
+    bins = safeArr(bins);
+
+    // Get recent trips
+    var tripPickups = await sbFetch('trip_pickups',{select:'*,trips(trip_code,trip_date,status,vehicles(reg_no))',order:'created_at.desc',limit:10});
+    var myBinIds = bins.map(function(b){return b.id;});
+    var myTrips = safeArr(tripPickups).filter(function(p){return myBinIds.includes(p.bin_id);});
+
+    var html = '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px">'
+      +'<div style="font-size:16px;font-weight:700;color:#e2eeff;margin-bottom:4px">🏭 '+gen.company_name+'</div>'
+      +'<div style="font-size:12px;color:#8ab0d0">'+gen.gen_code+' · '+gen.industry_type+'</div>'
+      +(gen.city?'<div style="font-size:12px;color:#8ab0d0">📍 '+gen.city+(gen.state?', '+gen.state:'')+'</div>':'')
+      +'</div>';
+
+    // Bins section
+    html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">Your Bins</div>';
+
+    if(bins.length === 0) {
+      html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet. Contact EcoLoop.</div>';
+    } else {
+      bins.forEach(function(b) {
+        var fillColor = b.current_fill_pct >= 95 ? '#f44336' : b.current_fill_pct >= 80 ? '#ff9800' : b.current_fill_pct >= 60 ? '#2196f3' : '#00e676';
+        var status = b.current_fill_pct >= 95 ? '🔴 CRITICAL — Pickup Urgent!' : b.current_fill_pct >= 80 ? '⚠️ High — Schedule Pickup' : b.current_fill_pct >= 60 ? '🔵 Moderate' : '🟢 Normal';
+
+        html += '<div style="background:#162033;border:2px solid '+(b.current_fill_pct>=95?'#f44336':b.current_fill_pct>=80?'#ff9800':'rgba(100,160,255,.1)')+';border-radius:12px;padding:14px;margin-bottom:10px">'
+          +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'
+          +'<div><div style="font-family:Consolas,monospace;font-size:16px;font-weight:700;color:#e2eeff">'+b.bin_code+'</div>'
+          +'<div style="font-size:11px;color:#8ab0d0">'+b.container_category+' · '+b.waste_category+'</div>'
+          +'<div style="font-size:11px;color:#8ab0d0">📍 '+b.zone+'</div></div>'
+          +'<div style="text-align:right">'
+          +'<div style="font-family:Consolas,monospace;font-size:28px;font-weight:700;color:'+fillColor+'">'+b.current_fill_pct+'%</div>'
+          +'<div style="font-size:10px;color:'+fillColor+'">'+status+'</div>'
+          +'</div></div>'
+          +'<div style="height:10px;background:#0f1724;border-radius:5px;margin-bottom:12px"><div style="height:100%;width:'+b.current_fill_pct+'%;background:'+fillColor+';border-radius:5px;transition:width .5s"></div></div>'
+          +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+          +'<button data-bid="'+b.id+'" data-bcode="'+b.bin_code+'" onclick="genUpdateFill(this.dataset.bid,this.dataset.bcode)" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.2);background:#1e3048;color:#e2eeff;cursor:pointer;font-size:13px;font-family:inherit">📊 Update Fill Level</button>'
+          +(b.current_fill_pct >= 80
+            ? '<button data-bid="'+b.id+'" data-bcode="'+b.bin_code+'" onclick="genRequestPickup(this.dataset.bid,this.dataset.bcode)" style="padding:10px;border-radius:8px;border:none;background:#f44336;color:#fff;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit">🚨 Request Pickup</button>'
+            : '<button disabled style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.1);background:#0f1724;color:#5a7a9a;cursor:not-allowed;font-size:13px;font-family:inherit">Pickup when 80%+</button>')
+          +'</div></div>';
+      });
+    }
+
+    // Recent pickups
+    if(myTrips.length > 0) {
+      html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">Recent Pickups</div>'
+        +'<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;overflow:hidden">';
+      myTrips.slice(0,5).forEach(function(p) {
+        var t = p.trips || {};
+        html += '<div style="padding:10px 14px;border-bottom:1px solid rgba(100,160,255,.08);display:flex;justify-content:space-between;align-items:center">'
+          +'<div><div style="font-family:Consolas,monospace;font-size:12px;color:#00e676">'+(t.trip_code||'-')+'</div>'
+          +'<div style="font-size:11px;color:#8ab0d0">'+(t.trip_date||'')+(t.vehicles?' · '+t.vehicles.reg_no:'')+'</div></div>'
+          +'<span style="font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;background:'+(t.status==='Completed'||t.status==='Certified'?'rgba(0,230,118,.15)':t.status==='In Transit'?'rgba(255,152,0,.15)':'rgba(33,150,243,.15)')+';color:'+(t.status==='Completed'||t.status==='Certified'?'#00e676':t.status==='In Transit'?'#ff9800':'#2196f3')+'">'+(t.status||'-')+'</span>'
+          +'</div>';
+      });
+      html += '</div>';
+    }
+
+    gpc.innerHTML = html;
+  } catch(e) {
+    gpc.innerHTML = '<div style="background:rgba(244,67,54,.08);border-left:3px solid #f44336;padding:12px;border-radius:6px;color:#f44336">Error: '+e.message+'</div>';
+  }
+}
+
+window.genUpdateFill = function(binId, binCode) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px';
+  overlay.innerHTML = '<div style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;width:320px;padding:20px">'
+    +'<div style="font-size:15px;font-weight:700;color:#e2eeff;margin-bottom:16px">📊 Update Fill Level — '+binCode+'</div>'
+    +'<div style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:#9ab8d4;margin-bottom:6px">Current Fill Level (%)</div>'
+    +'<input id="gf_pct" type="number" min="0" max="100" placeholder="e.g. 85" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:16px;width:100%;font-family:Consolas,monospace;text-align:center">'
+    +'</div>'
+    +'<div style="margin-bottom:16px">'
+    +'<div style="font-size:11px;color:#9ab8d4;margin-bottom:6px">Notes (optional)</div>'
+    +'<textarea id="gf_note" rows="2" placeholder="Waste type, observations..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:12px;width:100%;font-family:inherit;resize:none"></textarea>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:#0f1724;color:#8ab0d0;cursor:pointer;font-family:inherit">Cancel</button>'
+    +'<button onclick="window._gfBinId=\''+binId+'\';doGenUpdateFill(window._gfBinId)" style="padding:10px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-family:inherit">Save Update</button>'
+    +'</div></div>';
+  document.body.appendChild(overlay);
+  document.getElementById('gf_pct').focus();
+};
+
+window.doGenUpdateFill = async function(binId) {
+  var pct = parseInt(document.getElementById('gf_pct').value);
+  if(isNaN(pct)||pct<0||pct>100){alert('Please enter a valid fill level (0-100).');return;}
+  try {
+    var newStatus = pct >= 95 ? 'Critical' : pct >= 80 ? 'Warning' : 'Active';
+    await sbUpdate('bins',{current_fill_pct:pct, status:newStatus},{id:binId});
+    await sbInsert('bin_fill_readings',{bin_id:binId,fill_pct:pct,data_source:'GENERATOR-PORTAL',notes:document.getElementById('gf_note').value||null,supervisor_pin_verified:false});
+    
+    // Remove overlay
+    document.querySelectorAll('div[style*="position:fixed"]').forEach(function(el){el.remove();});
+    
+    // Show success flash
+    var flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#00e676;color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap';
+    flash.textContent = 'Fill level updated to '+pct+'%'+(pct>=95?' — Pickup alert triggered!':'');
+    document.body.appendChild(flash);
+    setTimeout(function(){flash.remove();},3000);
+
+    // If critical, auto-trigger planner
+    if(pct >= 95) {
+      setTimeout(autoTripPlanner, 500);
+    }
+    
+    renderGeneratorPortal();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.genRequestPickup = async function(binId, binCode) {
+  if(!confirm('Request urgent pickup for bin '+binCode+'?\n\nThis will notify EcoLoop operations team immediately.')) return;
+  try {
+    // Mark bin as critical
+    await sbUpdate('bins',{status:'Critical'},{id:binId});
+    // Auto-trigger planner
+    var result = await autoTripPlanner();
+    
+    var msg = '🚨 Pickup request submitted for '+binCode+'!\n\n';
+    if(result.triggered && result.trips.length > 0) {
+      msg += 'Trip automatically created: '+result.trips[0].trip+'\nVehicle: '+result.trips[0].vehicle+'\nDriver: '+result.trips[0].driver;
+    } else {
+      msg += 'Operations team has been notified. A vehicle will be assigned shortly.';
+    }
+    alert(msg);
+    renderGeneratorPortal();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+
+// ── PROCESSING SITES (Yards, Crushers, Boilers) ──────────
+async function renderSites() {
+  var ct = document.getElementById('ct');
+  try {
+    var sites = await sbFetch('processing_sites',{select:'*',order:'site_type,site_name'});
+    sites = safeArr(sites);
+
+    var yards     = sites.filter(function(s){return s.site_type==='Yard';});
+    var crushers  = sites.filter(function(s){return s.site_type==='Crusher';});
+    var boilers   = sites.filter(function(s){return s.site_type==='Boiler';});
+    var transfers = sites.filter(function(s){return s.site_type==='Transfer-Station';});
+    var wtePlants = sites.filter(function(s){return s.site_type==='WTE-Plant';});
+
+    var html = '<div class="sg">'
+      +sc('#2196f3','Yards',yards.length,'Receiving yards')
+      +sc('#ff9800','Crushers',crushers.length,'Processing units')
+      +sc('#f44336','Boilers',boilers.length,'Energy units')
+      +sc('#9c27b0','Transfer Stations',transfers.length,'')
+      +sc('#00e676','Active',sites.filter(function(s){return s.is_active;}).length,'All sites')
+      +'</div>';
+
+    // Site Network Map visualization
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px;margin-bottom:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+      +'<div style="font-size:13px;font-weight:600;color:#e2eeff">🗺️ Site Network & Flow</div>'
+      +'<button class="btn btn-g btn-sm" onclick="newSite()">+ Add Site</button>'
+      +'</div>'
+      // Flow diagram
+      +'<div style="overflow-x:auto"><div style="display:flex;align-items:center;gap:8px;min-width:600px;padding:10px 0">';
+
+    // Generators box
+    html += '<div style="background:#0f1724;border:2px solid rgba(0,230,118,.3);border-radius:10px;padding:12px;min-width:120px;text-align:center">'
+      +'<div style="font-size:20px;margin-bottom:4px">🏭</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#00e676">Generators</div>'
+      +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">Waste Source</div>'
+      +'</div>';
+
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-size:18px;color:#5a7a9a">→</div>'
+      +'<div style="font-size:9px;color:#5a7a9a">Vehicle Trip</div>'
+      +'</div>';
+
+    // Yards
+    html += '<div style="display:flex;flex-direction:column;gap:6px">';
+    yards.forEach(function(y) {
+      html += '<div style="background:#0f1724;border:2px solid rgba(33,150,243,.3);border-radius:10px;padding:10px;min-width:130px;text-align:center">'
+        +'<div style="font-size:18px;margin-bottom:2px">🏗️</div>'
+        +'<div style="font-size:11px;font-weight:700;color:#2196f3">'+y.site_name+'</div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+y.city+'</div>'
+        +(y.latitude?'<a href="https://www.google.com/maps?q='+y.latitude+','+y.longitude+'" target="_blank" style="font-size:9px;color:#00e676;text-decoration:none">📍 Maps</a>':'')
+        +'<div style="height:4px;background:#1c2d42;border-radius:2px;margin-top:4px"><div style="height:100%;width:'+(y.current_load_pct||0)+'%;background:#2196f3;border-radius:2px"></div></div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+(y.current_load_pct||0)+'% load</div>'
+        +'</div>';
+    });
+    if(yards.length===0) html += '<div style="background:#0f1724;border:2px dashed rgba(33,150,243,.2);border-radius:10px;padding:10px;min-width:130px;text-align:center;color:#5a7a9a;font-size:11px">No yards</div>';
+    html += '</div>';
+
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-size:18px;color:#5a7a9a">→</div>'
+      +'<div style="font-size:9px;color:#5a7a9a">Feed</div>'
+      +'</div>';
+
+    // Crushers
+    html += '<div style="display:flex;flex-direction:column;gap:6px">';
+    crushers.forEach(function(c) {
+      html += '<div style="background:#0f1724;border:2px solid rgba(255,152,0,.3);border-radius:10px;padding:10px;min-width:130px;text-align:center">'
+        +'<div style="font-size:18px;margin-bottom:2px">⚙️</div>'
+        +'<div style="font-size:11px;font-weight:700;color:#ff9800">'+c.site_name+'</div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+c.city+'</div>'
+        +(c.latitude?'<a href="https://www.google.com/maps?q='+c.latitude+','+c.longitude+'" target="_blank" style="font-size:9px;color:#00e676;text-decoration:none">📍 Maps</a>':'')
+        +'<div style="height:4px;background:#1c2d42;border-radius:2px;margin-top:4px"><div style="height:100%;width:'+(c.current_load_pct||0)+'%;background:#ff9800;border-radius:2px"></div></div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+(c.daily_capacity_ton||0)+'T/day capacity</div>'
+        +'</div>';
+    });
+    if(crushers.length===0) html += '<div style="background:#0f1724;border:2px dashed rgba(255,152,0,.2);border-radius:10px;padding:10px;min-width:130px;text-align:center;color:#5a7a9a;font-size:11px">No crushers</div>';
+    html += '</div>';
+
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-size:18px;color:#5a7a9a">→</div>'
+      +'<div style="font-size:9px;color:#5a7a9a">Crushed fuel</div>'
+      +'</div>';
+
+    // Boilers
+    html += '<div style="display:flex;flex-direction:column;gap:6px">';
+    boilers.forEach(function(b) {
+      html += '<div style="background:#0f1724;border:2px solid rgba(244,67,54,.3);border-radius:10px;padding:10px;min-width:130px;text-align:center">'
+        +'<div style="font-size:18px;margin-bottom:2px">🔥</div>'
+        +'<div style="font-size:11px;font-weight:700;color:#f44336">'+b.site_name+'</div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+b.city+'</div>'
+        +(b.latitude?'<a href="https://www.google.com/maps?q='+b.latitude+','+b.longitude+'" target="_blank" style="font-size:9px;color:#00e676;text-decoration:none">📍 Maps</a>':'')
+        +'<div style="height:4px;background:#1c2d42;border-radius:2px;margin-top:4px"><div style="height:100%;width:'+(b.current_load_pct||0)+'%;background:#f44336;border-radius:2px"></div></div>'
+        +'<div style="font-size:9px;color:#5a7a9a">'+(b.daily_capacity_ton||0)+'T/day capacity</div>'
+        +'</div>';
+    });
+    if(boilers.length===0) html += '<div style="background:#0f1724;border:2px dashed rgba(244,67,54,.2);border-radius:10px;padding:10px;min-width:130px;text-align:center;color:#5a7a9a;font-size:11px">No boilers</div>';
+    html += '</div>';
+
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-size:18px;color:#5a7a9a">→</div>'
+      +'<div style="font-size:9px;color:#5a7a9a">Steam/Power</div>'
+      +'</div>';
+
+    // Energy output
+    html += '<div style="background:#0f1724;border:2px solid rgba(0,230,118,.3);border-radius:10px;padding:12px;min-width:100px;text-align:center">'
+      +'<div style="font-size:20px;margin-bottom:4px">⚡</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#00e676">Energy</div>'
+      +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">Steam / Power</div>'
+      +'</div>';
+
+    html += '</div></div></div>';
+
+    // Sites table
+    var rows = sites.map(function(s) {
+      var typeColor = s.site_type==='Yard'?'#2196f3':s.site_type==='Crusher'?'#ff9800':s.site_type==='Boiler'?'#f44336':'#9c27b0';
+      var typeIcon = s.site_type==='Yard'?'🏗️':s.site_type==='Crusher'?'⚙️':s.site_type==='Boiler'?'🔥':s.site_type==='WTE-Plant'?'🏭':'🔄';
+      return [
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+s.site_code+'</strong>',
+        typeIcon+' <span style="color:'+typeColor+';font-weight:600">'+s.site_type+'</span>',
+        '<div style="font-weight:600;color:#e2eeff">'+s.site_name+'</div><div style="font-size:10px;color:#8ab0d0">'+(s.city||'')+(s.state?', '+s.state:'')+'</div>',
+        s.daily_capacity_ton?s.daily_capacity_ton+'T/day':'-',
+        s.contact_person||'-',
+        s.latitude&&s.longitude
+          ? '<a href="https://www.google.com/maps?q='+s.latitude+','+s.longitude+'" target="_blank" style="color:#00e676;font-size:11px;text-decoration:none">📍 View Maps</a>'
+          : '<span style="color:#5a7a9a;font-size:11px">No GPS</span>',
+        badge(s.is_active?'g':'gr',s.is_active?'Active':'Inactive'),
+        '<button class="btn btn-sm" id="es2'+s.id+'">Edit</button>'
+      ];
+    });
+
+    html += card('🏭 All Processing Sites','',
+      tbl(['Site Code','Type','Name & Location','Capacity','Contact','GPS','Status',''],rows),true);
+
+    ct.innerHTML = html;
+    setTimeout(function(){
+      document.querySelectorAll('[id^="es2"]').forEach(function(b){
+        var id=b.id.slice(3); b.onclick=function(){editSite(id);};
+      });
+    },150);
+  } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.newSite = function() {
+  var body = '<div class="fg">'
+    +fld('Site Name',inp('st_name','e.g. Crusher Unit 2 — Naroda'),true)
+    +fld('Site Type','<select id="st_type"><option>Yard</option><option>Crusher</option><option>Boiler</option><option>WTE-Plant</option><option>Transfer-Station</option></select>',true)
+    +fld('Daily Capacity (Ton)',inp('st_cap','40','number'))
+    +fld('Operational Hours',inp('st_hrs','08:00-20:00'))
+    +fld('Contact Person',inp('st_contact',''))
+    +fld('Contact Mobile',inp('st_mobile',''))
+    +'<div class="sec">Address</div>'
+    +fld('Address',inp('st_addr',''))
+    +fld('City',inp('st_city',''),true)
+    +fld('State',inp('st_state','Gujarat'))
+    +fld('PIN Code',inp('st_pin',''))
+    +'<div class="sec">GPS Location</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Site GPS Coordinates</span><button type="button" onclick="detectSiteLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Auto-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="st_lat" placeholder="Latitude (e.g. 22.9964)"><input id="st_lng" placeholder="Longitude (e.g. 72.4942)"></div>'
+    +'<div id="site-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div>'
+    +'<div id="site-maps-link" style="margin-top:4px"></div></div>'
+    +'<div class="sec">Equipment Details</div>'
+    +fld('Equipment Make',inp('st_emake','e.g. Terex, Atlas Copco'))
+    +fld('Equipment Model',inp('st_emodel',''))
+    +fld('Equipment Capacity',inp('st_ecap','e.g. 40T/hr'))
+    +fld('Next Maintenance',inp('st_maint','','date'))
+    +'<div class="full">'+fld('Notes','<textarea id="st_notes" rows="2" placeholder="Any special instructions..."></textarea>')+'</div>'
+    +'</div>';
+
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveSite()">Save Site</button>';
+  modal('🏭 Add Processing Site', body, foot);
+};
+
+window.detectSiteLocation = function() {
+  var status = document.getElementById('site-loc-status');
+  var mapsEl = document.getElementById('site-maps-link');
+  if(status) status.textContent = 'Detecting...';
+  if(!navigator.geolocation){if(status)status.textContent='GPS not supported';return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude.toFixed(6), lng=pos.coords.longitude.toFixed(6);
+      var le=document.getElementById('st_lat'); var lne=document.getElementById('st_lng');
+      if(le) le.value=lat; if(lne) lne.value=lng;
+      if(status) status.innerHTML='✅ Detected! Accuracy: ±'+Math.round(pos.coords.accuracy)+'m';
+      if(mapsEl) mapsEl.innerHTML='<a href="https://www.google.com/maps?q='+lat+','+lng+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Verify on Google Maps →</a>';
+    },
+    function(e){if(status)status.textContent='Error: '+(e.code===1?'Permission denied':'Could not detect');},
+    {enableHighAccuracy:true,timeout:10000}
+  );
+};
+
+window.saveSite = async function() {
+  var name=gv('st_name'), city=gv('st_city');
+  if(!name||!city){alert('Site name and city are required.');return;}
+  try {
+    var code = await sbRpc('next_site_code');
+    await sbInsert('processing_sites',{
+      site_code:code, site_name:name, site_type:gv('st_type'),
+      daily_capacity_ton:gv('st_cap')||null, operational_hours:gv('st_hrs')||'08:00-20:00',
+      contact_person:gv('st_contact')||null, contact_mobile:gv('st_mobile')||null,
+      address:gv('st_addr')||null, city:city, state:gv('st_state')||null, pincode:gv('st_pin')||null,
+      latitude:gv('st_lat')?parseFloat(gv('st_lat')):null,
+      longitude:gv('st_lng')?parseFloat(gv('st_lng')):null,
+      equipment_make:gv('st_emake')||null, equipment_model:gv('st_emodel')||null,
+      equipment_capacity:gv('st_ecap')||null,
+      next_maintenance_date:gv('st_maint')||null, notes:gv('st_notes')||null,
+      is_active:true
+    });
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Site '+code+' added!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderSites();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.editSite = async function(id) {
+  var data = await sbFetch('processing_sites',{select:'*',eq:{id:id}});
+  var s = data[0]; if(!s) return;
+  var body = '<div class="fg">'
+    +fld('Site Name','<input id="st_name" value="'+s.site_name.replace(/"/g,'&quot;')+'">',true)
+    +fld('Site Type','<select id="st_type"><option>Yard</option><option>Crusher</option><option>Boiler</option><option>WTE-Plant</option><option>Transfer-Station</option></select>',true)
+    +fld('Daily Capacity (Ton)','<input id="st_cap" type="number" value="'+(s.daily_capacity_ton||'')+'">')
+    +fld('Current Load %','<input id="st_load" type="number" min="0" max="100" value="'+(s.current_load_pct||0)+'">')
+    +fld('Operational Hours','<input id="st_hrs" value="'+(s.operational_hours||'08:00-20:00')+'">')
+    +fld('Contact Person','<input id="st_contact" value="'+(s.contact_person||'').replace(/"/g,'&quot;')+'">')
+    +fld('Contact Mobile','<input id="st_mobile" value="'+(s.contact_mobile||'').replace(/"/g,'&quot;')+'">')
+    +'<div class="sec">Address</div>'
+    +fld('City','<input id="st_city" value="'+(s.city||'').replace(/"/g,'&quot;')+'">',true)
+    +fld('State','<input id="st_state" value="'+(s.state||'').replace(/"/g,'&quot;')+'">')
+    +'<div class="sec">GPS Location</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Site GPS</span><button type="button" onclick="detectSiteLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Re-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="st_lat" placeholder="Latitude" value="'+(s.latitude||'')+'"><input id="st_lng" placeholder="Longitude" value="'+(s.longitude||'')+'"></div>'
+    +(s.latitude&&s.longitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+s.latitude+','+s.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Current location on Maps →</a></div>':'<div id="site-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div><div id="site-maps-link"></div>')
+    +'</div>'
+    +'<div class="sec">Equipment</div>'
+    +fld('Equipment Make','<input id="st_emake" value="'+(s.equipment_make||'').replace(/"/g,'&quot;')+'">')
+    +fld('Equipment Capacity','<input id="st_ecap" value="'+(s.equipment_capacity||'').replace(/"/g,'&quot;')+'">')
+    +fld('Next Maintenance','<input id="st_maint" type="date" value="'+(s.next_maintenance_date||'')+'">')
+    +fld('Status','<select id="st_active"><option value="true">Active</option><option value="false">Inactive</option></select>')
+    +'</div>';
+
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" id="svsite">Save Changes</button>';
+  modal('Edit Site — '+s.site_code, body, foot);
+  setTimeout(function(){
+    document.getElementById('st_type').value = s.site_type||'Yard';
+    document.getElementById('st_active').value = String(s.is_active);
+    var sv=document.getElementById('svsite');if(sv){var sid=id;sv.onclick=function(){saveSiteEdit(sid);};}
+  },50);
+};
+
+window.saveSiteEdit = async function(id) {
+  var name=gv('st_name'),city=gv('st_city');
+  if(!name||!city){alert('Name and city required.');return;}
+  try {
+    await sbUpdate('processing_sites',{
+      site_name:name, site_type:gv('st_type'),
+      daily_capacity_ton:gv('st_cap')||null, current_load_pct:parseInt(gv('st_load'))||0,
+      operational_hours:gv('st_hrs')||'08:00-20:00',
+      contact_person:gv('st_contact')||null, contact_mobile:gv('st_mobile')||null,
+      city:city, state:gv('st_state')||null,
+      latitude:gv('st_lat')?parseFloat(gv('st_lat')):null,
+      longitude:gv('st_lng')?parseFloat(gv('st_lng')):null,
+      equipment_make:gv('st_emake')||null, equipment_capacity:gv('st_ecap')||null,
+      next_maintenance_date:gv('st_maint')||null,
+      is_active:gv('st_active')==='true'
+    },{id:id});
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Site updated!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderSites();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── SMART TRIP PLANNER ────────────────────────────────────
+async function renderSmartTripPlanner() {
+  var ct = document.getElementById('ct');
+  try {
+    var [bins, sites, vehicles, drivers] = await Promise.all([
+      sbFetch('bins',{select:'*,generators(company_name,address,city,latitude,longitude)',order:'current_fill_pct.desc'}),
+      sbFetch('processing_sites',{select:'*',eq:{is_active:'true'},order:'site_type'}),
+      sbFetch('vehicles',{select:'*,drivers(id,full_name)',eq:{status:'Active'}}),
+      sbFetch('drivers',{select:'*',eq:{status:'Active'}}),
+    ]);
+    bins=safeArr(bins); sites=safeArr(sites); vehicles=safeArr(vehicles); drivers=safeArr(drivers);
+
+    var yards = sites.filter(function(s){return s.site_type==='Yard'||s.site_type==='Transfer-Station';});
+    var crushers = sites.filter(function(s){return s.site_type==='Crusher';});
+    var boilers = sites.filter(function(s){return s.site_type==='Boiler'||s.site_type==='WTE-Plant';});
+
+    var criticalBins = bins.filter(function(b){return b.current_fill_pct>=80;});
+    var today = new Date().toISOString().split('T')[0];
+    var checklists = await sbFetch('vehicle_checklist',{select:'vehicle_id',eq:{check_date:today}});
+    var readyVehicleIds = safeArr(checklists).map(function(c){return c.vehicle_id;});
+
+    var html = '<div class="sg">'
+      +sc('#f44336','Bins Need Pickup',criticalBins.length,'80%+ fill')
+      +sc('#2196f3','Available Yards',yards.length,'Receiving')
+      +sc('#ff9800','Crushers',crushers.length,'Processing')
+      +sc('#f44336','Boilers',boilers.length,'Energy')
+      +sc('#00e676','Vehicles Ready',readyVehicleIds.length,'Checklist done')
+      +'</div>';
+
+    // Smart Trip Builder
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:16px;margin-bottom:14px">'
+      +'<div style="font-size:14px;font-weight:700;color:#e2eeff;margin-bottom:16px">🧠 Smart Trip Planner</div>'
+      +'<div class="fg" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+
+      // Vehicle selection
+      +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Vehicle *</div>'
+      +'<select id="stp_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'
+      +'<option value="">— Select Vehicle —</option>'
+      +vehicles.map(function(v){
+        var ready = readyVehicleIds.includes(v.id);
+        return '<option value="'+v.id+'">'+(ready?'[OK] ':'[!] ')+v.reg_no+(v.drivers?' - '+v.drivers.full_name:'')+(ready?'':' (no checklist)')+'</option>';
+      }).join('')
+      +'</select></div>'
+
+      // Delivery site
+      +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Deliver To (Yard/Crusher) *</div>'
+      +'<select id="stp_site" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'
+      +'<option value="">— Select Destination —</option>'
+      +sites.map(function(s){
+        var icon = s.site_type==='Yard'?'🏗️':s.site_type==='Crusher'?'⚙️':s.site_type==='Boiler'?'🔥':'🔄';
+        return '<option value="'+s.id+'">'+icon+' '+s.site_name+' — '+s.city+'</option>';
+      }).join('')
+      +'</select></div>'
+
+      // Trip date
+      +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Trip Date *</div>'
+      +'<input id="stp_date" type="date" value="'+today+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+
+      // Priority
+      +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Route Priority</div>'
+      +'<select id="stp_pri" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'
+      +'<option>Urgent Fill First</option><option>Nearest Generator First</option><option>Max Weight First</option><option>Manual Order</option>'
+      +'</select></div>'
+
+      // Bin selection
+      +'<div style="grid-column:1/-1"><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Select Bins to Collect (sorted by fill level)</div>'
+      +'<div style="max-height:200px;overflow-y:auto;border:1px solid rgba(100,160,255,.1);border-radius:8px;padding:8px">'
+      +bins.sort(function(a,b){return b.current_fill_pct-a.current_fill_pct;}).map(function(b){
+        var color = b.current_fill_pct>=95?'#f44336':b.current_fill_pct>=80?'#ff9800':b.current_fill_pct>=60?'#2196f3':'#5a7a9a';
+        var gen = b.generators||{};
+        return '<label style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;border-bottom:1px solid rgba(100,160,255,.06)">'
+          +'<input type="checkbox" id="stb_'+b.id+'" value="'+b.id+'" style="accent-color:#00e676">'
+          +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:#e2eeff">'+b.bin_code+' — '+(gen.company_name||'-')+'</div>'
+          +'<div style="font-size:10px;color:#8ab0d0">'+(gen.city||b.zone||'-')+(gen.latitude&&gen.longitude?'  <a href="https://www.google.com/maps?q='+gen.latitude+','+gen.longitude+'" target="_blank" style="color:#00e676;text-decoration:none">📍</a>':'')+'</div></div>'
+          +'<div style="text-align:right"><div style="font-family:Consolas,monospace;font-weight:700;font-size:14px;color:'+color+'">'+b.current_fill_pct+'%</div>'
+          +'<div style="font-size:9px;color:#8ab0d0">'+b.waste_category+'</div></div>'
+          +'</label>';
+      }).join('')
+      +'</div>'
+      +'<div style="font-size:11px;color:#8ab0d0;margin-top:6px">✅ Pre-checked: bins at 80%+. Bins with 📍 have GPS for route optimization.</div>'
+      +'</div>'
+
+      // Instructions
+      +'<div style="grid-column:1/-1">'+fld('Special Instructions','<textarea id="stp_inst" rows="2" placeholder="Entry gate time, special handling..."></textarea>')+'</div>'
+      +'</div>'
+
+      +'<div style="display:flex;gap:10px;margin-top:14px">'
+      +'<button onclick="renderSmartTripPlanner()" class="btn btn-sm">🔄 Refresh</button>'
+      +'<button onclick="preCheckBins()" class="btn btn-sm" style="background:#1e3048">✅ Pre-select Critical Bins</button>'
+      +'<button onclick="saveSmartTrip()" class="btn btn-g btn-sm" style="flex:1;padding:10px;font-size:14px">🚛 Create & Push Trip to Driver</button>'
+      +'</div></div>';
+
+    // Recent smart trips
+    var recentTrips = await sbFetch('trips',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:10});
+    recentTrips = safeArr(recentTrips);
+    var rows = recentTrips.map(function(t){
+      return [
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>',
+        t.trip_date,
+        (t.vehicles&&t.vehicles.reg_no)||'-',
+        (t.drivers&&t.drivers.full_name)||'-',
+        t.route_priority||'-',
+        badge(t.status==='In Transit'?'a':t.status==='Completed'||t.status==='Certified'?'g':t.status==='Dispatched'?'b':'gr',t.status),
+        t.auto_planned?'<span style="font-size:10px;color:#ff9800">🤖 Auto</span>':'<span style="font-size:10px;color:#8ab0d0">Manual</span>'
+      ];
+    });
+    html += card('📋 Recent Trips','',tbl(['Trip','Date','Vehicle','Driver','Priority','Status','Type'],rows),true);
+
+    ct.innerHTML = html;
+    window._stpBins = bins;
+
+    // Pre-check critical bins
+    setTimeout(function(){
+      bins.filter(function(b){return b.current_fill_pct>=80;}).forEach(function(b){
+        var el=document.getElementById('stb_'+b.id);
+        if(el) el.checked=true;
+      });
+    },200);
+  } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.preCheckBins = function() {
+  var bins = window._stpBins||[];
+  bins.forEach(function(b){
+    var el=document.getElementById('stb_'+b.id);
+    if(el) el.checked = b.current_fill_pct>=80;
+  });
+};
+
+window.saveSmartTrip = async function() {
+  var vehId = gv('stp_veh');
+  var siteId = gv('stp_site');
+  var date = gv('stp_date');
+  if(!vehId||!date){alert('Vehicle and date required.');return;}
+
+  var selBins = (window._stpBins||[]).filter(function(b){
+    var el=document.getElementById('stb_'+b.id);
+    return el&&el.checked;
+  });
+  if(selBins.length===0){alert('Please select at least one bin to collect.');return;}
+
+  try {
+    // Get vehicle driver
+    var vehicles = await sbFetch('vehicles',{select:'*,drivers(id,full_name)',eq:{id:vehId}});
+    var veh = safeArr(vehicles)[0];
+    var driverId = veh&&veh.drivers?veh.drivers.id:null;
+
+    var code = await sbRpc('next_trip_code');
+    var tripResult = await sbInsert('trips',{
+      trip_code:code,
+      vehicle_id:vehId,
+      driver_id:driverId,
+      trip_date:date,
+      delivery_site_id:siteId||null,
+      route_priority:gv('stp_pri')||'Urgent Fill First',
+      instructions:gv('stp_inst')||null,
+      status:'Planned',
+      auto_planned:false
+    });
+
+    var tripId = tripResult[0]&&tripResult[0].id;
+    if(tripId) {
+      var pickups = selBins.map(function(b,i){
+        return {trip_id:tripId,bin_id:b.id,sequence_no:i+1,status:'Pending'};
+      });
+      await sbInsert('trip_pickups',pickups);
+      selBins.forEach(async function(b){
+        await sbUpdate('bins',{status:'Trip Planned'},{id:b.id});
+      });
+    }
+
+    // Get destination site name
+    var sites = await sbFetch('processing_sites',{select:'site_name',eq:{id:siteId}});
+    var siteName = safeArr(sites)[0]?safeArr(sites)[0].site_name:'';
+
+    alert('✅ Trip '+code+' created!\n\n'
+      +'Bins: '+selBins.map(function(b){return b.bin_code;}).join(', ')+'\n'
+      +'Vehicle: '+(veh?veh.reg_no:'')+'\n'
+      +'Driver: '+(veh&&veh.drivers?veh.drivers.full_name:'Unassigned')+'\n'
+      +'Deliver to: '+siteName+'\n\n'
+      +'Trip pushed to driver app!');
+
+    renderSmartTripPlanner();
+  } catch(e){alert('Error: '+e.message);}
+};
+
 // ── GLOBAL EVENT DELEGATION ──────────────────────────────
 function wireButtons(){
   // Generator edit
@@ -105,7 +1641,7 @@ function wireButtons(){
   // Driver app - open collect
   document.querySelectorAll('[id^="otc"]').forEach(function(b){ var id=b.id.slice(3); var tc=b.getAttribute('data-tc'); b.onclick=function(){openTripCollect(id,tc);}; });
   // Driver app - complete trip
-  document.querySelectorAll('[id^="ct"]').forEach(function(b){ var id=b.id.slice(2); b.onclick=function(){completeTrip(id);}; });
+  document.querySelectorAll('[id^="ctr"]').forEach(function(b){ var id=b.id.slice(3); b.onclick=function(){completeTrip(id);}; });
   // Collect bin
   document.querySelectorAll('[id^="cb"]').forEach(function(b){ var id=b.id.slice(2); var bid=b.getAttribute('data-bid'); b.onclick=function(){collectBin(id,bid);}; });
   // Issue slip
@@ -116,6 +1652,15 @@ function wireButtons(){
   document.querySelectorAll('[id^="ds"]').forEach(function(b){ var id=b.id.slice(2); b.onclick=function(){doneSchedule(id);}; });
   // Edit user
   document.querySelectorAll('[id^="eu"]').forEach(function(b){ var id=b.id.slice(2); b.onclick=function(){editUser(id);}; });
+  // Link driver profile
+  document.querySelectorAll('[id^="ld"]').forEach(function(b){ var id=b.id.slice(2); b.onclick=function(){linkDriverProfile(id);}; });
+  // Staff edit
+  document.querySelectorAll('[id^="es"]').forEach(function(b){ var id=b.id.slice(2); b.onclick=function(){alert('Edit staff: '+id+' - Coming soon');} ; });
+  // Generator approve/reject
+  document.querySelectorAll('[id^="apr"]').forEach(function(b){ var id=b.id.slice(3); b.onclick=function(){approveGen(id);}; });
+  document.querySelectorAll('[id^="rej"]').forEach(function(b){ var id=b.id.slice(3); b.onclick=function(){rejectGen(id);}; });
+  // Payments
+  document.querySelectorAll('[id^="pay"]').forEach(function(b){ var id=b.id.slice(3); b.onclick=function(){newPaymentForInvoice(id,null);}; });
   // Update fill (bins)
   document.querySelectorAll('[id^="uf"]').forEach(function(b){ var id=b.id.slice(2); var bc=b.getAttribute('data-bc')||''; b.onclick=function(){updateFill(id,bc);}; });
   // Dashboard nav buttons
@@ -170,14 +1715,15 @@ async function sbRpc(fn){
 }
 
 var NAV=[
-  {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'}]},
+  {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
   {s:'Compliance',items:[{id:'inspection',l:'Yard Inspection',i:'🔍'},{id:'boiler',l:'Boiler & Steam',i:'🔥'}]},
-  {s:'Fleet Management',items:[{id:'vehicles',l:'Vehicle Registry',i:'🚛'},{id:'drivers',l:'Driver Registry',i:'👤'},{id:'cleaning',l:'Vehicle Cleaning',i:'🧹'},{id:'pm',l:'Preventive Maint.',i:'🔧'},{id:'rm',l:'Reactive Maint.',i:'⚡'},{id:'schedule',l:'Maint. Schedule',i:'📅'},{id:'fuel',l:'Fuel Management',i:'⛽'},{id:'tyres',l:'Tyre Management',i:'⭕'}]},
-  {s:'Admin',items:[{id:'reports',l:'Reports & Export',i:'📊'},{id:'users',l:'User Management',i:'👥'}]},
+  {s:'Fleet Management',items:[{id:'vehicles',l:'Vehicle Registry',i:'🚛'},{id:'checklist',l:'Pre-Trip Checklist',i:'✅'},{id:'drivers',l:'Driver Registry',i:'👤'},{id:'cleaning',l:'Vehicle Cleaning',i:'🧹'},{id:'pm',l:'Preventive Maint.',i:'🔧'},{id:'rm',l:'Reactive Maint.',i:'⚡'},{id:'schedule',l:'Maint. Schedule',i:'📅'},{id:'fuel',l:'Fuel Management',i:'⛽'},{id:'tyres',l:'Tyre Management',i:'⭕'}]},
+  {s:'Infrastructure',items:[{id:'sites',l:'Processing Sites',i:'🏭'},{id:'boiler',l:'Boiler & Steam',i:'🔥'}]},
+  {s:'Admin',items:[{id:'staff',l:'Staff Master',i:'👥'},{id:'roles',l:'Role Permissions',i:'🔐'},{id:'reports',l:'Reports & Export',i:'📊'},{id:'users',l:'User Management',i:'👤'}]},
 ];
 
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry',trips:'Trip & Lift Plans',billing:'Billing & Receipts',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',reports:'Reports & Export',users:'User Management'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests','autoplanner':'Auto Trip Planner','smarttrip':'Smart Trip Planner','sites':'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management'};
 
 function fc(p){return p>=80?'#f44336':p>=60?'#ff9800':'#00e676';}
 function badge(c,t){return '<span class="badge b'+c+'">'+t+'</span>';}
@@ -203,7 +1749,7 @@ function buildNav(){
   NAV.forEach(sec=>{
     h+='<div class="nh">'+sec.s+'</div>';
     sec.items.forEach(item=>{
-      h+='<div class="ni" id="ni-'+item.id+'" data-page="'+item.id+'" onclick="go(this.getAttribute(\'data-page\'))">';
+      h+='<div class="ni" id="ni-'+item.id+'" data-page="'+item.id+'" onclick="go(this.getAttribute(\'data-page\'))">'
         +'<span style="font-size:15px;width:18px;text-align:center">'+item.i+'</span>'
         +'<span>'+item.l+'</span></div>';
     });
@@ -222,7 +1768,7 @@ function go(page){
   ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
   var pages={dashboard:renderDash,generators:renderGenerators,trips:renderTrips,billing:renderBilling,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,fuel:renderFuel,tyres:renderTyres};
   if(pages[page]) pages[page]();
-  else ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div style="font-size:16px;color:#e8f4fd">'+PAGE_TITLES[page]+'</div><div style="margin-top:8px">Module loading...</div></div>';
+  else ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div style="font-size:16px;color:#e2eeff">'+PAGE_TITLES[page]+'</div><div style="margin-top:8px">Module loading...</div></div>';
 }
 
 async function renderDash(){
@@ -252,11 +1798,11 @@ async function renderDash(){
       (t.drivers&&t.drivers.full_name||'-'),
       badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)
     ]);
-    var binHtml=(bins||[]).slice(0,8).map(b=>'<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace;color:#e8f4fd">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+' · '+(b.zone||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+( b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>').join('');
-    var fleetHtml=(vehicles||[]).slice(0,4).map(v=>'<div style="background:#111d2e;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><strong style="font-family:Consolas,monospace;font-size:12px">'+v.reg_no+'</strong><div style="font-size:10.5px;color:#5a7a9a">'+(v.drivers&&v.drivers.full_name||'Unassigned')+'</div></div>'+badge('g',v.status)+'</div>'+prog(v.current_fuel_pct||0)+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Fuel '+(v.current_fuel_pct||0)+'%</div></div>').join('');
+    var binHtml=(bins||[]).slice(0,8).map(b=>'<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace;color:#e2eeff">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+' · '+(b.zone||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+( b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>').join('');
+    var fleetHtml=(vehicles||[]).slice(0,4).map(v=>'<div style="background:#1a2840;border:1px solid rgba(100,160,255,.1);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><strong style="font-family:Consolas,monospace;font-size:12px">'+v.reg_no+'</strong><div style="font-size:10.5px;color:#5a7a9a">'+(v.drivers&&v.drivers.full_name||'Unassigned')+'</div></div>'+badge('g',v.status)+'</div>'+prog(v.current_fuel_pct||0)+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Fuel '+(v.current_fuel_pct||0)+'%</div></div>').join('');
     var boilerHtml='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">'
-      +['842°C|Combustion|#f44336|84','9.2 bar|Pressure|#ff9800|77','92%|Efficiency|#00e676|92'].map(s=>{var p=s.split('|');return'<div style="text-align:center;background:#111d2e;border-radius:8px;padding:10px"><div style="font-size:18px;font-weight:700;font-family:Consolas,monospace;color:'+p[2]+'">'+p[0]+'</div><div style="font-size:10px;color:#5a7a9a;margin:3px 0">'+p[1]+'</div>'+prog(parseInt(p[3]),p[2])+'</div>';}).join('')+'</div>'
-      +'<div style="font-size:11.5px;color:#5a7a9a">Steam: <strong style="color:#e8f4fd">4.2T/h</strong> · Feed: <strong style="color:#e8f4fd">580kg/h</strong></div>';
+      +['842°C|Combustion|#f44336|84','9.2 bar|Pressure|#ff9800|77','92%|Efficiency|#00e676|92'].map(s=>{var p=s.split('|');return'<div style="text-align:center;background:#1a2840;border-radius:8px;padding:10px"><div style="font-size:18px;font-weight:700;font-family:Consolas,monospace;color:'+p[2]+'">'+p[0]+'</div><div style="font-size:10px;color:#5a7a9a;margin:3px 0">'+p[1]+'</div>'+prog(parseInt(p[3]),p[2])+'</div>';}).join('')+'</div>'
+      +'<div style="font-size:11.5px;color:#5a7a9a">Steam: <strong style="color:#e2eeff">4.2T/h</strong> · Feed: <strong style="color:#e2eeff">580kg/h</strong></div>';
     ct.innerHTML=alerts+stats
       +'<div class="two">'
       +card('🚛 Active Trips','<button class="btn btn-sm" id="gotrips" style="cursor:pointer">All</button>',tbl(['Trip','Vehicle','Driver','Status'],tripRows),true)
@@ -272,10 +1818,10 @@ async function renderDash(){
 async function renderGenerators(){
   var ct=document.getElementById('ct');
   try{
-    var data=await sbFetch('generators',{select:'*',order:'created_at.desc'});
-    var rows=(data||[]).map(g=>[
+    var data=safeArr(await sbFetch('generators',{select:'*',order:'created_at.desc'}));
+    var rows=data.map(g=>[
       '<strong style="font-family:Consolas,monospace;color:#00e676">'+g.gen_code+'</strong>',
-      '<div><div style="font-weight:600;color:#e8f4fd">'+g.company_name+'</div><div style="font-size:10px;color:#5a7a9a">'+(g.gstin||'No GSTIN')+'</div></div>',
+      '<div><div style="font-weight:600;color:#e2eeff">'+g.company_name+'</div><div style="font-size:10px;color:#5a7a9a">'+(g.gstin||'No GSTIN')+'</div></div>',
       g.industry_type||'-',g.contact_person,
       '<span style="font-family:Consolas,monospace;font-size:11px">'+g.mobile+'</span>',
       g.city||'-',
@@ -290,7 +1836,7 @@ async function renderGenerators(){
       +'</div>'
       +card('🏭 Waste Generator Registry',
         '<button class="btn btn-g btn-sm" onclick="newGen()">+ Register Generator</button>',
-        tbl(['Gen ID','Company','Industry','Contact','Mobile','City','Waste Category','Status',''],rows),true);
+        tbl(['Gen ID','Company','Industry','Contact','Mobile','City','Maps','Waste Category','Status',''],rows),true);
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 
@@ -313,6 +1859,11 @@ window.newGen=function(){
     +'<div class="sec">Waste Details</div>'
     +fld('Avg Waste/Day (kg)',inp('g_waste','500','number'))
     +fld('Waste Category',sel('g_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']),true)
+    +'<div class="sec">GPS Location</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Plant GPS Coordinates</span><button type="button" onclick="detectGenLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Auto-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="g_lat" placeholder="Latitude (e.g. 23.0225)"><input id="g_lng" placeholder="Longitude (e.g. 72.5714)"></div>'
+    +'<div id="gen-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:5px"></div>'
+    +'<div id="gen-maps-link" style="margin-top:4px"></div></div>'
     +'</div>';
   modal('🏭 Register Waste Generator',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveGen()">Register & Generate ID</button>');
 };
@@ -327,7 +1878,9 @@ window.saveGen=async function(){
   if(!name||!contact||!mobile||!addr||!cat){alert('Please fill all required fields.');return;}
   try{
     var code=await sbRpc('next_gen_code');
-    await sbInsert('generators',{gen_code:code,company_name:name,industry_type:industry,contact_person:contact,mobile:mobile,email:document.getElementById('g_email').value,gstin:document.getElementById('g_gstin').value,pcb_auth_no:document.getElementById('g_pcb').value,pcb_expiry:document.getElementById('g_pcbexp').value||null,address:addr,city:document.getElementById('g_city').value,state:document.getElementById('g_state').value,waste_category:cat,avg_waste_per_day:document.getElementById('g_waste').value||null,is_active:true});
+    var glat = document.getElementById('g_lat') ? parseFloat(document.getElementById('g_lat').value)||null : null;
+    var glng = document.getElementById('g_lng') ? parseFloat(document.getElementById('g_lng').value)||null : null;
+    await sbInsert('generators',{gen_code:code,company_name:name,industry_type:industry,contact_person:contact,mobile:mobile,email:document.getElementById('g_email').value,gstin:document.getElementById('g_gstin').value,pcb_auth_no:document.getElementById('g_pcb').value,pcb_expiry:document.getElementById('g_pcbexp').value||null,address:addr,city:document.getElementById('g_city').value,state:document.getElementById('g_state').value,waste_category:cat,avg_waste_per_day:document.getElementById('g_waste').value||null,latitude:glat,longitude:glng,is_active:true});
     closeModal();success('Generator '+code+' registered successfully!');
     renderGenerators();
   }catch(e){alert('Error: '+e.message);}
@@ -356,10 +1909,10 @@ window.editGen=async function(id){
     +fld('Waste Category',sel('g_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']),true)
     +fld('Status',sel('g_active',['Active','Inactive']))
     +'</div>';
-  var _gf='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" style="background:#f44336;color:#fff;border-color:#f44336" onclick="deleteGen(\''+id+'\',\''+g.gen_code+'\')" >Delete</button><button class="btn btn-g btn-sm" onclick="updateGen(\''+id+'\')" >Save Changes</button>';
+  window._editGenId=id; window._editGenCode=g.gen_code;
+  var _gf='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" style="background:#f44336;color:#fff" id="dgbtn">Delete</button><button class="btn btn-g btn-sm" id="ugbtn">Save Changes</button>';
   modal('Edit Generator '+g.gen_code,body,_gf);
-
-
+  setTimeout(function(){var db=document.getElementById('dgbtn');var ub=document.getElementById('ugbtn');if(db){db.onclick=function(){deleteGen(window._editGenId,window._editGenCode);};}if(ub){ub.onclick=function(){updateGen(window._editGenId);};}},50);
 
   document.getElementById('g_cat').value=g.waste_category||'';
   document.getElementById('g_active').value=g.is_active?'Active':'Inactive';
@@ -372,7 +1925,9 @@ window.updateGen=async function(id){
   var addr=document.getElementById('g_addr').value;
   if(!name||!contact||!mobile||!addr){alert('Please fill all required fields.');return;}
   try{
-    await sbUpdate('generators',{company_name:name,industry_type:document.getElementById('g_industry').value,contact_person:contact,mobile:mobile,email:document.getElementById('g_email').value,gstin:document.getElementById('g_gstin').value,pcb_auth_no:document.getElementById('g_pcb').value,pcb_expiry:document.getElementById('g_pcbexp').value||null,address:addr,city:document.getElementById('g_city').value,state:document.getElementById('g_state').value,waste_category:document.getElementById('g_cat').value,avg_waste_per_day:document.getElementById('g_waste').value||null,is_active:document.getElementById('g_active').value==='Active'},{id:id});
+    var ulat = document.getElementById('g_lat') ? parseFloat(document.getElementById('g_lat').value)||null : null;
+    var ulng = document.getElementById('g_lng') ? parseFloat(document.getElementById('g_lng').value)||null : null;
+    await sbUpdate('generators',{company_name:name,industry_type:document.getElementById('g_industry').value,contact_person:contact,mobile:mobile,email:document.getElementById('g_email').value,gstin:document.getElementById('g_gstin').value,pcb_auth_no:document.getElementById('g_pcb').value,pcb_expiry:document.getElementById('g_pcbexp').value||null,address:addr,city:document.getElementById('g_city').value,state:document.getElementById('g_state').value,waste_category:document.getElementById('g_cat').value,avg_waste_per_day:document.getElementById('g_waste').value||null,latitude:ulat,longitude:ulng,is_active:document.getElementById('g_active').value==='Active'},{id:id});
     closeModal();success('Generator updated successfully!');renderGenerators();
   }catch(e){alert('Error: '+e.message);}
 };
@@ -388,13 +1943,13 @@ window.deleteGen=async function(id,code){
 async function renderDrivers(){
   var ct=document.getElementById('ct');
   try{
-    var data=await sbFetch('drivers',{select:'*',order:'created_at.desc'});
-    var rows=(data||[]).map(d=>{
+    var data=safeArr(await sbFetch('drivers',{select:'*',order:'created_at.desc'}));
+    var rows=data.map(d=>{
       var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;
       var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';
       return[
         '<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>',
-        '<div style="font-weight:600;color:#e8f4fd">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+'</div>',
+        '<div style="font-weight:600;color:#e2eeff">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+'</div>',
         d.dl_no||'-',
         badge(dlS,dlDays===null?'No DL':dlDays<0?'Expired':dlDays<60?dlDays+'d left':'Valid'),
         badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),
@@ -441,11 +1996,23 @@ window.saveDriver=async function(){
   var mobile=document.getElementById('d_mobile').value;
   var dl=document.getElementById('d_dl').value;
   var dlexp=document.getElementById('d_dlexp').value;
+  var email=gv('d_email');
+  var pin=gv('d_pin');
   if(!name||!mobile||!dl||!dlexp){alert('Name, mobile, DL number and DL expiry are required.');return;}
+  if(email&&!pin){alert('If you enter email, PIN is also required for login access.');return;}
   try{
     var code=await sbRpc('next_driver_code');
     await sbInsert('drivers',{driver_code:code,full_name:name,mobile:mobile,dob:gv('d_dob')||null,blood_group:gv('d_blood')||null,dl_no:dl,dl_expiry:dlexp,dl_hazmat_endorsed:gv('d_hazmat')==='Yes',dl_alert_channel:gv('d_alert')||'WhatsApp+SMS',medical_cert_expiry:gv('d_medexp')||null,police_verified:gv('d_police')==='Verified',ppe_trained:gv('d_ppe')==='Yes',hazmat_certified:gv('d_haz')==='Valid',joining_date:gv('d_join')||null,employment_type:gv('d_emp')||'Permanent',status:'Active'});
-    closeModal();success('Driver '+code+' registered successfully!');
+    // Auto-create login account if email+PIN provided
+    if(email && pin){
+      try{
+        await sbInsert('user_roles',{full_name:name,email:email,phone:mobile,role:'driver',pin:pin,is_active:true});
+      }catch(ue){
+        console.warn('Login account not created (may already exist):',ue.message);
+      }
+    }
+    closeModal();
+    success('Driver '+code+' registered!'+(email?' Login account created.':' Add email+PIN to enable login.'));
     renderDrivers();
   }catch(e){alert('Error: '+e.message);}
 };
@@ -455,9 +2022,9 @@ window.viewDriver=async function(id){
   var d=data[0];if(!d)return;
   var age=d.dob?Math.floor((new Date()-new Date(d.dob))/31557600000):'-';
   var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;
-  var body='<div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;padding:14px;background:#111d2e;border-radius:10px">'
-    +'<div style="width:50px;height:50px;border-radius:50%;background:#1c2d42;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👤</div>'
-    +'<div><div style="font-size:16px;font-weight:700;color:#e8f4fd">'+d.full_name+'</div>'
+  var body='<div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;padding:14px;background:#1a2840;border-radius:10px">'
+    +'<div style="width:50px;height:50px;border-radius:50%;background:#243858;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👤</div>'
+    +'<div><div style="font-size:16px;font-weight:700;color:#e2eeff">'+d.full_name+'</div>'
     +'<div style="font-size:12px;color:#5a7a9a">'+d.driver_code+' · Age '+age+' · '+( d.blood_group||'-')+' · '+d.mobile+'</div>'
     +'<div style="margin-top:6px;display:flex;gap:6px">'
     +'<span class="badge b'+(d.status==='Active'?'g':d.status==='On Leave'?'a':'r')+'">'+( d.status||'Active')+'</span>'
@@ -472,9 +2039,9 @@ window.viewDriver=async function(id){
       {i:'🛡',t:'Police Verification',s:d.police_verified?'Verified':'Pending',v:d.police_verified},
       {i:'⚠️',t:'Hazmat Certificate',s:d.hazmat_certified?'Valid · Exp: '+(d.hazmat_expiry||'N/A'):'Not certified',v:d.hazmat_certified},
       {i:'🦺',t:'PPE Training',s:d.ppe_trained?'Completed':'Not done',v:d.ppe_trained},
-    ].map(doc=>'<div style="background:#111d2e;border:1px solid '+(doc.v?'rgba(0,230,118,.2)':'rgba(255,255,255,.07)')+';border-radius:9px;padding:10px;display:flex;gap:8px">'
-      +'<div style="width:32px;height:32px;border-radius:6px;background:#1c2d42;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+doc.i+'</div>'
-      +'<div><div style="font-size:12px;font-weight:600;color:#e8f4fd">'+doc.t+'</div>'
+    ].map(doc=>'<div style="background:#1a2840;border:1px solid '+(doc.v?'rgba(0,230,118,.2)':'rgba(100,160,255,.1)')+';border-radius:9px;padding:10px;display:flex;gap:8px">'
+      +'<div style="width:32px;height:32px;border-radius:6px;background:#243858;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+doc.i+'</div>'
+      +'<div><div style="font-size:12px;font-weight:600;color:#e2eeff">'+doc.t+'</div>'
       +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">'+doc.s+'</div>'
       +'<span class="badge '+(doc.v?'bg':'ba')+'" style="margin-top:4px;display:inline-flex">'+(doc.v?'✓ Valid':'⚠ Check')+'</span>'
       +'</div></div>').join('')
@@ -517,14 +2084,14 @@ window.saveDriverEdit=async function(id){
 async function renderVehicles(){
   var ct=document.getElementById('ct');
   try{
-    var data=await sbFetch('vehicles',{select:'*,drivers(full_name)',order:'reg_no'});
-    var rows=(data||[]).map(v=>{
+    var data=safeArr(await sbFetch('vehicles',{select:'*',order:'reg_no'}));
+    var rows=data.map(v=>{
       var fitDays=v.fitness_expiry?Math.ceil((new Date(v.fitness_expiry)-new Date())/864e5):null;
       var fitS=fitDays===null?'gr':fitDays<0?'r':fitDays<30?'a':'g';
       return[
         '<strong style="font-family:Consolas,monospace;color:#00e676">'+v.reg_no+'</strong>',
-        '<div style="color:#e8f4fd">'+v.make+' '+v.model+'</div><div style="font-size:10px;color:#5a7a9a">'+(v.year||'')+' · '+(v.vehicle_type||'')+'</div>',
-        (v.drivers&&v.drivers.full_name)||'Unassigned',
+        '<div style="color:#e2eeff">'+v.make+' '+v.model+'</div><div style="font-size:10px;color:#5a7a9a">'+(v.year||'')+' · '+(v.vehicle_type||'')+'</div>',
+        'Unassigned',
         badge(fitS,fitDays===null?'N/A':fitDays<0?'Expired':fitDays+'d'),
         '<div style="width:80px">'+prog(v.current_fuel_pct||0)+'<div style="font-size:10px;color:#5a7a9a">'+(v.current_fuel_pct||0)+'%</div></div>',
         badge(v.status==='Active'?'g':v.status==='In Maintenance'?'a':'r',v.status||'Active'),
@@ -642,7 +2209,7 @@ window.newBin=async function(){
   var body='<div class="fg">'
     +'<div class="sec">Step 1 — Operation Type</div>'
     +'<div class="full"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
-    +['A|🔄|Type A — Bin stays|Waste emptied into truck','B|🏗|Type B — Full bin lifted|Empty bin placed back','C|🛍|Type C — Loose bag|Only bag lifted'].map(t=>{var p=t.split('|');return'<div onclick="document.getElementById(\'b_type\').value=\''+p[0]+'\';document.querySelectorAll(\'.typeopt\').forEach(x=>x.style.borderColor=\'rgba(255,255,255,.12)\');this.style.borderColor=\'#00e676\'" class="typeopt" style="background:#162236;border:2px solid rgba(255,255,255,.12);border-radius:9px;padding:12px;cursor:pointer;text-align:center"><div style="font-size:24px;margin-bottom:6px">'+p[1]+'</div><div style="font-size:12px;font-weight:700;color:#e8f4fd">'+p[2]+'</div><div style="font-size:11px;color:#5a7a9a;margin-top:4px">'+p[3]+'</div></div>';}).join('')
+    +['A|🔄|Type A — Bin stays|Waste emptied into truck','B|🏗|Type B — Full bin lifted|Empty bin placed back','C|🛍|Type C — Loose bag|Only bag lifted'].map(t=>{var p=t.split('|');return'<div onclick="document.getElementById(\'b_type\').value=\''+p[0]+'\';document.querySelectorAll(\'.typeopt\').forEach(x=>x.style.borderColor=\'rgba(100,160,255,.15)\');this.style.borderColor=\'#00e676\'" class="typeopt" style="background:#1e3048;border:2px solid rgba(100,160,255,.15);border-radius:9px;padding:12px;cursor:pointer;text-align:center"><div style="font-size:24px;margin-bottom:6px">'+p[1]+'</div><div style="font-size:12px;font-weight:700;color:#e2eeff">'+p[2]+'</div><div style="font-size:11px;color:#5a7a9a;margin-top:4px">'+p[3]+'</div></div>';}).join('')
     +'</div><input type="hidden" id="b_type" value="A"></div>'
     +'<div class="sec">Generator & Container</div>'
     +'<div class="full"><div class="fl">Generator<span style="color:#f44336;margin-left:2px">*</span></div><select id="b_gen"><option value="">— Select Generator —</option>'+genOpts+'</select></div>'
@@ -796,7 +2363,7 @@ async function renderBilling(){
       (i.generators&&i.generators.company_name)||'-',
       (i.trips&&i.trips.trip_code)||'-',
       i.net_weight_kg+' kg',
-      '<strong style="color:#e8f4fd">₹'+Number(i.total_amount||0).toLocaleString('en-IN')+'</strong>',
+      '<strong style="color:#e2eeff">₹'+Number(i.total_amount||0).toLocaleString('en-IN')+'</strong>',
       badge(i.payment_status==='Paid'?'g':i.payment_status==='Overdue'?'r':'a',i.payment_status),
       i.payment_status!=='Paid'?'<button class="btn btn-sm btn-g" id="mp'+i.id+'" style="cursor:pointer">Mark Paid</button>':''
     ]);
@@ -833,7 +2400,7 @@ window.newInvoice=function(){
     +fld('GST %',sel('i_gst',['18','12','5','0']))
     +fld('Payment Mode',sel('i_pm',['NEFT/RTGS','UPI/QR','Cash','Credit 30 days']))
     +'</div>'
-    +'<div id="inv_calc" style="margin-top:14px;padding:12px;background:#162236;border-radius:8px;font-size:13px"></div>';
+    +'<div id="inv_calc" style="margin-top:14px;padding:12px;background:#1e3048;border-radius:8px;font-size:13px"></div>';
   modal('🧾 Generate Invoice',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveInvoice()">Generate Receipt</button>');
   ['i_wt','i_rate','i_gst'].forEach(id=>{
     document.getElementById(id).addEventListener('input',function(){
@@ -948,7 +2515,8 @@ async function renderCleaning(){
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
       sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}),
     ]);
-    var rows=(records||[]).map(r=>[
+    var records=safeArr(records_r),vehicles=safeArr(vehicles_r),drivers=safeArr(drivers_r);
+    var rows=records.map(r=>[
       '<strong style="font-family:Consolas,monospace">'+( r.vehicles&&r.vehicles.reg_no||'-')+'</strong>',
       (r.drivers&&r.drivers.full_name)||'-',
       r.cleaning_date,r.cleaning_type,
@@ -1003,10 +2571,11 @@ window.saveCleaning=async function(){
 async function renderPM(){
   var ct=document.getElementById('ct');
   try{
-    var[records,vehicles]=await Promise.all([
+    var[records_r,vehicles_r]=await Promise.all([
       sbFetch('preventive_maintenance',{select:'*,vehicles(reg_no)',order:'service_date.desc',limit:30}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
     ]);
+    var records=safeArr(records_r),vehicles=safeArr(vehicles_r);
     var rows=(records||[]).map(r=>[
       '<strong style="font-family:Consolas,monospace;font-size:11px">'+r.pm_code+'</strong>',
       '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
@@ -1126,10 +2695,11 @@ window.saveFuel=async function(){
 async function renderTyres(){
   var ct=document.getElementById('ct');
   try{
-    var[records,vehicles]=await Promise.all([
+    var[records_r,vehicles_r]=await Promise.all([
       sbFetch('tyre_records',{select:'*,vehicles(reg_no)',order:'record_date.desc',limit:30}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
     ]);
+    var records=safeArr(records_r),vehicles=safeArr(vehicles_r);
     var rows=(records||[]).map(r=>[
       '<strong style="font-family:Consolas,monospace;font-size:11px">'+r.tyre_code+'</strong>',
       '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
@@ -1187,7 +2757,7 @@ function renderBoiler(){
     +'</div>'
     +card('⚡ Waste-to-Energy Pipeline','<span class="badge bg">Live</span>',
       '<div style="padding-left:20px;position:relative">'
-      +'<div style="position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:#1c2d42"></div>'
+      +'<div style="position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:#243858"></div>'
       +['Waste Received at Yard|8,400 kg · CERT verified|done',
         'Crushing & Shredding|CB-082 complete · 7,140 kg fuel|done',
         'Pre-Feed Sorting|Metals removed: 180 kg|done',
@@ -1195,7 +2765,7 @@ function renderBoiler(){
         'Combustion Chamber|842°C · CO₂: 14.2%|done',
         'Steam Generation — Active|4.2T/h · 9.2 bar · Supplied|active',
         'Ash Collection & Disposal|0.6T fly ash · PCB disposal: 09 Jun|pending']
-        .map(s=>{var p=s.split('|');var c=p[2]==='done'?'#00e676':p[2]==='active'?'#ff9800':'#2e4a65';return'<div style="position:relative;margin-bottom:14px"><div style="position:absolute;left:-17px;top:3px;width:11px;height:11px;border-radius:50%;border:2px solid '+c+';background:'+(p[2]==='done'?c:'#060a0f')+'"></div><div style="font-size:12.5px;font-weight:600;color:#e8f4fd">'+p[0]+'</div><div style="font-size:11.5px;color:#5a7a9a;margin-top:2px">'+p[1]+'</div></div>';}).join('')
+        .map(s=>{var p=s.split('|');var c=p[2]==='done'?'#00e676':p[2]==='active'?'#ff9800':'#2e4a65';return'<div style="position:relative;margin-bottom:14px"><div style="position:absolute;left:-17px;top:3px;width:11px;height:11px;border-radius:50%;border:2px solid '+c+';background:'+(p[2]==='done'?c:'#060a0f')+'"></div><div style="font-size:12.5px;font-weight:600;color:#e2eeff">'+p[0]+'</div><div style="font-size:11.5px;color:#5a7a9a;margin-top:2px">'+p[1]+'</div></div>';}).join('')
       +'</div>');
 }
 
@@ -1205,22 +2775,22 @@ var CURRENT_USER = null;
 
 function showLogin() {
   document.body.innerHTML = '';
-  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#060a0f;color:#e8f4fd;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0';
-  document.body.innerHTML = '<div style="width:380px;background:#0d1520;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:32px">'
+  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0';
+  document.body.innerHTML = '<div style="width:380px;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:32px">'
     +'<div style="text-align:center;margin-bottom:28px"><div style="font-size:40px;margin-bottom:8px">♻️</div>'
     +'<div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
     +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Waste-to-Energy ERP</div></div>'
     +'<div id="login-err" style="margin-bottom:12px"></div>'
     +'<div style="display:flex;flex-direction:column;gap:14px">'
-    +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Email Address</div>'
-    +'<input id="l_email" type="email" placeholder="you@ecoloop.com" style="background:#162236;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e8f4fd;padding:9px 12px;font-size:13px;width:100%;font-family:inherit;outline:none">'
-    +'</div><div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">PIN / Password</div>'
-    +'<input id="l_pin" type="password" placeholder="Enter your PIN" style="background:#162236;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e8f4fd;padding:9px 12px;font-size:13px;width:100%;font-family:inherit;outline:none">'
+    +'<div><div style="font-size:11.5px;color:#8ab0d0;margin-bottom:4px">Email Address</div>'
+    +'<input id="l_email" type="email" placeholder="you@ecoloop.com" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:9px 12px;font-size:13px;width:100%;font-family:inherit;outline:none">'
+    +'</div><div><div style="font-size:11.5px;color:#8ab0d0;margin-bottom:4px">PIN / Password</div>'
+    +'<input id="l_pin" type="password" placeholder="Enter your PIN" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:9px 12px;font-size:13px;width:100%;font-family:inherit;outline:none">'
     +'</div>'
     +'<button onclick="doLogin()" style="padding:11px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;margin-top:4px">Sign In</button>'
     +'</div>'
-    +'<div style="margin-top:20px;padding:14px;background:#162236;border-radius:8px;font-size:11.5px;color:#5a7a9a">'
-    +'<div style="font-weight:600;color:#9ab8d4;margin-bottom:6px">Demo Credentials:</div>'
+    +'<div style="margin-top:20px;padding:14px;background:#1e3048;border-radius:8px;font-size:11.5px;color:#5a7a9a">'
+    +'<div style="font-weight:600;color:#8ab0d0;margin-bottom:6px">Demo Credentials:</div>'
     +'<div>Admin: admin@ecoloop.com / 1234</div>'
     +'<div>Manager: manager@ecoloop.com / 2345</div>'
     +'<div>Driver: driver1@ecoloop.com / 3456</div>'
@@ -1235,7 +2805,7 @@ async function doLogin() {
   if(!email||!pin){ document.getElementById('login-err').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:8px 12px;border-radius:6px;color:#f44336;font-size:12px">Please enter email and PIN.</div>'; return; }
   var data = await sbFetch('user_roles',{select:'*',eq:{email:email}});
   var user = data && data[0];
-  if(!user||user.pin!==pin){
+  if(!user||String(user.pin)!==String(pin)){
     document.getElementById('login-err').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:8px 12px;border-radius:6px;color:#f44336;font-size:12px">Invalid email or PIN.</div>';
     return;
   }
@@ -1243,6 +2813,8 @@ async function doLogin() {
   localStorage.setItem('ecoloop_user', JSON.stringify(user));
   if(user.role==='driver') {
     showDriverApp();
+  } else if(user.role==='generator') {
+    showGeneratorPortal();
   } else {
     initERP();
   }
@@ -1256,84 +2828,349 @@ function doLogout() {
 
 // ── ROLE-BASED ACCESS ─────────────────────────────────────
 var ROLE_ACCESS = {
-  admin:     ['dashboard','generators','trips','billing','bins','fillalerts','inspection','boiler','vehicles','drivers','cleaning','pm','rm','schedule','fuel','tyres','reports','users'],
-  manager:   ['dashboard','generators','trips','billing','bins','fillalerts','inspection','boiler','vehicles','drivers','cleaning','pm','rm','schedule','fuel','tyres','reports'],
+  admin:     ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','staff','roles','reports','users'],
+  manager:   ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','reports'],
   inspector: ['dashboard','inspection','trips','billing','bins','fillalerts','boiler'],
   driver:    [],
   generator: ['dashboard','bins','fillalerts'],
 };
 
 // ── DRIVER MOBILE APP ─────────────────────────────────────
+// Global driver state
+var DRIVER_LOCATION = null;
+var DRIVER_RECORD = null;
+var CHECKLIST_DONE_TODAY = false;
+
+function captureDriverLocation() {
+  return new Promise(function(resolve) {
+    if(!navigator.geolocation) { resolve(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        DRIVER_LOCATION = {lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:new Date().toISOString()};
+        resolve(DRIVER_LOCATION);
+      },
+      function() { resolve(null); },
+      {enableHighAccuracy:true,timeout:8000}
+    );
+  });
+}
+
 async function showDriverApp() {
   var user = CURRENT_USER;
   document.body.innerHTML = '';
-  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#060a0f;color:#e8f4fd;margin:0;min-height:100vh';
-
-  // Find driver record
-  var drvData = await sbFetch('drivers',{select:'*',eq:{mobile:user.phone||''}});
-  // Get today's trips for this driver
-  var today = new Date().toISOString().split('T')[0];
-
+  document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
   document.body.innerHTML =
-    '<div style="background:#0d1520;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.07)">'
-    +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">♻️ EcoLoop</div>'
-    +'<div style="font-size:11px;color:#5a7a9a">Driver App · '+user.full_name+'</div></div>'
-    +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,.12);color:#5a7a9a;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
-    +'</div>'
-    +'<div id="driver-content" style="padding:16px;display:flex;flex-direction:column;gap:12px"></div>';
+    '<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1);position:sticky;top:0;z-index:10">'
+    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop Pro</div>'
+    +'<div style="font-size:11px;color:#8ab0d0">Driver App · '+user.full_name+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px">'
+    +'<div id="gps-badge" style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,152,0,.15);color:#ff9800">📍 Getting GPS...</div>'
+    +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
+    +'</div></div>'
+    +'<div id="driver-content" style="padding:16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto"></div>';
 
-  renderDriverHome();
+  // Capture GPS
+  var loc = await captureDriverLocation();
+  var gpsBadge = document.getElementById('gps-badge');
+  if(loc && gpsBadge) {
+    gpsBadge.style.background='rgba(0,230,118,.15)';gpsBadge.style.color='#00e676';
+    gpsBadge.textContent='📍 GPS Active ±'+Math.round(loc.accuracy)+'m';
+  } else if(gpsBadge) {
+    gpsBadge.style.background='rgba(244,67,54,.15)';gpsBadge.style.color='#f44336';
+    gpsBadge.textContent='📍 GPS Unavailable';
+  }
+
+  // Get driver record
+  var drvData = await sbFetch('drivers',{select:'*',eq:{mobile:user.phone||''}});
+  DRIVER_RECORD = safeArr(drvData)[0]||null;
+
+  // Check if today checklist done
+  var today = new Date().toISOString().split('T')[0];
+  var todayCheck = await sbFetch('vehicle_checklist',{select:'id,vehicle_ready',eq:{check_date:today},limit:1});
+  CHECKLIST_DONE_TODAY = safeArr(todayCheck).some(function(c){return c.vehicle_ready;});
+
+  if(!CHECKLIST_DONE_TODAY) {
+    showMandatoryChecklist();
+  } else {
+    renderDriverHome();
+  }
 }
+
+function showMandatoryChecklist() {
+  var dc = document.getElementById('driver-content');
+  var checks = [
+    {id:'fuel_ok',icon:'⛽',label:'Fuel Level >= 20%',critical:true},
+    {id:'tyre_fl_ok',icon:'⭕',label:'Front Left Tyre OK',critical:true},
+    {id:'tyre_fr_ok',icon:'⭕',label:'Front Right Tyre OK',critical:true},
+    {id:'tyre_rlo_ok',icon:'⭕',label:'Rear Left Outer Tyre OK',critical:true},
+    {id:'tyre_rli_ok',icon:'⭕',label:'Rear Left Inner Tyre OK',critical:false},
+    {id:'tyre_rro_ok',icon:'⭕',label:'Rear Right Outer Tyre OK',critical:true},
+    {id:'tyre_rri_ok',icon:'⭕',label:'Rear Right Inner Tyre OK',critical:false},
+    {id:'oil_level_ok',icon:'🛢',label:'Engine Oil Level OK',critical:true},
+    {id:'oil_filter_ok',icon:'🔧',label:'Oil Filter OK',critical:false},
+    {id:'brake_ok',icon:'🛑',label:'Brakes Working OK',critical:true},
+    {id:'lights_ok',icon:'💡',label:'All Lights Working',critical:true},
+    {id:'horn_ok',icon:'📯',label:'Horn Working',critical:false},
+    {id:'adas_camera_ok',icon:'📹',label:'ADAS Camera Working',critical:true},
+    {id:'cleaning_ok',icon:'🧹',label:'Vehicle Clean Inside/Outside',critical:true},
+    {id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',critical:true},
+    {id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher Present',critical:true},
+    {id:'ppes_available',icon:'🦺',label:'PPEs Available (Gloves,Mask,Vest)',critical:true},
+  ];
+  window._checkState={};
+  window._checkDefs=checks;
+  checks.forEach(function(c){window._checkState[c.id]=false;});
+  var reqCount=checks.filter(function(c){return c.critical;}).length;
+  var html='<div style="background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.3);border-radius:10px;padding:14px;text-align:center">'
+    +'<div style="font-size:28px;margin-bottom:6px">🚛</div>'
+    +'<div style="font-size:15px;font-weight:700;color:#ff9800">Daily Pre-Trip Checklist</div>'
+    +'<div style="font-size:12px;color:#8ab0d0;margin-top:4px">Complete 360 degree vehicle check before starting trips today</div>'
+    +'</div>'
+    +'<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;overflow:hidden">'
+    +'<div style="padding:12px 14px;border-bottom:1px solid rgba(100,160,255,.1);font-size:13px;font-weight:600">360 Degree Vehicle Inspection</div>'
+    +'<div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">';
+  checks.forEach(function(c){
+    html+='<label id="lbl-'+c.id+'" data-cid="'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.08);cursor:pointer" onclick="toggleCheck(this.dataset.cid)">';
+      +'<div id="chk-'+c.id+'" style="width:24px;height:24px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>'
+      +'<div><div style="font-size:13px;color:#e2eeff">'+c.icon+' '+c.label+'</div>'
+      +(c.critical?'<div style="font-size:10px;color:#ff9800">Required</div>':'<div style="font-size:10px;color:#5a7a9a">Optional</div>')
+      +'</div></label>';
+  });
+  html+='</div>'
+    +'<div style="padding:12px 14px;border-top:1px solid rgba(100,160,255,.1)">'
+    +'<div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Fuel Level %</div>'
+    +'<input id="fuel_pct" type="number" min="0" max="100" placeholder="e.g. 75" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit"></div>'
+    +'<div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Vehicle Cleaning Status</div>'
+    +'<select id="cl_status" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit">'
+    +'<option>Clean</option><option>Needs Cleaning</option><option>Dirty - Cannot Proceed</option>'
+    +'</select></div>'
+    +'<div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Notes</div>'
+    +'<textarea id="chk_notes" rows="2" placeholder="Any issues or observations..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit;resize:none"></textarea></div>'
+    +'<div id="checklist-progress" style="text-align:center;font-size:12px;color:#8ab0d0;margin-bottom:10px">0 / '+reqCount+' required checks completed</div>'
+    +'<button onclick="submitDriverChecklist()" id="submit-checklist-btn" style="width:100%;padding:13px;border-radius:10px;border:1px solid rgba(100,160,255,.15);background:#162033;color:#8ab0d0;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">Complete and Submit Checklist</button>'
+    +'</div></div>';
+  dc.innerHTML=html;
+}
+
+window.toggleCheck=function(id){
+  var state=window._checkState||{};
+  state[id]=!state[id];
+  window._checkState=state;
+  var chkEl=document.getElementById('chk-'+id);
+  var lblEl=document.getElementById('lbl-'+id);
+  var def=(window._checkDefs||[]).find(function(c){return c.id===id;});
+  if(state[id]){
+    chkEl.style.background='#00e676';chkEl.style.borderColor='#00e676';chkEl.innerHTML='&#10003;';
+    lblEl.style.background='rgba(0,230,118,.06)';lblEl.style.borderColor='rgba(0,230,118,.2)';
+  } else {
+    chkEl.style.background='';chkEl.style.borderColor=def&&def.critical?'#ff9800':'#5a7a9a';chkEl.textContent='';
+    lblEl.style.background='';lblEl.style.borderColor='rgba(100,160,255,.08)';
+  }
+  var defs=window._checkDefs||[];
+  var req=defs.filter(function(c){return c.critical;});
+  var done=req.filter(function(c){return state[c.id];}).length;
+  var prog=document.getElementById('checklist-progress');
+  var btn=document.getElementById('submit-checklist-btn');
+  if(prog) prog.textContent=done+' / '+req.length+' required checks completed';
+  if(btn){
+    if(done===req.length){btn.style.background='#00e676';btn.style.color='#000';btn.style.borderColor='#00e676';}
+    else{btn.style.background='#162033';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';}
+  }
+};
+
+window.submitDriverChecklist=async function(){
+  var state=window._checkState||{};
+  var defs=window._checkDefs||[];
+  var req=defs.filter(function(c){return c.critical;});
+  var allReq=req.every(function(c){return state[c.id];});
+  if(!allReq){
+    var missing=req.filter(function(c){return !state[c.id];}).map(function(c){return c.label;});
+    alert('Please complete all required checks:\n\n'+missing.join('\n'));return;
+  }
+  var fuelPct=parseInt(document.getElementById('fuel_pct').value)||0;
+  var cleanStatus=document.getElementById('cl_status').value;
+  if(cleanStatus==='Dirty - Cannot Proceed'){alert('Vehicle is dirty. Please clean before proceeding.');return;}
+  if(fuelPct<20){alert('Fuel below 20%. Please refuel before proceeding.');return;}
+  try{
+    var today=new Date().toISOString().split('T')[0];
+    var code=await sbRpc('next_checklist_code');
+    var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true,driver_notes:document.getElementById('chk_notes').value||null};
+    if(DRIVER_RECORD) checkData.driver_id=DRIVER_RECORD.id;
+    defs.forEach(function(c){if(c.id!=='cleaning_ok') checkData[c.id]=state[c.id]||false;});
+    await sbInsert('vehicle_checklist',checkData);
+    CHECKLIST_DONE_TODAY=true;
+    var dc=document.getElementById('driver-content');
+    dc.innerHTML='<div style="text-align:center;padding:40px">'
+      +'<div style="font-size:60px;margin-bottom:12px">✅</div>'
+      +'<div style="font-size:18px;font-weight:700;color:#00e676;margin-bottom:6px">Vehicle Cleared!</div>'
+      +'<div style="font-size:13px;color:#8ab0d0">Checklist '+code+' submitted successfully</div>'
+      +'<div style="font-size:12px;color:#5a7a9a;margin-top:4px">Loading your trips...</div></div>';
+    setTimeout(renderDriverHome,1500);
+  }catch(e){alert('Error: '+e.message);}
+};
+
 
 async function renderDriverHome() {
   var dc = document.getElementById('driver-content');
+  if(!dc) return;
   var today = new Date().toISOString().split('T')[0];
-  var trips = await sbFetch('trips',{select:'*,vehicles(reg_no)',order:'created_at.desc',limit:10});
-  var myTrips = trips.filter(t=>t.trip_date===today||['Planned','Dispatched','In Transit'].includes(t.status));
+  var now = new Date();
+  var timeStr = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  var dateStr = now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  var html = '<div style="background:#162236;border-radius:10px;padding:14px;text-align:center">'
-    +'<div style="font-size:32px;margin-bottom:8px">👋</div>'
-    +'<div style="font-size:16px;font-weight:700;color:#e8f4fd">Welcome, '+CURRENT_USER.full_name+'</div>'
-    +'<div style="font-size:12px;color:#5a7a9a;margin-top:4px">'+new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div>'
-    +'</div>';
-
-  if(myTrips.length===0){
-    html += '<div style="background:#0d1520;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:24px;text-align:center;color:#5a7a9a">'
-      +'<div style="font-size:32px;margin-bottom:8px">📋</div>'
-      +'<div style="font-size:14px">No trips assigned today</div>'
-      +'<div style="font-size:12px;margin-top:4px">Contact your manager for trip assignment</div>'
-      +'</div>';
+  // Fetch trips assigned to this driver
+  var driverId = DRIVER_RECORD ? DRIVER_RECORD.id : null;
+  var trips;
+  if(driverId) {
+    trips = await sbFetch('trips',{select:'*,vehicles(reg_no,reg_no)',eq:{driver_id:driverId},order:'created_at.desc',limit:10});
   } else {
-    myTrips.forEach(function(t){
-      var statusColor = t.status==='In Transit'?'#ff9800':t.status==='Completed'||t.status==='Certified'?'#00e676':t.status==='Dispatched'?'#2196f3':'#5a7a9a';
-      html += '<div style="background:#0d1520;border:1px solid rgba(255,255,255,.07);border-left:3px solid '+statusColor+';border-radius:10px;padding:14px">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
-        +'<div><div style="font-family:Consolas,monospace;font-size:16px;font-weight:700;color:#e8f4fd">'+t.trip_code+'</div>'
-        +'<div style="font-size:12px;color:#5a7a9a">'+t.trip_date+' · '+(t.vehicles&&t.vehicles.reg_no||'-')+'</div></div>'
-        +'<span style="background:rgba(255,255,255,.08);color:'+statusColor+';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">'+t.status+'</span>'
-        +'</div>';
+    trips = await sbFetch('trips',{select:'*,vehicles(reg_no)',order:'created_at.desc',limit:10});
+  }
+  trips = safeArr(trips);
+  var myTrips = trips.filter(function(t){return ['Planned','Dispatched','In Transit'].includes(t.status)||t.trip_date===today;});
+  var completedToday = trips.filter(function(t){return t.trip_date===today&&(t.status==='Completed'||t.status==='Certified');});
 
-      if(t.status==='Planned'){
-        var btn1 = document.createElement('button');
-        btn1.textContent = 'Start Trip';
-        btn1.setAttribute('data-id', t.id);
-        btn1.style.cssText = 'width:100%;padding:10px;border-radius:8px;border:none;background:#2196f3;color:#fff;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit';
-        btn1.onclick = function(){ startTrip(this.getAttribute('data-id')); };
-        html += btn1.outerHTML;
-      } else if(t.status==='Dispatched'||t.status==='In Transit'){
-        html += '<button id="otc'+t.id+'" data-tc="'+t.trip_code+'" style="width:100%;padding:10px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;margin-bottom:6px">Scan and Collect Bins</button>';
-        html += '<button id="ct'+t.id+'" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#162236;color:#e8f4fd;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit">Mark Trip Complete</button>';
-      }
-      html += '</div>';
+  // Get bin pickups for active trips
+  var activeTrip = myTrips.find(function(t){return t.status==='In Transit';});
+  var pendingPickups = 0;
+  if(activeTrip) {
+    var pickups = await sbFetch('trip_pickups',{select:'id,status',eq:{trip_id:activeTrip.id}});
+    pendingPickups = safeArr(pickups).filter(function(p){return p.status==='Pending';}).length;
+  }
+
+  var html = '';
+
+  // ── HEADER CARD ──
+  html += '<div style="background:linear-gradient(135deg,#162033 0%,#1e3048 100%);border:1px solid rgba(100,160,255,.15);border-radius:14px;padding:16px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div>'
+    +'<div style="font-size:22px;font-weight:700;color:#e2eeff">'+(CURRENT_USER?CURRENT_USER.full_name:'Driver')+'</div>'
+    +'<div style="font-size:13px;color:#8ab0d0;margin-top:2px">'+(DRIVER_RECORD?DRIVER_RECORD.driver_code:'')+'</div>'
+    +'</div>'
+    +'<div style="text-align:right">'
+    +'<div style="font-size:24px;font-weight:700;font-family:Consolas,monospace;color:#00e676">'+timeStr+'</div>'
+    +'<div style="font-size:10px;color:#8ab0d0">'+dateStr+'</div>'
+    +'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px">'
+    +'<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px;text-align:center">'
+    +'<div style="font-size:24px;font-weight:700;color:'+(myTrips.length>0?'#ff9800':'#5a7a9a')+'">'+myTrips.length+'</div>'
+    +'<div style="font-size:10px;color:#8ab0d0;margin-top:2px">Pending Trips</div></div>'
+    +'<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px;text-align:center">'
+    +'<div style="font-size:24px;font-weight:700;color:'+(completedToday.length>0?'#00e676':'#5a7a9a')+'">'+completedToday.length+'</div>'
+    +'<div style="font-size:10px;color:#8ab0d0;margin-top:2px">Done Today</div></div>'
+    +'<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px;text-align:center">'
+    +'<div style="font-size:24px;font-weight:700;color:'+(DRIVER_LOCATION?'#00e676':'#f44336')+'">'+(DRIVER_LOCATION?'ON':'OFF')+'</div>'
+    +'<div style="font-size:10px;color:#8ab0d0;margin-top:2px">GPS Status</div></div>'
+    +'</div></div>';
+
+  // ── ACTIVE TRIP BANNER ──
+  if(activeTrip) {
+    html += '<div style="background:rgba(255,152,0,.1);border:2px solid #ff9800;border-radius:14px;padding:16px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ff9800">Active Trip</div>'
+      +'<div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#e2eeff">'+activeTrip.trip_code+'</div>'
+      +'<div style="font-size:12px;color:#8ab0d0">'+(activeTrip.vehicles?activeTrip.vehicles.reg_no:'')+'</div></div>'
+      +'<div style="text-align:center;background:rgba(255,152,0,.15);border-radius:10px;padding:10px 14px">'
+      +'<div style="font-size:28px;font-weight:700;color:#ff9800">'+pendingPickups+'</div>'
+      +'<div style="font-size:10px;color:#8ab0d0">Bins Left</div></div></div>'
+      +'<button id="otc'+activeTrip.id+'" data-tc="'+activeTrip.trip_code+'" style="width:100%;padding:14px;border-radius:10px;border:none;background:#ff9800;color:#000;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">📷 Scan & Collect Bins</button>'
+      +'<button id="ctr'+activeTrip.id+'" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(100,160,255,.2);background:#0f1724;color:#8ab0d0;cursor:pointer;font-size:13px;font-family:inherit;margin-top:8px">✅ Mark Trip Complete</button>'
+      +'</div>';
+  }
+
+  // ── PLANNED TRIPS ──
+  var plannedTrips = myTrips.filter(function(t){return t.status==='Planned'||t.status==='Dispatched';});
+  if(plannedTrips.length > 0) {
+    html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">📋 Assigned Trips</div>';
+    plannedTrips.forEach(function(t) {
+      html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-left:3px solid #2196f3;border-radius:12px;padding:14px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'
+        +'<div><div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#e2eeff">'+t.trip_code+'</div>'
+        +'<div style="font-size:12px;color:#8ab0d0;margin-top:2px">📅 '+t.trip_date+' · 🚛 '+(t.vehicles?t.vehicles.reg_no:'-')+'</div>'
+        +(t.instructions?'<div style="font-size:11px;color:#8ab0d0;margin-top:4px;padding:6px;background:#0f1724;border-radius:6px">'+t.instructions+'</div>':'')
+        +'</div>'
+        +'<span style="font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;background:rgba(33,150,243,.15);color:#2196f3;white-space:nowrap">'+t.status+'</span>'
+        +'</div>'
+        +'<button id="tb'+t.id+'d" style="width:100%;padding:14px;border-radius:10px;border:none;background:#2196f3;color:#fff;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">▶ Start Trip</button>'
+        +'</div>';
     });
   }
 
-  html += '<button onclick="showDriverApp()" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:transparent;color:#5a7a9a;cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px">🔄 Refresh</button>';
+  // ── NO TRIPS ──
+  if(myTrips.length === 0) {
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:30px;text-align:center">'
+      +'<div style="font-size:48px;margin-bottom:12px">🎉</div>'
+      +'<div style="font-size:16px;font-weight:600;color:#e2eeff">No Trips Assigned</div>'
+      +'<div style="font-size:12px;color:#8ab0d0;margin-top:6px">All clear for today. Contact your manager if a trip was expected.</div>'
+      +'</div>';
+  }
+
+  // ── COMPLETED TODAY ──
+  if(completedToday.length > 0) {
+    html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">✅ Completed Today</div>';
+    completedToday.forEach(function(t) {
+      html += '<div style="background:#162033;border:1px solid rgba(0,230,118,.15);border-left:3px solid #00e676;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center">'
+        +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">'+t.trip_code+'</div>'
+        +'<div style="font-size:11px;color:#8ab0d0">'+(t.vehicles?t.vehicles.reg_no:'-')+'</div></div>'
+        +'<span style="font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;background:rgba(0,230,118,.15);color:#00e676">Completed</span>'
+        +'</div>';
+    });
+  }
+
+  // ── GPS INFO ──
+  if(DRIVER_LOCATION) {
+    html += '<div style="background:#0f1724;border:1px solid rgba(100,160,255,.08);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">'
+      +'<div style="font-size:11px;color:#5a7a9a">📍 GPS: '+DRIVER_LOCATION.lat.toFixed(4)+', '+DRIVER_LOCATION.lng.toFixed(4)+' (±'+Math.round(DRIVER_LOCATION.accuracy)+'m)</div>'
+      +'<a href="https://www.google.com/maps?q='+DRIVER_LOCATION.lat+','+DRIVER_LOCATION.lng+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">Maps →</a>'
+      +'</div>';
+  }
+
+  // ── REFRESH BUTTON ──
+  html += '<button onclick="renderDriverHome()" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(100,160,255,.1);background:transparent;color:#5a7a9a;cursor:pointer;font-size:12px;font-family:inherit">🔄 Refresh</button>';
+
   dc.innerHTML = html;
+
+  // Wire buttons
+  setTimeout(function(){
+    // Start trip buttons
+    document.querySelectorAll('[id^="tb"]').forEach(function(b){
+      var id=b.id.slice(2,-1);
+      if(b.id.endsWith('d')) b.onclick=function(){startTrip(id);};
+    });
+    // Open collect
+    document.querySelectorAll('[id^="otc"]').forEach(function(b){
+      var id=b.id.slice(3); var tc=b.getAttribute('data-tc');
+      b.onclick=function(){openTripCollect(id,tc);};
+    });
+    // Complete trip
+    document.querySelectorAll('[id^="ctr"]').forEach(function(b){
+      var id=b.id.slice(3);
+      b.onclick=function(){completeTrip(id);};
+    });
+  }, 100);
+
 }
 
+
 window.startTrip = async function(id) {
-  await sbUpdate('trips',{status:'In Transit'},{id:id});
+  // Capture GPS location when trip starts
+  var updateData = {status:'In Transit', actual_start_time:new Date().toISOString()};
+  if(DRIVER_LOCATION) {
+    updateData.driver_lat = DRIVER_LOCATION.lat;
+    updateData.driver_lng = DRIVER_LOCATION.lng;
+  }
+  await sbUpdate('trips', updateData, {id:id});
+  
+  // Show GPS confirmation
+  var dc = document.getElementById('driver-content');
+  if(dc && DRIVER_LOCATION) {
+    var flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#00e676;color:#000;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:999';
+    flash.textContent = '📍 GPS Location recorded — Trip Started!';
+    document.body.appendChild(flash);
+    setTimeout(function(){flash.remove();},3000);
+  }
+  
   renderDriverHome();
 };
 
@@ -1348,17 +3185,17 @@ window.openTripCollect = async function(tripId, tripCode) {
   var pickups = await sbFetch('trip_pickups',{select:'*,bins(bin_code,waste_category,zone,generators(company_name))',eq:{trip_id:tripId},order:'sequence_no'});
 
   var html = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'
-    +'<button onclick="renderDriverHome()" style="background:none;border:1px solid rgba(255,255,255,.12);color:#9ab8d4;padding:6px 12px;border-radius:7px;cursor:pointer;font-size:12px">← Back</button>'
+    +'<button onclick="renderDriverHome()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:6px 12px;border-radius:7px;cursor:pointer;font-size:12px">← Back</button>'
     +'<div style="font-family:Consolas,monospace;font-size:16px;font-weight:700;color:#00e676">'+tripCode+'</div>'
     +'</div>';
 
   if(pickups.length===0){
-    html += '<div style="background:#0d1520;border-radius:10px;padding:20px;text-align:center;color:#5a7a9a">No bins assigned to this trip.</div>';
+    html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#5a7a9a">No bins assigned to this trip.</div>';
   } else {
     pickups.forEach(function(p,i){
       var done = p.status==='Collected';
       var b = p.bins||{};
-      html += '<div id="pickup-'+p.id+'" style="background:'+(done?'rgba(0,230,118,.06)':'#0d1520')+';border:2px solid '+(done?'rgba(0,230,118,.3)':'rgba(255,255,255,.07)')+';border-radius:12px;padding:14px;margin-bottom:8px">'
+      html += '<div id="pickup-'+p.id+'" style="background:'+(done?'rgba(0,230,118,.06)':'#0d1520')+';border:2px solid '+(done?'rgba(0,230,118,.3)':'rgba(100,160,255,.1)')+';border-radius:12px;padding:14px;margin-bottom:8px">'
         +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
         +'<div style="width:32px;height:32px;border-radius:50%;background:'+(done?'#00e676':'#1c2d42')+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:'+(done?'#000':'#5a7a9a')+';flex-shrink:0">'+(done?'✓':(i+1))+'</div>'
         +'<div><div style="font-family:Consolas,monospace;font-weight:700;font-size:14px;color:'+(done?'#00e676':'#e8f4fd')+'">'+( b.bin_code||'-')+'</div>'
@@ -1367,10 +3204,10 @@ window.openTripCollect = async function(tripId, tripCode) {
 
       if(!done){
         html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-          +'<div><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Weight (kg)</div>'
-          +'<input id="wt-'+p.id+'" type="number" placeholder="Enter weight" style="background:#162236;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e8f4fd;padding:8px 10px;font-size:13px;width:100%;font-family:inherit"></div>'
-          +'<div><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Notes</div>'
-          +'<input id="nt-'+p.id+'" placeholder="Optional notes" style="background:#162236;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e8f4fd;padding:8px 10px;font-size:13px;width:100%;font-family:inherit"></div>'
+          +'<div><div style="font-size:11px;color:#8ab0d0;margin-bottom:4px">Weight (kg)</div>'
+          +'<input id="wt-'+p.id+'" type="number" placeholder="Enter weight" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 10px;font-size:13px;width:100%;font-family:inherit"></div>'
+          +'<div><div style="font-size:11px;color:#8ab0d0;margin-bottom:4px">Notes</div>'
+          +'<input id="nt-'+p.id+'" placeholder="Optional notes" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 10px;font-size:13px;width:100%;font-family:inherit"></div>'
           +'</div>'
           +'<button id="cb'+p.id+'" data-bid="'+p.bin_id+'" style="width:100%;padding:10px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">Scan and Collect</button>'
       } else {
@@ -1434,12 +3271,12 @@ window.issueSlip = async function(pickupId, tripCode) {
 async function renderRM() {
   var ct = document.getElementById('ct');
   try {
-    var [records, vehicles, drivers] = await Promise.all([
+    var [records_r, vehicles_r, drivers_r] = await Promise.all([
       sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:30}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
       sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}),
     ]);
-    records = safeArr(records); vehicles = safeArr(vehicles); drivers = safeArr(drivers);
+    var records=safeArr(records_r),vehicles=safeArr(vehicles_r),drivers=safeArr(drivers_r);
 
     var rows = records.map(function(r){
       return [
@@ -1519,12 +3356,12 @@ window.saveRM = async function() {
 async function renderSchedule() {
   var ct = document.getElementById('ct');
   try {
-    var [scheds, vehicles, drivers] = await Promise.all([
+    var [scheds_r, vehicles_r, drivers_r] = await Promise.all([
       sbFetch('maintenance_schedule',{select:'*,vehicles(reg_no),drivers(full_name)',order:'scheduled_date'}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
       sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}),
     ]);
-    scheds = safeArr(scheds); vehicles = safeArr(vehicles); drivers = safeArr(drivers);
+    var scheds=safeArr(scheds_r),vehicles=safeArr(vehicles_r),drivers=safeArr(drivers_r);
 
     function daysTill(d){ return Math.ceil((new Date(d)-new Date())/864e5); }
     function schedColor(d){ var n=daysTill(d); return n<0?'#f44336':n<3?'#f44336':n<7?'#ff9800':'#00e676'; }
@@ -1535,7 +3372,7 @@ async function renderSchedule() {
       +sc('#00e676','Scheduled',scheds.filter(function(s){return s.status==='Scheduled';}).length,'')
       +'</div>';
 
-    html += '<div style="background:#0d1520;border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden">'
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;overflow:hidden">'
       +'<div class="ch"><span class="ct2">📅 Maintenance Schedule & Alerts</span>'
       +'<button class="btn btn-g btn-sm" onclick="newSchedule()">+ Schedule Service</button></div>'
       +'<div class="cb"><div style="display:flex;flex-direction:column;gap:8px">';
@@ -1550,13 +3387,13 @@ async function renderSchedule() {
       var dLabel = days<0?'OVERDUE '+Math.abs(days)+'d':days===0?'TODAY':days===1?'Tomorrow':'In '+days+' days';
       if(s.status==='Completed') { color='#5a7a9a'; dLabel='Completed'; }
       var entity = (s.vehicles&&s.vehicles.reg_no)||(s.drivers&&s.drivers.full_name)||s.entity_type;
-      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#111d2e;border-radius:8px;border:1px solid rgba(255,255,255,.05)">'
-        +'<div style="width:48px;height:48px;background:#162236;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">'
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1a2840;border-radius:8px;border:1px solid rgba(255,255,255,.05)">'
+        +'<div style="width:48px;height:48px;background:#1e3048;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">'
         +'<div style="font-size:9px;text-transform:uppercase;font-weight:600;color:#5a7a9a">'+new Date(s.scheduled_date).toLocaleDateString('en-IN',{month:'short'})+'</div>'
-        +'<div style="font-size:18px;font-weight:700;font-family:Consolas,monospace;color:#e8f4fd">'+new Date(s.scheduled_date).getDate()+'</div>'
+        +'<div style="font-size:18px;font-weight:700;font-family:Consolas,monospace;color:#e2eeff">'+new Date(s.scheduled_date).getDate()+'</div>'
         +'</div>'
         +'<div style="flex:1">'
-        +'<div style="font-size:12.5px;font-weight:600;color:#e8f4fd">'+s.service_type+'</div>'
+        +'<div style="font-size:12.5px;font-weight:600;color:#e2eeff">'+s.service_type+'</div>'
         +'<div style="font-size:11px;color:#5a7a9a">'+entity+' · 🔔 '+s.alert_channel+'</div>'
         +'<div style="font-size:11px;margin-top:2px;color:'+color+'">'+dLabel+' · Alert '+s.alert_days_before+'d before</div>'
         +(s.notes?'<div style="font-size:11px;color:#5a7a9a;margin-top:2px">'+s.notes+'</div>':'')
@@ -1632,12 +3469,13 @@ async function renderUsers() {
     data = safeArr(data);
     var rows = data.map(function(u){
       return [
-        '<strong style="color:#e8f4fd">'+u.full_name+'</strong>',
+        '<strong style="color:#e2eeff">'+u.full_name+'</strong>',
         u.email,
         u.phone||'-',
         '<span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:'+(u.role==='admin'?'rgba(244,67,54,.15)':u.role==='manager'?'rgba(33,150,243,.15)':u.role==='driver'?'rgba(0,230,118,.15)':'rgba(255,152,0,.15)')+';color:'+(u.role==='admin'?'#f44336':u.role==='manager'?'#2196f3':u.role==='driver'?'#00e676':'#ff9800')+'">'+u.role.toUpperCase()+'</span>',
         badge(u.is_active?'g':'gr',u.is_active?'Active':'Inactive'),
-        '<button class="btn btn-sm" id="eu'+u.id+'" style="cursor:pointer">Edit</button>'
+        (u.role==='driver'?'<button class="btn btn-sm" id="ld'+u.id+'" style="cursor:pointer;margin-right:4px">+Driver Profile</button>':'')
+        +'<button class="btn btn-sm" id="eu'+u.id+'" style="cursor:pointer">Edit</button>'
       ];
     });
     ct.innerHTML = '<div class="sg">'
@@ -1657,6 +3495,53 @@ async function renderUsers() {
       });
     }, 100);
 }
+
+window.linkDriverProfile = async function(userId) {
+  // Get the user details
+  var users = await sbFetch('user_roles',{select:'*',eq:{id:userId}});
+  var u = users[0]; if(!u) return;
+  
+  // Check if driver already exists with this mobile/email
+  var existing = await sbFetch('drivers',{select:'id,driver_code,full_name',eq:{mobile:u.phone||''}});
+  if(safeArr(existing).length > 0) {
+    alert('Driver profile already exists: '+existing[0].driver_code+' — '+existing[0].full_name);
+    return;
+  }
+  
+  // Pre-fill driver registration form with user data
+  window._linkUserId = userId;
+  var body = '<div class="fg">'
+    +'<div style="grid-column:1/-1;padding:10px;background:#0f1724;border-radius:8px;margin-bottom:4px;font-size:12px;color:#8ab0d0">Creating Driver Registry profile for: <strong style="color:#00e676">'+u.full_name+'</strong></div>'
+    +fld('Full Name','<input id="ld_name" value="'+u.full_name.replace(/"/g,"&quot;")+'">',true)
+    +fld('Mobile','<input id="ld_mobile" value="'+(u.phone||'')+'">',true)
+    +fld('DL Number',inp('ld_dl','DL-XXXXXXXXXXXXX'),true)
+    +fld('DL Expiry',inp('ld_dlexp','','date'),true)
+    +fld('Blood Group','<select id="ld_blood"><option value="">-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>')
+    +fld('Employment Type','<select id="ld_emp"><option>Permanent</option><option>Contract</option><option>Outsourced</option></select>')
+    +fld('Joining Date',inp('ld_join','','date'))
+    +fld('Police Verified','<select id="ld_police"><option value="false">Pending</option><option value="true">Verified</option></select>')
+    +'</div>';
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveLinkDriver()">Create Driver Profile</button>';
+  modal('👤 Create Driver Profile — '+u.full_name, body, foot);
+};
+
+window.saveLinkDriver = async function() {
+  var name=gv('ld_name'), mobile=gv('ld_mobile'), dl=gv('ld_dl'), dlexp=gv('ld_dlexp');
+  if(!name||!mobile||!dl||!dlexp){alert('Name, mobile, DL and expiry required.');return;}
+  try {
+    var code = await sbRpc('next_driver_code');
+    await sbInsert('drivers',{
+      driver_code:code, full_name:name, mobile:mobile,
+      blood_group:gv('ld_blood')||null, dl_no:dl, dl_expiry:dlexp,
+      employment_type:gv('ld_emp'), joining_date:gv('ld_join')||null,
+      police_verified:gv('ld_police')==='true', status:'Active'
+    });
+    closeModal();
+    success('Driver profile '+code+' created for '+name+'!');
+    renderUsers();
+  } catch(e) { alert('Error: '+e.message); }
+};
 
 window.newUser = function() {
   var body = '<div class="fg">'
@@ -1730,7 +3615,7 @@ async function renderReports() {
     var collectRate = mtdInv.length>0?Math.round(paidInv.length/mtdInv.length*100):0;
 
     var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-      +'<div style="font-size:16px;font-weight:700;color:#e8f4fd">📊 Monthly Reports — '+now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})+'</div>'
+      +'<div style="font-size:16px;font-weight:700;color:#e2eeff">📊 Monthly Reports — '+now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})+'</div>'
       +'<button class="btn btn-g btn-sm" onclick="printReport()">🖨️ Print Report</button>'
       +'</div>';
 
@@ -1796,34 +3681,35 @@ function initERP() {
   document.body.innerHTML = '';
   document.body.style.cssText = '';
   document.body.style.margin = '0';
-  document.body.innerHTML = '<div id="app" style="display:flex;height:100vh;overflow:hidden;background:#060a0f;color:#e8f4fd;font-family:Segoe UI,Arial,sans-serif;font-size:13px">'
-    +'<div id="sb" style="width:232px;min-width:232px;background:#0d1520;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0">'
-    +'<div style="padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07)">'
+  document.body.innerHTML = '<div id="app" style="display:flex;height:100vh;width:100vw;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px;position:fixed;top:0;left:0">'
+    +'<div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0">'
+    +'<div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)">'
     +'<div style="font-size:22px;margin-bottom:4px">♻️</div>'
     +'<div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
     +'<div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div>'
     +'</div>'
     +'<div style="flex:1;padding:6px 0" id="nav"></div>'
-    +'<div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.07)">'
+    +'<div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)">'
     +'<div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'
     +'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'
     +(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div>'
-    +'<button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:#1c2d42;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button>'
+    +'<button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#243858;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button>'
     +'</div></div>'
     +'<div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">'
-    +'<div id="tb" style="background:#0d1520;border-bottom:1px solid rgba(255,255,255,.07);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
-    +'<div><div style="font-size:14px;font-weight:600;color:#e8f4fd" id="ptitle">Operations Dashboard</div>'
+    +'<div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    +'<div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div>'
     +'<div style="font-size:11px;color:#5a7a9a">EcoLoop Waste-to-Energy ERP · Live</div></div>'
     +'<div style="display:flex;align-items:center;gap:10px">'
-    +'<div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#162236;border-radius:20px">🟢 All Systems Online</div>'
+    +'<div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#1e3048;border-radius:20px">🟢 All Systems Online</div>'
     +'<button class="btn btn-g btn-sm" onclick="goTrips()">+ New Trip</button>'
     +'</div></div>'
-    +'<div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#060a0f"></div>'
+    +'<div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div>'
     +'</div></div>'
     +'<div id="modal-container"></div>';
 
   buildNav();
   go('dashboard');
+  setTimeout(wireButtons, 200);
 }
 
 // ── OVERRIDE go() TO ADD NEW MODULES ─────────────────────
@@ -1835,7 +3721,8 @@ go = function(page) {
     if(ct) ct.innerHTML='<div class="alert al-r">Access denied. Your role does not have permission for this module.</div>';
     return;
   }
-  var newPages = {rm:renderRM, schedule:renderSchedule, users:renderUsers, reports:renderReports};
+  setTimeout(wireButtons, 200);
+  var newPages = {rm:renderRM, schedule:renderSchedule, users:renderUsers, reports:renderReports, staff:renderStaff, roles:renderRoles, 'gen-requests':renderGenRequests, checklist:renderChecklist, payments:renderPayments, autoplanner:renderAutoPlanner, smarttrip:renderSmartTripPlanner, sites:renderSites};
   if(newPages[page]){
     CUR=page;
     document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
@@ -1847,19 +3734,24 @@ go = function(page) {
     newPages[page]();
   } else {
     _origGo(page);
+    setTimeout(wireButtons, 200);
   }
 };
 
 // ── START ─────────────────────────────────────────────────
-// Check if already logged in
-var savedUser = null;
-try { savedUser = JSON.parse(localStorage.getItem('ecoloop_user')); } catch(e){}
-if(savedUser) {
-  CURRENT_USER = savedUser;
-  if(savedUser.role==='driver') showDriverApp();
-  else initERP();
-} else {
-  showLogin();
+// Check for public registration URL first
+if(!checkPublicRegistration()) {
+  // Check if already logged in
+  var savedUser = null;
+  try { savedUser = JSON.parse(localStorage.getItem('ecoloop_user')); } catch(e){}
+  if(savedUser) {
+    CURRENT_USER = savedUser;
+    if(savedUser.role==='driver') showDriverApp();
+    else if(savedUser.role==='generator') showGeneratorPortal();
+    else initERP();
+  } else {
+    showLogin();
+  }
 }
 
 </script>
