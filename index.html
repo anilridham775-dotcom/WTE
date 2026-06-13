@@ -1623,6 +1623,408 @@ window.saveSmartTrip = async function() {
   } catch(e){alert('Error: '+e.message);}
 };
 
+
+// ── QR CODE GENERATOR & ATTENDANCE SYSTEM ─────────────────
+
+// Generate QR code as SVG (simple QR-like visual with encoded data)
+function generateQRSVG(text, size) {
+  size = size || 200;
+  // Create a simple visual QR placeholder with the code text
+  // In production this would use a QR library
+  var hash = 0;
+  for(var i=0;i<text.length;i++) hash = ((hash<<5)-hash)+text.charCodeAt(i);
+  hash = Math.abs(hash);
+  
+  var cells = 21;
+  var cell = Math.floor(size/cells);
+  var svg = '<svg width="'+size+'" height="'+size+'" xmlns="http://www.w3.org/2000/svg" style="background:#fff">';
+  
+  // Border
+  svg += '<rect x="0" y="0" width="'+size+'" height="'+size+'" fill="#fff"/>';
+  svg += '<rect x="2" y="2" width="'+(size-4)+'" height="'+(size-4)+'" fill="none" stroke="#000" stroke-width="2"/>';
+  
+  // Position detection patterns (corners)
+  var corners = [[1,1],[1,cells-8],[cells-8,1]];
+  corners.forEach(function(c) {
+    var x=c[0]*cell, y=c[1]*cell;
+    svg += '<rect x="'+x+'" y="'+y+'" width="'+(7*cell)+'" height="'+(7*cell)+'" fill="#000"/>';
+    svg += '<rect x="'+(x+cell)+'" y="'+(y+cell)+'" width="'+(5*cell)+'" height="'+(5*cell)+'" fill="#fff"/>';
+    svg += '<rect x="'+(x+2*cell)+'" y="'+(y+2*cell)+'" width="'+(3*cell)+'" height="'+(3*cell)+'" fill="#000"/>';
+  });
+  
+  // Data pattern based on hash
+  for(var r=0;r<cells;r++) {
+    for(var c2=0;c2<cells;c2++) {
+      if((r<9&&c2<9)||(r<9&&c2>cells-9)||(r>cells-9&&c2<9)) continue;
+      var bit = (hash >> ((r*cells+c2)%32)) & 1;
+      var extra = (text.charCodeAt((r+c2)%text.length)>>((r*c2)%8))&1;
+      if((bit^extra)==1) {
+        svg += '<rect x="'+(c2*cell)+'" y="'+(r*cell)+'" width="'+cell+'" height="'+cell+'" fill="#000"/>';
+      }
+    }
+  }
+  
+  // Center text
+  svg += '<rect x="'+(size/2-30)+'" y="'+(size/2-10)+'" width="60" height="20" fill="#fff"/>';
+  svg += '<text x="'+(size/2)+'" y="'+(size/2+5)+'" text-anchor="middle" font-size="9" font-family="Consolas,monospace" fill="#000">'+text+'</text>';
+  svg += '</svg>';
+  return svg;
+}
+
+// ── QR LOCATIONS MODULE ───────────────────────────────────
+async function renderQRLocations() {
+  var ct = document.getElementById('ct');
+  try {
+    var [locations, vehicles] = await Promise.all([
+      sbFetch('qr_locations',{select:'*',order:'location_type,location_name'}),
+      sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
+    ]);
+    locations = safeArr(locations);
+    vehicles = safeArr(vehicles);
+
+    var html = '<div class="sg">'
+      +sc('#2196f3','Total QR Codes',locations.length,'Registered')
+      +sc('#00e676','Active',locations.filter(function(l){return l.is_active;}).length,'')
+      +sc('#ff9800','Yard/Parking',locations.filter(function(l){return l.location_type==='Yard'||l.location_type==='Parking';}).length,'')
+      +sc('#9c27b0','Vehicles',locations.filter(function(l){return l.location_type==='Vehicle';}).length,'')
+      +'</div>';
+
+    html += '<div class="card"><div class="ch"><span class="ct2">📱 QR Code Locations</span>'
+      +'<button class="btn btn-g btn-sm" onclick="newQRLocation()">+ Add QR Location</button></div>'
+      +'<div class="cb"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">';
+
+    locations.forEach(function(loc) {
+      var typeColor = loc.location_type==='Yard'?'#2196f3':loc.location_type==='Parking'?'#ff9800':loc.location_type==='Vehicle'?'#9c27b0':loc.location_type==='Office'?'#00e676':'#f44336';
+      var typeIcon = loc.location_type==='Yard'?'🏗️':loc.location_type==='Parking'?'🅿️':loc.location_type==='Vehicle'?'🚛':loc.location_type==='Office'?'🏢':'🏭';
+
+      html += '<div style="background:#0f1724;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px">'
+        +'<div style="font-size:11px;font-weight:700;color:'+typeColor+'">'+typeIcon+' '+loc.location_type+'</div>'
+        +generateQRSVG(loc.qr_code, 140)
+        +'<div style="text-align:center">'
+        +'<div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">'+loc.qr_code+'</div>'
+        +'<div style="font-size:12px;color:#e2eeff;font-weight:600;margin-top:2px">'+loc.location_name+'</div>'
+        +(loc.latitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+loc.latitude+','+loc.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 View on Maps</a></div>':'<div style="font-size:10px;color:#5a7a9a;margin-top:4px">No GPS set</div>')
+        +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">Radius: '+loc.radius_meters+'m</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:6px">'
+        +'<button class="btn btn-sm" id="pq'+loc.id+'">Print</button>'
+        +'<button class="btn btn-sm" id="eql'+loc.id+'">Edit</button>'
+        +'</div></div>';
+    });
+
+    html += '</div></div></div>';
+    ct.innerHTML = html;
+    setTimeout(function(){
+      document.querySelectorAll('[id^="eql"]').forEach(function(b){
+        var id=b.id.slice(3); b.onclick=function(){editQRLocation(id);};
+      });
+    },150);
+    window._qrVehicles = vehicles;
+  } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.printQR = function(code, name) {
+  var svg = generateQRSVG(code, 250);
+  var win = window.open('','_blank');
+  win.document.write('<html><body style="display:flex;flex-direction:column;align-items:center;padding:30px;font-family:Arial">'
+    +'<h2 style="margin-bottom:4px">EcoLoop Pro</h2>'
+    +'<p style="color:#666;margin-bottom:16px">Attendance QR Code</p>'
+    +svg
+    +'<h3 style="margin-top:12px;font-family:Consolas">'+code+'</h3>'
+    +'<p style="font-size:16px;font-weight:bold">'+name+'</p>'
+    +'<p style="color:#999;font-size:12px">Scan to mark attendance</p>'
+    +'<script>window.print();<\/script>'
+    +'</body></html>');
+};
+
+window.newQRLocation = function() {
+  var vOpts = (window._qrVehicles||[]).map(function(v){return '<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
+  var body = '<div class="fg">'
+    +fld('Location Name',inp('ql_name','e.g. Main Yard Entry Gate'),true)
+    +fld('Location Type','<select id="ql_type"><option>Yard</option><option>Parking</option><option>Office</option><option>Vehicle</option><option>Generator</option></select>',true)
+    +fld('Radius (meters)',inp('ql_radius','50','number'))
+    +'<div class="full"><div class="fl">Vehicle (if type is Vehicle)</div><select id="ql_veh"><option value="">— Not a vehicle QR —</option>'+vOpts+'</select></div>'
+    +'<div class="sec">GPS Location</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Location GPS</span><button type="button" onclick="detectQRLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Auto-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="ql_lat" placeholder="Latitude"><input id="ql_lng" placeholder="Longitude"></div>'
+    +'<div id="qr-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div>'
+    +'<div id="qr-maps-link" style="margin-top:4px"></div></div>'
+    +'</div>';
+  modal('📱 Add QR Location',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveQRLocation()">Generate QR Code</button>');
+};
+
+window.detectQRLocation = function() {
+  var status=document.getElementById('qr-loc-status');
+  var mapsEl=document.getElementById('qr-maps-link');
+  if(status) status.textContent='Detecting...';
+  if(!navigator.geolocation){if(status)status.textContent='GPS not supported';return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+      var le=document.getElementById('ql_lat');var lne=document.getElementById('ql_lng');
+      if(le)le.value=lat;if(lne)lne.value=lng;
+      if(status)status.innerHTML='✅ Detected! ±'+Math.round(pos.coords.accuracy)+'m';
+      if(mapsEl)mapsEl.innerHTML='<a href="https://www.google.com/maps?q='+lat+','+lng+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Verify on Maps →</a>';
+    },
+    function(e){if(status)status.textContent='Error: '+(e.code===1?'Permission denied':'Failed');},
+    {enableHighAccuracy:true,timeout:10000}
+  );
+};
+
+window.saveQRLocation = async function() {
+  var name=gv('ql_name'),type=gv('ql_type');
+  if(!name||!type){alert('Name and type required.');return;}
+  try {
+    var code = await sbRpc('next_qr_code');
+    await sbInsert('qr_locations',{
+      qr_code:code, location_name:name, location_type:type,
+      radius_meters:parseInt(gv('ql_radius'))||50,
+      vehicle_id:gv('ql_veh')||null,
+      latitude:gv('ql_lat')?parseFloat(gv('ql_lat')):null,
+      longitude:gv('ql_lng')?parseFloat(gv('ql_lng')):null,
+      is_active:true
+    });
+    closeModal();
+    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='QR Code '+code+' created!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
+    renderQRLocations();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+window.editQRLocation = async function(id) {
+  var data = await sbFetch('qr_locations',{select:'*',eq:{id:id}});
+  var loc = data[0]; if(!loc) return;
+  var body = '<div class="fg">'
+    +fld('Location Name','<input id="ql_name" value="'+loc.location_name.replace(/"/g,'&quot;')+'">',true)
+    +fld('Radius (meters)','<input id="ql_radius" type="number" value="'+(loc.radius_meters||50)+'">')
+    +'<div class="sec">GPS</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Location GPS</span><button type="button" onclick="detectQRLocation()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">🎯 Re-Detect</button></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="ql_lat" placeholder="Latitude" value="'+(loc.latitude||'')+'"><input id="ql_lng" placeholder="Longitude" value="'+(loc.longitude||'')+'"></div>'
+    +(loc.latitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+loc.latitude+','+loc.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Current location →</a></div>':'<div id="qr-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div><div id="qr-maps-link"></div>')
+    +'</div>'
+    +fld('Status','<select id="ql_active"><option value="true">Active</option><option value="false">Inactive</option></select>')
+    +'</div>';
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" id="sqrl">Save Changes</button>';
+  modal('Edit QR — '+loc.qr_code,body,foot);
+  setTimeout(function(){
+    document.getElementById('ql_active').value=String(loc.is_active);
+    var sb=document.getElementById('sqrl');if(sb){var lid=id;sb.onclick=function(){saveQREdit(lid);};}
+  },50);
+};
+
+window.saveQREdit = async function(id) {
+  try {
+    await sbUpdate('qr_locations',{
+      location_name:gv('ql_name'),
+      radius_meters:parseInt(gv('ql_radius'))||50,
+      latitude:gv('ql_lat')?parseFloat(gv('ql_lat')):null,
+      longitude:gv('ql_lng')?parseFloat(gv('ql_lng')):null,
+      is_active:gv('ql_active')==='true'
+    },{id:id});
+    closeModal();
+    renderQRLocations();
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── ATTENDANCE MODULE ─────────────────────────────────────
+async function renderAttendance() {
+  var ct = document.getElementById('ct');
+  try {
+    var today = new Date().toISOString().split('T')[0];
+    var records = await sbFetch('attendance',{select:'*,qr_locations(location_name,location_type)',order:'punch_time.desc',limit:50});
+    records = safeArr(records);
+    var todayRecs = records.filter(function(r){return r.punch_time&&r.punch_time.startsWith(today);});
+
+    var html = '<div class="sg">'
+      +sc('#00e676','Present Today',todayRecs.filter(function(r){return r.punch_type==='IN';}).length,'Punched IN')
+      +sc('#ff9800','Punched Out',todayRecs.filter(function(r){return r.punch_type==='OUT';}).length,'')
+      +sc('#2196f3','Total Records',records.length,'All time')
+      +'</div>';
+
+    html += '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px;margin-bottom:14px">'
+      +'<div style="font-size:13px;font-weight:600;color:#e2eeff;margin-bottom:12px">📷 Quick Attendance Punch</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<button id="sqin" style="padding:14px;border-radius:10px;background:rgba(0,230,118,.15);color:#00e676;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;border:2px solid rgba(0,230,118,.3)">Scan QR Punch IN</button>'
+      +'<button id="sqout" style="padding:14px;border-radius:10px;background:rgba(244,67,54,.1);color:#f44336;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;border:2px solid rgba(244,67,54,.2)">Scan QR Punch OUT</button>'
+      +'</div>'
+      +'<div id="scan-result" style="margin-top:12px"></div>'
+      +'</div>';
+
+    var rows = records.slice(0,20).map(function(r){
+      var loc = r.qr_locations||{};
+      var time = r.punch_time ? new Date(r.punch_time).toLocaleString('en-IN') : '-';
+      return [
+        r.user_role_id||r.staff_id||'Unknown',
+        badge(r.punch_type==='IN'?'g':'r', r.punch_type),
+        loc.location_name||'-',
+        time,
+        badge(r.gps_verified?'g':'a', r.gps_verified?'GPS OK':'Not verified'),
+        r.distance_from_qr?r.distance_from_qr+'m':'-'
+      ];
+    });
+
+    html += card('📋 Attendance Records','',
+      tbl(['Staff','Type','Location','Time','GPS','Distance'],rows),true);
+    ct.innerHTML = html;
+  } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
+}
+
+window.startQRScan = function(punchType) {
+  var result = document.getElementById('scan-result');
+  if(result) result.innerHTML = '<div style="padding:12px;background:#0f1724;border-radius:8px;font-size:12px">Enter QR Code:<br><div style="display:flex;gap:8px;margin-top:8px"><input id="qri" placeholder="QR-0001" style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:6px;color:#e2eeff;padding:8px;font-family:Consolas,monospace;flex:1"><button id="qrsb" style="padding:8px 14px;border-radius:6px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer">Submit</button></div></div>';
+  var _ptp=punchType;setTimeout(function(){var ei=document.getElementById('qri');if(ei)ei.focus();var bs=document.getElementById('qrsb');if(bs)bs.onclick=function(){processQRPunch(_ptp);};},50);
+};
+
+window.processQRPunch = async function(punchType) {
+  var qrCode = gv('qr-input').trim().toUpperCase();
+  if(!qrCode){alert('Please enter QR code.');return;}
+  
+  try {
+    // Find QR location
+    var locs = await sbFetch('qr_locations',{select:'*',eq:{qr_code:qrCode,is_active:'true'}});
+    var loc = safeArr(locs)[0];
+    if(!loc){
+      document.getElementById('scan-result').innerHTML = '<div style="color:#f44336;padding:10px;background:rgba(244,67,54,.08);border-radius:8px">❌ Invalid QR code: '+qrCode+'</div>';
+      return;
+    }
+
+    // Get current GPS
+    var lat=null, lng=null, gpsVerified=false, distance=null;
+    if(navigator.geolocation) {
+      await new Promise(function(resolve){
+        navigator.geolocation.getCurrentPosition(
+          function(pos){
+            lat=pos.coords.latitude; lng=pos.coords.longitude;
+            // Check if within radius
+            if(loc.latitude&&loc.longitude) {
+              var R=6371000;
+              var dLat=(loc.latitude-lat)*Math.PI/180;
+              var dLon=(loc.longitude-lng)*Math.PI/180;
+              var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat*Math.PI/180)*Math.cos(loc.latitude*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+              distance=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+              gpsVerified=distance<=(loc.radius_meters||50);
+            } else {
+              gpsVerified=true; // No GPS set on location, trust the QR
+            }
+            resolve();
+          },
+          function(){resolve();},
+          {enableHighAccuracy:true,timeout:5000}
+        );
+      });
+    }
+
+    // Record attendance
+    await sbInsert('attendance',{
+      user_role_id:CURRENT_USER?CURRENT_USER.id:null,
+      qr_location_id:loc.id,
+      punch_type:punchType,
+      punch_time:new Date().toISOString(),
+      latitude:lat, longitude:lng,
+      gps_verified:gpsVerified,
+      distance_from_qr:distance
+    });
+
+    var msg = punchType==='IN'
+      ? '<div style="background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;margin-bottom:6px">✅</div><div style="font-size:14px;font-weight:700;color:#00e676">Punched IN Successfully!</div><div style="font-size:12px;color:#8ab0d0;margin-top:4px">Location: '+loc.location_name+'</div><div style="font-size:12px;color:#8ab0d0">Time: '+new Date().toLocaleTimeString('en-IN')+'</div>'+(gpsVerified?'<div style="font-size:11px;color:#00e676;margin-top:4px">📍 GPS Verified ('+distance+'m from location)</div>':'<div style="font-size:11px;color:#ff9800;margin-top:4px">⚠️ GPS not verified</div>')+'</div>'
+      : '<div style="background:rgba(244,67,54,.08);border:1px solid rgba(244,67,54,.2);border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;margin-bottom:6px">👋</div><div style="font-size:14px;font-weight:700;color:#f44336">Punched OUT</div><div style="font-size:12px;color:#8ab0d0;margin-top:4px">Location: '+loc.location_name+'</div><div style="font-size:12px;color:#8ab0d0">Time: '+new Date().toLocaleTimeString('en-IN')+'</div></div>';
+
+    document.getElementById('scan-result').innerHTML = msg;
+    setTimeout(renderAttendance, 2000);
+  } catch(e){alert('Error: '+e.message);}
+};
+
+// ── UPDATE DRIVER APP WITH ATTENDANCE + HELPER ────────────
+// Add attendance punch to driver home
+var _origRenderDriverHome = renderDriverHome;
+renderDriverHome = async function() {
+  await _origRenderDriverHome();
+  // Add attendance section at top
+  var dc = document.getElementById('driver-content');
+  if(!dc) return;
+  
+  // Check today's punch status
+  var today = new Date().toISOString().split('T')[0];
+  var att = await sbFetch('attendance',{select:'*',eq:{user_role_id:CURRENT_USER?CURRENT_USER.id:null},order:'punch_time.desc',limit:2});
+  att = safeArr(att);
+  var todayAtt = att.filter(function(a){return a.punch_time&&a.punch_time.startsWith(today);});
+  var lastPunch = todayAtt[0];
+  var isPunchedIn = lastPunch&&lastPunch.punch_type==='IN';
+
+  var attHtml = '<div style="background:'+(isPunchedIn?'rgba(0,230,118,.08)':'rgba(255,152,0,.08)')+';border:1px solid '+(isPunchedIn?'rgba(0,230,118,.2)':'rgba(255,152,0,.2)')+';border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center">'
+    +'<div><div style="font-size:12px;font-weight:700;color:'+(isPunchedIn?'#00e676':'#ff9800')+'">'+(isPunchedIn?'✅ Punched IN':'⚠️ Not Punched In')+'</div>'
+    +(lastPunch?'<div style="font-size:10px;color:#8ab0d0">'+new Date(lastPunch.punch_time).toLocaleTimeString('en-IN')+'</div>':'<div style="font-size:10px;color:#8ab0d0">Scan QR to punch attendance</div>')
+    +'</div>'
+    +'<button onclick="showDriverAttendance()" style="padding:8px 14px;border-radius:8px;border:1px solid rgba(100,160,255,.2);background:#1e3048;color:#e2eeff;cursor:pointer;font-size:12px;font-family:inherit">📷 Attendance</button>'
+    +'</div>';
+
+  dc.insertAdjacentHTML('afterbegin', attHtml);
+};
+
+window.showDriverAttendance = function() {
+  var body = '<div style="text-align:center;padding:10px">'
+    +'<div style="font-size:13px;color:#8ab0d0;margin-bottom:16px">Enter the QR code displayed at your location</div>'
+    +'<input id="drv-qr" placeholder="e.g. QR-0001" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:12px;font-family:Consolas,monospace;font-size:16px;width:100%;text-align:center;margin-bottom:12px">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<button id="dqin" style="padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch IN</button>'
+    +'<button id="dqout" style="padding:14px;border-radius:10px;border:none;background:#f44336;color:#fff;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch OUT</button>'
+    +'</div>'
+    +'<div id="drv-att-result" style="margin-top:12px"></div>'
+    +'</div>';
+  modal('📷 Attendance Punch',body,'<button class="btn btn-sm" onclick="closeModal()">Close</button>');
+  setTimeout(function(){var di=document.getElementById('dqin');var dout=document.getElementById('dqout');if(di)di.onclick=function(){driverQRPunch('IN');};if(dout)dout.onclick=function(){driverQRPunch('OUT');};var el=document.getElementById('drv-qr');if(el)el.focus();},100);
+};
+
+window.driverQRPunch = async function(punchType) {
+  var qrCode = gv('drv-qr').trim().toUpperCase();
+  if(!qrCode){alert('Please enter QR code.');return;}
+  
+  try {
+    var locs = await sbFetch('qr_locations',{select:'*',eq:{qr_code:qrCode,is_active:'true'}});
+    var loc = safeArr(locs)[0];
+    if(!loc){
+      document.getElementById('drv-att-result').innerHTML='<div style="color:#f44336;font-size:13px;padding:8px">Invalid QR code</div>';
+      return;
+    }
+
+    var lat=null,lng=null,gpsVerified=false,distance=null;
+    if(navigator.geolocation&&DRIVER_LOCATION){
+      lat=DRIVER_LOCATION.lat; lng=DRIVER_LOCATION.lng;
+      if(loc.latitude&&loc.longitude){
+        var R=6371000;
+        var dLat=(loc.latitude-lat)*Math.PI/180;
+        var dLon=(loc.longitude-lng)*Math.PI/180;
+        var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat*Math.PI/180)*Math.cos(loc.latitude*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+        distance=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+        gpsVerified=distance<=(loc.radius_meters||100);
+      } else { gpsVerified=true; }
+    }
+
+    await sbInsert('attendance',{
+      user_role_id:CURRENT_USER?CURRENT_USER.id:null,
+      qr_location_id:loc.id,
+      punch_type:punchType,
+      punch_time:new Date().toISOString(),
+      latitude:lat,longitude:lng,
+      gps_verified:gpsVerified,
+      distance_from_qr:distance
+    });
+
+    var resEl = document.getElementById('drv-att-result');
+    if(resEl) resEl.innerHTML = '<div style="text-align:center;padding:10px">'
+      +'<div style="font-size:36px;margin-bottom:6px">'+(punchType==='IN'?'✅':'👋')+'</div>'
+      +'<div style="font-size:15px;font-weight:700;color:'+(punchType==='IN'?'#00e676':'#f44336')+'">'+(punchType==='IN'?'Punched IN!':'Punched OUT!')+'</div>'
+      +'<div style="font-size:12px;color:#8ab0d0;margin-top:4px">'+loc.location_name+'</div>'
+      +'<div style="font-size:12px;color:#8ab0d0">'+new Date().toLocaleTimeString('en-IN')+'</div>'
+      +(gpsVerified?'<div style="font-size:11px;color:#00e676;margin-top:4px">📍 GPS Verified</div>':'<div style="font-size:11px;color:#ff9800;margin-top:4px">⚠️ GPS not verified</div>')
+      +'</div>';
+    
+    setTimeout(function(){closeModal();renderDriverHome();},2000);
+  } catch(e){alert('Error: '+e.message);}
+};
+
 // ── GLOBAL EVENT DELEGATION ──────────────────────────────
 function wireButtons(){
   // Generator edit
@@ -1718,12 +2120,13 @@ var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
   {s:'Compliance',items:[{id:'inspection',l:'Yard Inspection',i:'🔍'},{id:'boiler',l:'Boiler & Steam',i:'🔥'}]},
+  {s:'Attendance & Tracking',items:[{id:'qrlocations',l:'QR Locations',i:'📱'},{id:'attendance',l:'Attendance',i:'👆'}]},
   {s:'Fleet Management',items:[{id:'vehicles',l:'Vehicle Registry',i:'🚛'},{id:'checklist',l:'Pre-Trip Checklist',i:'✅'},{id:'drivers',l:'Driver Registry',i:'👤'},{id:'cleaning',l:'Vehicle Cleaning',i:'🧹'},{id:'pm',l:'Preventive Maint.',i:'🔧'},{id:'rm',l:'Reactive Maint.',i:'⚡'},{id:'schedule',l:'Maint. Schedule',i:'📅'},{id:'fuel',l:'Fuel Management',i:'⛽'},{id:'tyres',l:'Tyre Management',i:'⭕'}]},
   {s:'Infrastructure',items:[{id:'sites',l:'Processing Sites',i:'🏭'},{id:'boiler',l:'Boiler & Steam',i:'🔥'}]},
   {s:'Admin',items:[{id:'staff',l:'Staff Master',i:'👥'},{id:'roles',l:'Role Permissions',i:'🔐'},{id:'reports',l:'Reports & Export',i:'📊'},{id:'users',l:'User Management',i:'👤'}]},
 ];
 
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests','autoplanner':'Auto Trip Planner','smarttrip':'Smart Trip Planner','sites':'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests','autoplanner':'Auto Trip Planner','smarttrip':'Smart Trip Planner','sites':'Processing Sites','qrlocations':'QR Code Locations','attendance':'Attendance Records',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management'};
 
 function fc(p){return p>=80?'#f44336':p>=60?'#ff9800':'#00e676';}
 function badge(c,t){return '<span class="badge b'+c+'">'+t+'</span>';}
@@ -2828,8 +3231,8 @@ function doLogout() {
 
 // ── ROLE-BASED ACCESS ─────────────────────────────────────
 var ROLE_ACCESS = {
-  admin:     ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','staff','roles','reports','users'],
-  manager:   ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','reports'],
+  admin:     ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users'],
+  manager:   ['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports'],
   inspector: ['dashboard','inspection','trips','billing','bins','fillalerts','boiler'],
   driver:    [],
   generator: ['dashboard','bins','fillalerts'],
@@ -2884,11 +3287,20 @@ async function showDriverApp() {
   var drvData = await sbFetch('drivers',{select:'*',eq:{mobile:user.phone||''}});
   DRIVER_RECORD = safeArr(drvData)[0]||null;
 
-  // Check if today checklist done
+  // Check if today checklist done - first check localStorage (fast)
   var today = new Date().toISOString().split('T')[0];
+  var savedCheckDate = localStorage.getItem('checklist_date');
+  if(savedCheckDate === today) {
+    CHECKLIST_DONE_TODAY = true;
+    renderDriverHome();
+    return;
+  }
+  // Then check database
   var todayCheck = await sbFetch('vehicle_checklist',{select:'id,vehicle_ready',eq:{check_date:today},limit:1});
   CHECKLIST_DONE_TODAY = safeArr(todayCheck).some(function(c){return c.vehicle_ready;});
-
+  if(CHECKLIST_DONE_TODAY) {
+    localStorage.setItem('checklist_date', today);
+  }
   if(!CHECKLIST_DONE_TODAY) {
     showMandatoryChecklist();
   } else {
@@ -2930,8 +3342,8 @@ function showMandatoryChecklist() {
     +'<div style="padding:12px 14px;border-bottom:1px solid rgba(100,160,255,.1);font-size:13px;font-weight:600">360 Degree Vehicle Inspection</div>'
     +'<div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">';
   checks.forEach(function(c){
-    html+='<label id="lbl-'+c.id+'" data-cid="'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.08);cursor:pointer" onclick="toggleCheck(this.dataset.cid)">';
-      +'<div id="chk-'+c.id+'" style="width:24px;height:24px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>'
+    html+='<label id="lbl-'+c.id+'" data-cid="'+c.id+'" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;border:2px solid rgba(100,160,255,.08);cursor:pointer;transition:all .15s;margin-bottom:2px;-webkit-tap-highlight-color:transparent" onclick="toggleCheck(this.dataset.cid)">';
+      +'<div id="chk-'+c.id+'" style="width:36px;height:36px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .15s"></div>'
       +'<div><div style="font-size:13px;color:#e2eeff">'+c.icon+' '+c.label+'</div>'
       +(c.critical?'<div style="font-size:10px;color:#ff9800">Required</div>':'<div style="font-size:10px;color:#5a7a9a">Optional</div>')
       +'</div></label>';
@@ -2999,6 +3411,8 @@ window.submitDriverChecklist=async function(){
     defs.forEach(function(c){if(c.id!=='cleaning_ok') checkData[c.id]=state[c.id]||false;});
     await sbInsert('vehicle_checklist',checkData);
     CHECKLIST_DONE_TODAY=true;
+    // Store in localStorage so it persists through page actions
+    localStorage.setItem('checklist_date', today);
     var dc=document.getElementById('driver-content');
     dc.innerHTML='<div style="text-align:center;padding:40px">'
       +'<div style="font-size:60px;margin-bottom:12px">✅</div>'
@@ -3176,8 +3590,19 @@ window.startTrip = async function(id) {
 
 window.completeTrip = async function(id) {
   if(!confirm('Mark this trip as Complete?')) return;
-  await sbUpdate('trips',{status:'Completed'},{id:id});
-  renderDriverHome();
+  try {
+    await sbUpdate('trips',{status:'Completed',actual_end_time:new Date().toISOString()},{id:id});
+    // Show success then refresh home - no checklist re-check
+    var dc = document.getElementById('driver-content');
+    if(dc) {
+      dc.innerHTML = '<div style="text-align:center;padding:30px">'
+        +'<div style="font-size:50px;margin-bottom:12px">✅</div>'
+        +'<div style="font-size:16px;font-weight:700;color:#00e676">Trip Completed!</div>'
+        +'<div style="font-size:12px;color:#8ab0d0;margin-top:6px">Loading your trips...</div>'
+        +'</div>';
+    }
+    setTimeout(renderDriverHome, 1500);
+  } catch(e) { alert('Error: '+e.message); }
 };
 
 window.openTripCollect = async function(tripId, tripCode) {
@@ -3722,7 +4147,7 @@ go = function(page) {
     return;
   }
   setTimeout(wireButtons, 200);
-  var newPages = {rm:renderRM, schedule:renderSchedule, users:renderUsers, reports:renderReports, staff:renderStaff, roles:renderRoles, 'gen-requests':renderGenRequests, checklist:renderChecklist, payments:renderPayments, autoplanner:renderAutoPlanner, smarttrip:renderSmartTripPlanner, sites:renderSites};
+  var newPages = {rm:renderRM, schedule:renderSchedule, users:renderUsers, reports:renderReports, staff:renderStaff, roles:renderRoles, 'gen-requests':renderGenRequests, checklist:renderChecklist, payments:renderPayments, autoplanner:renderAutoPlanner, smarttrip:renderSmartTripPlanner, sites:renderSites, qrlocations:renderQRLocations, attendance:renderAttendance};
   if(newPages[page]){
     CUR=page;
     document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
