@@ -3857,20 +3857,127 @@ window.toggleSchedEntity = function(val) {
 window.newSchedule = function() {
   var d = window._schedData||{vehicles:[],drivers:[]};
   var vOpts = d.vehicles.map(function(v){return '<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  var dOpts = d.drivers.map(function(dr){return '<option value="'+dr.id+'">'+dr.full_name+'</option>';}).join('');
-  var body = '<div class="fg">'
-    +fld('Entity Type','<select id="sch_type" onchange="toggleSchedEntity(this.value)"><option value="vehicle">Vehicle</option><option value="driver">Driver</option></select>')
-    +'<div id="sch_vg"><div class="fl">Vehicle</div><select id="sch_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'
-    +'<div id="sch_dg" style="display:none"><div class="fl">Driver</div><select id="sch_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'
-    +fld('Service Type','<select id="sch_svc"><option>Weekly Cleaning</option><option>Engine Oil Change</option><option>Full PM Service A</option><option>Full PM Service B</option><option>Tyre Rotation</option><option>Brake Inspection</option><option>Annual Fitness Test</option><option>DL Renewal Alert</option><option>Medical Cert Renewal</option><option>Insurance Renewal</option><option>PUC Renewal</option></select>',true)
-    +fld('Scheduled Date','<input id="sch_date" type="date">',true)
-    +fld('Alert Before (days)','<select id="sch_days"><option>1</option><option>2</option><option value="3" selected>3</option><option>7</option><option>14</option><option>30</option></select>')
-    +fld('Alert Channel','<select id="sch_ch"><option>WhatsApp+SMS</option><option>SMS only</option><option>Email+SMS</option><option>All Channels</option></select>')
-    +'<div class="full">'+fld('Notes','<input id="sch_notes" placeholder="Instructions, parts to arrange...">')+'</div>'
+  var dOpts = d.drivers.map(function(dr){return '<option value="'+dr.id+'" data-type="driver">'+dr.full_name+' (Driver)</option>';}).join('');
+
+  var services = [
+    'Weekly Cleaning','Engine Oil Change','Oil Filter Change',
+    'Air Filter Change','Fuel Filter Change','Full PM Service A',
+    'Full PM Service B','Tyre Rotation','Brake Inspection',
+    'Annual Fitness Test','Insurance Renewal','PUC Renewal',
+    'Battery Check','Coolant Flush','DL Renewal Alert',
+    'Medical Cert Renewal','Hazmat Cert Renewal','Police Verification'
+  ];
+
+  var body = '<div style="display:flex;flex-direction:column;gap:14px">'
+    // Entity selector
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Select Vehicle</div>'
+    +'<select id="sch_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'
+    +'<option value="">— Vehicle (optional) —</option>'+vOpts+'</select></div>'
+    +'<div><div class="fl">Or Select Driver</div>'
+    +'<select id="sch_drv" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'
+    +'<option value="">— Driver (optional) —</option>'+dOpts+'</select></div>'
+    +'</div>'
+    // Alert settings
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Alert Before</div><select id="sch_days" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>1</option><option>2</option><option selected>3</option><option>7</option><option>14</option><option>30</option></select></div>'
+    +'<div><div class="fl">Alert Channel</div><select id="sch_ch" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>WhatsApp+SMS</option><option>SMS only</option><option>Email+SMS</option><option>All Channels</option></select></div>'
+    +'<div><div class="fl">Notes (applies to all)</div><input id="sch_notes" placeholder="Parts, instructions..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    // Service grid - checkboxes with dates
+    +'<div style="font-size:12px;font-weight:600;color:#e2eeff;margin-bottom:4px">Select Services & Set Dates</div>'
+    +'<div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden">'
+    +'<div style="display:grid;grid-template-columns:2fr 1fr;background:#0f1724;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.1)">'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Service Type</div>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Scheduled Date</div>'
+    +'</div>'
+    +'<div style="max-height:320px;overflow-y:auto">';
+
+  services.forEach(function(svc, idx) {
+    body += '<div style="display:grid;grid-template-columns:2fr 1fr;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.05);align-items:center;'+(idx%2===0?'background:#162033;':'background:#0f1724;')+'">'
+      +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer">'
+      +'<input type="checkbox" id="sc_'+idx+'" value="'+svc+'" style="accent-color:#00e676;width:16px;height:16px">'
+      +'<span style="font-size:12.5px;color:#e2eeff">'+svc+'</span>'
+      +'</label>'
+      +'<input type="date" id="sd_'+idx+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit">'
+      +'</div>';
+  });
+
+  body += '</div>'
+    +'<div style="font-size:11px;color:#8ab0d0">✅ Check a service and set its date. Multiple services can be scheduled at once.</div>'
     +'</div>';
+
+  window._schServices = services;
+
   var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
-    +'<button class="btn btn-g btn-sm" onclick="saveSchedule()">Schedule & Set Alert</button>';
-  modal('📅 Schedule Service / Alert',body,foot);
+    +'<button class="btn btn-sm" onclick="selectAllServices()">Select All</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveBulkSchedule()">Schedule All Selected</button>';
+  modal('📅 Schedule Services',body,foot);
+};
+
+window.selectAllServices = function() {
+  var svcs = window._schServices||[];
+  svcs.forEach(function(s,idx){
+    var cb = document.getElementById('sc_'+idx);
+    if(cb) cb.checked = !cb.checked;
+  });
+};
+
+window.saveBulkSchedule = async function() {
+  var vehId = gv('sch_veh');
+  var drvId = gv('sch_drv');
+  var days = gv('sch_days');
+  var ch = gv('sch_ch');
+  var notes = gv('sch_notes');
+  var svcs = window._schServices||[];
+
+  var toSchedule = [];
+  svcs.forEach(function(svc, idx) {
+    var cb = document.getElementById('sc_'+idx);
+    var dt = document.getElementById('sd_'+idx);
+    if(cb && cb.checked) {
+      if(!dt || !dt.value) {
+        alert('Please set a date for: '+svc);
+        return;
+      }
+      toSchedule.push({svc:svc, date:dt.value});
+    }
+  });
+
+  if(toSchedule.length === 0) {
+    alert('Please select at least one service and set its date.');
+    return;
+  }
+
+  try {
+    var created = 0;
+    for(var i=0; i<toSchedule.length; i++) {
+      var code = await sbRpc('next_schedule_code');
+      var etype = vehId ? 'vehicle' : 'driver';
+      await sbInsert('maintenance_schedule',{
+        schedule_code:code,
+        entity_type:etype,
+        vehicle_id:vehId||null,
+        driver_id:drvId||null,
+        service_type:toSchedule[i].svc,
+        scheduled_date:toSchedule[i].date,
+        alert_days_before:parseInt(days)||3,
+        alert_channel:ch,
+        notes:notes||null,
+        status:'Scheduled'
+      });
+      created++;
+    }
+    closeModal();
+    setTimeout(function(){
+      var s=document.createElement('div');
+      s.className='alert al-g';
+      s.textContent=created+' service(s) scheduled successfully!';
+      document.getElementById('ct').prepend(s);
+      setTimeout(function(){s.remove();},5000);
+    },100);
+    renderSchedule();
+  } catch(e){alert('Error: '+e.message);}
 };
 
 window.saveSchedule = async function() {
