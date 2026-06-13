@@ -1,5 +1,7 @@
 {
-  "buildCommand": "echo done",
-  "outputDirectory": ".",
-  "framework": null
+  "name": "ecoloop-erp",
+  "version": "3.0.0",
+  "scripts": {
+    "build": "echo done"
+  }
 }
