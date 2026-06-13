@@ -833,7 +833,7 @@ async function autoTripPlanner() {
   }
 
   // Find available vehicles (status Active, no active trip today)
-  var vehicles = await sbFetch('vehicles',{select:'*,drivers(id,full_name,mobile)',eq:{status:'Active'}});
+  var vehicles = await sbFetch('vehicles',{select:'*',eq:{status:'Active'}});
   vehicles = safeArr(vehicles);
 
   // Find vehicles with checklist done today (vehicle ready)
@@ -1444,7 +1444,7 @@ async function renderSmartTripPlanner() {
     var [bins, sites, vehicles, drivers] = await Promise.all([
       sbFetch('bins',{select:'*,generators(company_name,address,city,latitude,longitude)',order:'current_fill_pct.desc'}),
       sbFetch('processing_sites',{select:'*',eq:{is_active:'true'},order:'site_type'}),
-      sbFetch('vehicles',{select:'*,drivers(id,full_name)',eq:{status:'Active'}}),
+      sbFetch('vehicles',{select:'*',eq:{status:'Active'}}),
       sbFetch('drivers',{select:'*',eq:{status:'Active'}}),
     ]);
     bins=safeArr(bins); sites=safeArr(sites); vehicles=safeArr(vehicles); drivers=safeArr(drivers);
@@ -1580,7 +1580,7 @@ window.saveSmartTrip = async function() {
 
   try {
     // Get vehicle driver
-    var vehicles = await sbFetch('vehicles',{select:'*,drivers(id,full_name)',eq:{id:vehId}});
+    var vehicles = await sbFetch('vehicles',{select:'*',eq:{id:vehId}});
     var veh = safeArr(vehicles)[0];
     var driverId = veh&&veh.drivers?veh.drivers.id:null;
 
@@ -1778,7 +1778,7 @@ async function renderDash(){
       sbFetch('generators',{select:'id',eq:{is_active:'true'}}),
       sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)'}),
       sbFetch('trips',{select:'id,trip_code,status,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:5}),
-      sbFetch('vehicles',{select:'id,reg_no,current_fuel_pct,status,drivers(full_name)',eq:{status:'Active'}}),
+      sbFetch('vehicles',{select:'id,reg_no,current_fuel_pct,status',eq:{status:'Active'}}),
     ]);
     var gens=safeArr(gens_r),bins=safeArr(bins_r),trips=safeArr(trips_r),vehicles=safeArr(vehicles_r);
     var critical=bins.filter(b=>b.current_fill_pct>=80);
@@ -1799,7 +1799,7 @@ async function renderDash(){
       badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)
     ]);
     var binHtml=(bins||[]).slice(0,8).map(b=>'<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace;color:#e2eeff">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+' · '+(b.zone||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+( b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>').join('');
-    var fleetHtml=(vehicles||[]).slice(0,4).map(v=>'<div style="background:#1a2840;border:1px solid rgba(100,160,255,.1);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><strong style="font-family:Consolas,monospace;font-size:12px">'+v.reg_no+'</strong><div style="font-size:10.5px;color:#5a7a9a">'+(v.drivers&&v.drivers.full_name||'Unassigned')+'</div></div>'+badge('g',v.status)+'</div>'+prog(v.current_fuel_pct||0)+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Fuel '+(v.current_fuel_pct||0)+'%</div></div>').join('');
+    var fleetHtml=(vehicles||[]).slice(0,4).map(v=>'<div style="background:#1a2840;border:1px solid rgba(100,160,255,.1);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><strong style="font-family:Consolas,monospace;font-size:12px">'+v.reg_no+'</strong><div style="font-size:10.5px;color:#5a7a9a">'+'Unassigned'+'</div></div>'+badge('g',v.status)+'</div>'+prog(v.current_fuel_pct||0)+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Fuel '+(v.current_fuel_pct||0)+'%</div></div>').join('');
     var boilerHtml='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">'
       +['842°C|Combustion|#f44336|84','9.2 bar|Pressure|#ff9800|77','92%|Efficiency|#00e676|92'].map(s=>{var p=s.split('|');return'<div style="text-align:center;background:#1a2840;border-radius:8px;padding:10px"><div style="font-size:18px;font-weight:700;font-family:Consolas,monospace;color:'+p[2]+'">'+p[0]+'</div><div style="font-size:10px;color:#5a7a9a;margin:3px 0">'+p[1]+'</div>'+prog(parseInt(p[3]),p[2])+'</div>';}).join('')+'</div>'
       +'<div style="font-size:11.5px;color:#5a7a9a">Steam: <strong style="color:#e2eeff">4.2T/h</strong> · Feed: <strong style="color:#e2eeff">580kg/h</strong></div>';
