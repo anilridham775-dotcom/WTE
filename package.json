@@ -1,7 +1,5 @@
 {
-  "name": "ecoloop-erp",
-  "version": "3.0.0",
-  "scripts": {
-    "build": "echo 'static site'"
-  }
+  "buildCommand": "echo done",
+  "outputDirectory": ".",
+  "framework": null
 }
