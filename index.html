@@ -703,12 +703,12 @@ function initERP(){
 async function renderDash(){
   var ct=document.getElementById('ct');
   try{
-    var[gens_r,bins_r,trips_r,vehicles_r]=await Promise.all([sbFetch('generators',{select:'id',eq:{is_active:'true'}}),sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)',order:'current_fill_pct.desc'}),sbFetch('trips',{select:'id,trip_code,status,trip_date,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:5}),sbFetch('vehicles',{select:'id,reg_no,current_fuel_pct,status',eq:{status:'Active'}})]);
-    var gens=safeArr(gens_r),bins=safeArr(bins_r),trips=safeArr(trips_r),vehicles=safeArr(vehicles_r);
+    var[gens_r,bins_r,trips_r,vehicles_r]=await Promise.all([sbFetch('generators',{select:'id,is_active'}),sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)',order:'current_fill_pct.desc'}),sbFetch('trips',{select:'id,trip_code,status,trip_date,vehicle_id,driver_id,vehicles!inner(reg_no),drivers!inner(full_name)',order:'created_at.desc',limit:5}),sbFetch('vehicles',{select:'id,reg_no,current_fuel_pct,status',eq:{status:'Active'}})]);
+    var gens=safeArr(gens_r).filter(function(g){return g.is_active;});var bins=safeArr(bins_r);var trips=safeArr(trips_r);var vehicles=safeArr(vehicles_r);
     var critical=bins.filter(function(b){return b.current_fill_pct>=80;});
     ct.innerHTML=(critical.length?'<div class="alert al-r">🔴 '+critical.length+' bin(s) at ≥80% — immediate pickup required.</div>':'')
       +'<div class="sg">'+sc('#00e676','Active Generators',gens.length,'')+sc('#2196f3','Total Bins',bins.length,critical.length+' critical')+sc('#ff9800','In Transit',trips.filter(function(t){return t.status==='In Transit';}).length,'')+sc('#00e676','Vehicles',vehicles.length,'')+sc('#f44336','Critical Bins',critical.length,'≥80%')+'</div>'
-      +'<div class="two">'+card('🚛 Recent Trips','<button class="btn btn-sm" onclick="go(\'trips\')">All</button>',tbl(['Trip','Vehicle','Driver','Status'],trips.map(function(t){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(t.vehicles&&t.vehicles.reg_no||'-')+'</span>',(t.drivers&&t.drivers.full_name||'-'),badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)];})),true)
+      +'<div class="two">'+card('🚛 Recent Trips','<button class="btn btn-sm" onclick="go(\'trips\')">All</button>',tbl(['Trip','Vehicle','Driver','Status'],trips.map(function(t){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(t.vehicles&&t.vehicles.reg_no||t.vehicle_id||'-')+'</span>',(t.drivers&&t.drivers.full_name||t.driver_id||'-'),badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)];})),true)
       +card('📊 Bin Fill Levels','<button class="btn btn-sm" onclick="go(\'bins\')">All</button>',bins.slice(0,6).map(function(b){return'<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+(b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>';}).join(''))+'</div>';
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
@@ -1067,9 +1067,9 @@ window.saveBin=async function(){
 async function renderTrips(){
   var ct=document.getElementById('ct');
   try{
-    var[trips_r,vehicles_r,drivers_r,bins_r]=await Promise.all([sbFetch('trips',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:20}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,driver_code,full_name',eq:{status:'Active'}}),sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)'})]);
+    var[trips_r,vehicles_r,drivers_r,bins_r]=await Promise.all([sbFetch('trips',{select:'id,trip_code,trip_date,status,vehicle_id,driver_id,vehicles!inner(reg_no),drivers!inner(full_name)',order:'created_at.desc',limit:20}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,driver_code,full_name',eq:{status:'Active'}}),sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)'})]);
     var trips=safeArr(trips_r),vehicles=safeArr(vehicles_r),drivers=safeArr(drivers_r),bins=safeArr(bins_r);
-    var rows=trips.map(function(t){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>',t.trip_date||'-','<span style="font-family:Consolas,monospace;font-size:11px">'+(t.vehicles&&t.vehicles.reg_no||'-')+'</span>',(t.drivers&&t.drivers.full_name||'-'),badge(t.status==='In Transit'?'a':t.status==='Completed'||t.status==='Certified'?'g':t.status==='Dispatched'?'b':'gr',t.status),'<div style="display:flex;gap:4px">'+(t.status==='Planned'?'<button class="btn btn-sm" id="tb'+t.id+'d">Dispatch</button>':'')+(t.status==='Dispatched'?'<button class="btn btn-sm" id="tb'+t.id+'i">In Transit</button>':'')+(t.status==='In Transit'?'<button class="btn btn-sm" id="ctr'+t.id+'">Complete</button>':'')+'</div>'];});
+    var rows=trips.map(function(t){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>',t.trip_date||'-','<span style="font-family:Consolas,monospace;font-size:11px">'+(t.vehicles&&t.vehicles.reg_no||t.vehicle_id||'-')+'</span>',(t.drivers&&t.drivers.full_name||t.driver_id||'-'),badge(t.status==='In Transit'?'a':t.status==='Completed'||t.status==='Certified'?'g':t.status==='Dispatched'?'b':'gr',t.status),'<div style="display:flex;gap:4px">'+(t.status==='Planned'?'<button class="btn btn-sm" id="tb'+t.id+'d">Dispatch</button>':'')+(t.status==='Dispatched'?'<button class="btn btn-sm" id="tb'+t.id+'i">In Transit</button>':'')+(t.status==='In Transit'?'<button class="btn btn-sm" id="ctr'+t.id+'">Complete</button>':'')+'</div>'];});
     ct.innerHTML='<div class="sg">'+sc('#2196f3','Planned',trips.filter(function(t){return t.status==='Planned';}).length,'')+sc('#ff9800','In Transit',trips.filter(function(t){return t.status==='In Transit';}).length,'')+sc('#00e676','Completed Today',trips.filter(function(t){return t.status==='Completed'&&t.trip_date===new Date().toISOString().split('T')[0];}).length,'')+'</div>'+card('📍 Trip & Lift Plans','<button class="btn btn-g btn-sm" onclick="newTrip()">+ Create Trip</button>',tbl(['Trip','Date','Vehicle','Driver','Status','Action'],rows),true);
     window._tripData={vehicles:vehicles,drivers:drivers,bins:bins};
     setTimeout(function(){document.querySelectorAll('[id^="tb"]').forEach(function(b){var id=b.id.slice(2,-1);var action=b.id.slice(-1);var sm={d:'Dispatched',i:'In Transit'};b.onclick=function(){updateTripStatus(id,sm[action]);};});document.querySelectorAll('[id^="ctr"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){completeTrip(id);};});},150);
@@ -1486,9 +1486,9 @@ window.saveRM = async function() {
 ;
 async function renderFuel(){
   var ct=document.getElementById('ct');
-  try{var[rec,veh,drv]=await Promise.all([sbFetch('fuel_records',{select:'*,vehicles(reg_no),drivers(full_name)',order:'fill_datetime.desc',limit:30}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}})]);
+  try{var[rec,veh,drv]=await Promise.all([sbFetch('fuel_records',{select:'*,vehicles!inner(reg_no)',order:'fill_datetime.desc',limit:30}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}})]);
   var records=safeArr(rec),vehicles=safeArr(veh),drivers=safeArr(drv);
-  var rows=records.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.fuel_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',(r.drivers&&r.drivers.full_name)||'-',r.fill_datetime?(r.fill_datetime.split('T')[0]):'-',r.quantity_litres+'L','₹'+r.rate_per_litre+'/L','<strong>₹'+Number(r.total_amount||0).toLocaleString('en-IN')+'</strong>',r.mileage_kmpl?'<span style="color:'+(r.mileage_kmpl<3.5?'#ff9800':'#00e676')+'">'+r.mileage_kmpl+'</span>':'-'];});
+  var rows=records.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.fuel_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',(r.drivers&&r.drivers.full_name)||r.driver_id||'-',r.fill_datetime?(r.fill_datetime.split('T')[0]):'-',r.quantity_litres+'L','₹'+r.rate_per_litre+'/L','<strong>₹'+Number(r.total_amount||0).toLocaleString('en-IN')+'</strong>',r.mileage_kmpl?'<span style="color:'+(r.mileage_kmpl<3.5?'#ff9800':'#00e676')+'">'+r.mileage_kmpl+'</span>':'-'];});
   var mtd=records.filter(function(r){return r.fill_datetime&&new Date(r.fill_datetime).getMonth()===new Date().getMonth();});
   ct.innerHTML='<div class="sg">'+sc('#00bcd4','MTD Spend','₹'+(mtd.reduce(function(s,r){return s+(r.total_amount||0);},0)/100000).toFixed(2)+'L','')+'</div>'+card('⛽ Fuel Management','<button class="btn btn-g btn-sm" onclick="newFuel()">+ Log Fill-up</button>',tbl(['ID','Vehicle','Driver','Date','Litres','Rate','Amount','km/L'],rows),true);
   window._fuelData={vehicles:vehicles,drivers:drivers};}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
@@ -1507,16 +1507,16 @@ async function renderTyres(){
   var ct=document.getElementById('ct');
   try{var[rec,veh]=await Promise.all([sbFetch('tyre_records',{select:'*,vehicles(reg_no)',order:'record_date.desc',limit:30}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}})]);
   var records=safeArr(rec),vehicles=safeArr(veh);
-  var rows=records.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.tyre_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',r.record_date||'-',r.position||'-',r.action||'-',r.pressure_after_psi?'<span style="color:'+(r.pressure_after_psi>=32?'#00e676':'#ff9800')+'">'+r.pressure_after_psi+' PSI</span>':'-',r.cost?'₹'+r.cost:'-'];});
-  ct.innerHTML=card('⭕ Tyre Management','<button class="btn btn-g btn-sm" onclick="newTyre()">+ Log Check</button>',tbl(['ID','Vehicle','Date','Position','Action','PSI','Cost'],rows),true);window._tyreVehicles=vehicles;}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+  var rows=records.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.tyre_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',r.record_date||'-',r.position||'-','<div style="font-weight:600">'+(r.tyre_make||'-')+'</div><div style="font-size:10px;color:#5a7a9a;font-family:Consolas,monospace">'+(r.tyre_serial_no||'')+'</div>',r.action||'-',r.pressure_after_psi?'<span style="color:'+(r.pressure_after_psi>=32?'#00e676':'#ff9800')+'">'+r.pressure_after_psi+' PSI</span>':'-',r.cost?'₹'+r.cost:'-'];});
+  ct.innerHTML=card('⭕ Tyre Management','<button class="btn btn-g btn-sm" onclick="newTyre()">+ Log Check</button>',tbl(['ID','Vehicle','Date','Position','Make & Serial','Action','PSI','Cost'],rows),true);window._tyreVehicles=vehicles;}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.newTyre=function(){
   var vOpts=(window._tyreVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  modal('⭕ Log Tyre Check','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="ty_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('ty_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Position',sel('ty_pos',['FL','FR','RLO','RLI','RRO','RRI','SPARE']),true)+fld('Action',sel('ty_act',['Pressure Check','Tyre Rotation','Tyre Replacement','Puncture Repair','Balancing']))+fld('Pressure Before (PSI)',inp('ty_pb','28','number'))+fld('Pressure After (PSI)',inp('ty_pa','36','number'))+fld('Tread Depth (mm)',inp('ty_td','','number'))+fld('Cost (₹)',inp('ty_cost','','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTyre()">Save</button>');
+  modal('⭕ Log Tyre Check','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="ty_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('ty_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Position',sel('ty_pos',['FL','FR','RLO','RLI','RRO','RRI','SPARE']),true)+'<div class="sec">Tyre Details</div>'+fld('Tyre Make / Brand',sel('ty_make',['MRF','CEAT','Apollo','Bridgestone','Michelin','Goodyear','JK Tyre','Yokohama','Continental','Other']),true)+fld('Tyre Serial No',inp('ty_serial','e.g. MRF2024-XXXXXX'),true)+fld('Tyre Size',inp('ty_size','e.g. 295/80 R22.5'))+fld('Action',sel('ty_act',['Pressure Check','Tyre Rotation','Tyre Replacement','Puncture Repair','Balancing','New Fitment','Retreading']))+fld('Pressure Before (PSI)',inp('ty_pb','28','number'))+fld('Pressure After (PSI)',inp('ty_pa','36','number'))+fld('Tread Depth (mm)',inp('ty_td','','number'))+fld('Cost (₹)',inp('ty_cost','','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTyre()">Save</button>');
 };
 window.saveTyre=async function(){
   var veh=gv('ty_veh'),pos=gv('ty_pos');if(!veh||!pos){alert('Vehicle and position required.');return;}
-  try{await sbInsert('tyre_records',{tyre_code:'TYR-'+Date.now(),vehicle_id:veh,record_date:gv('ty_date'),position:pos,action:gv('ty_act'),pressure_before_psi:gv('ty_pb')||null,pressure_after_psi:gv('ty_pa')||null,tread_depth_mm:gv('ty_td')||null,cost:gv('ty_cost')||null,data_source:'MANUAL'});closeModal();success('Tyre record saved!');renderTyres();}catch(e){alert('Error: '+e.message);}
+  var make=gv('ty_make'),serial=gv('ty_serial');if(!make||!serial){alert('Tyre Make and Serial Number are required.');return;}try{await sbInsert('tyre_records',{tyre_code:'TYR-'+Date.now(),vehicle_id:veh,record_date:gv('ty_date'),position:pos,tyre_make:make,tyre_serial_no:serial,tyre_size:gv('ty_size')||null,action:gv('ty_act'),pressure_before_psi:gv('ty_pb')||null,pressure_after_psi:gv('ty_pa')||null,tread_depth_mm:gv('ty_td')||null,cost:gv('ty_cost')||null,data_source:'MANUAL'});closeModal();success('Tyre record saved!');renderTyres();}catch(e){alert('Error: '+e.message);}
 };
 
 async function renderSchedule(){
@@ -1587,7 +1587,7 @@ async function exportReport(key){
     if(btn){btn.textContent='⏳ Fetching...';btn.disabled=true;}
     var rows=[],filename='ecoloop-'+key+'-'+new Date().toISOString().split('T')[0]+'.csv';
     if(key==='trips'){
-      var data=safeArr(await sbFetch('trips',{select:'*,drivers(full_name,mobile),vehicles(reg_no)',order:'created_at.desc'}));
+      var data=safeArr(await sbFetch('trips',{select:'*,vehicles!inner(reg_no),drivers!inner(full_name,mobile)',order:'created_at.desc'}));
       rows=[['Trip Code','Date','Driver','Mobile','Vehicle','Status','Total Weight kg','Created At']];
       data.forEach(function(t){rows.push([t.trip_code||'',t.trip_date||'',t.drivers&&t.drivers.full_name||'',t.drivers&&t.drivers.mobile||'',t.vehicles&&t.vehicles.reg_no||'',t.status||'',t.total_weight_kg||'',t.created_at||'']);});
     }else if(key==='fuel'){
@@ -1725,7 +1725,7 @@ async function renderChecklist(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('vehicle_checklist',{select:'*,drivers(full_name)',order:'check_date.desc',limit:30}));
   var today=new Date().toISOString().split('T')[0];
-  var rows=data.map(function(r){return[r.checklist_code||'-',r.check_date||'-',(r.drivers&&r.drivers.full_name)||'-',r.fuel_level_pct?r.fuel_level_pct+'%':'-',r.cleaning_status||'-',badge(r.vehicle_ready?'g':'r',r.vehicle_ready?'Ready':'Not Ready')];});
+  var rows=data.map(function(r){return[r.checklist_code||'-',r.check_date||'-',(r.drivers&&r.drivers.full_name)||r.driver_id||'-',r.fuel_level_pct?r.fuel_level_pct+'%':'-',r.cleaning_status||'-',badge(r.vehicle_ready?'g':'r',r.vehicle_ready?'Ready':'Not Ready')];});
   ct.innerHTML='<div class="sg">'+sc('#00e676','Today',data.filter(function(r){return r.check_date===today;}).length,'')+sc('#00e676','Passed',data.filter(function(r){return r.vehicle_ready;}).length,'')+'</div>'+card('✅ Pre-Trip Checklists','',tbl(['ID','Date','Driver','Fuel','Cleaning','Status'],rows),true);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 
@@ -2145,7 +2145,7 @@ async function renderChecklist() {
   var ct = document.getElementById('ct');
   try {
     var [checklists, vehicles, drivers] = await Promise.all([
-      sbFetch('vehicle_checklist',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:30}),
+      sbFetch('vehicle_checklist',{select:'id,checklist_code,check_date,vehicle_id,driver_id,fuel_level_pct,cleaning_status,vehicle_ready',order:'created_at.desc',limit:30}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
       sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}),
     ]);
@@ -3074,7 +3074,7 @@ async function renderSmartTripPlanner() {
       +'</div></div>';
 
     // Recent smart trips
-    var recentTrips = await sbFetch('trips',{select:'*,vehicles(reg_no),drivers(full_name)',order:'created_at.desc',limit:10});
+    var recentTrips = await sbFetch('trips',{select:'id,trip_code,trip_date,status,vehicle_id,driver_id,vehicles!inner(reg_no),drivers!inner(full_name)',order:'created_at.desc',limit:10});
     recentTrips = safeArr(recentTrips);
     var rows = recentTrips.map(function(t){
       return [
