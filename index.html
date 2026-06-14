@@ -640,35 +640,285 @@ window.saveCleaning=async function(){
   var veh=gv('cl_veh'),date=gv('cl_date');if(!veh||!date){alert('Vehicle and date required.');return;}
   try{await sbInsert('vehicle_cleaning',{vehicle_id:veh,cleaning_date:date,cleaning_type:gv('cl_type'),cleanliness_score:gv('cl_score')||null,supervisor_pin_verified:gv('cl_pin').length===4,cleaning_code:'CLN-'+Date.now()});closeModal();success('Cleaning record saved!');renderCleaning();}catch(e){alert('Error: '+e.message);}
 };
-async function renderPM(){
-  var ct=document.getElementById('ct');
-  try{var[rec,veh]=await Promise.all([sbFetch('preventive_maintenance',{select:'*,vehicles(reg_no)',order:'service_date.desc',limit:30}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}})]);
-  var records=safeArr(rec),vehicles=safeArr(veh);
-  var rows=records.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.pm_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',r.pm_type||'-',r.service_date||'-','₹'+Number(r.total_cost||0).toLocaleString('en-IN'),badge(r.supervisor_pin_verified?'g':'a',r.supervisor_pin_verified?'Approved':'Pending')];});
-  ct.innerHTML=card('🔧 Preventive Maintenance','<button class="btn btn-g btn-sm" onclick="newPM()">+ Log PM</button>',tbl(['PM ID','Vehicle','Type','Date','Cost','Approval'],rows),true);window._pmVehicles=vehicles;}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+
+// ── PREVENTIVE MAINTENANCE ────────────────────────────────
+async function renderPM() {
+  var ct = document.getElementById('ct');
+  try {
+    var [records, vehicles] = await Promise.all([
+      sbFetch('preventive_maintenance',{select:'*,vehicles(reg_no)',order:'service_date.desc',limit:50}),
+      sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}})
+    ]);
+    records = safeArr(records); vehicles = safeArr(vehicles);
+    var today = new Date().toISOString().split('T')[0];
+    var thisMonth = records.filter(function(r){ return r.service_date && r.service_date.slice(0,7) === today.slice(0,7); });
+    var mtdCost = thisMonth.reduce(function(s,r){ return s+(r.total_cost||0); }, 0);
+
+    var rows = records.map(function(r) { return [
+      '<strong style="font-family:Consolas,monospace;font-size:11px">'+r.pm_code+'</strong>',
+      '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
+      r.pm_type||'-', r.service_date||'-',
+      r.odometer_km ? r.odometer_km.toLocaleString()+' km' : '-',
+      '<div style="display:flex;flex-direction:column;gap:2px">'
+        +(r.parts_cost?'<span style="font-size:10px;color:#8ab0d0">Parts: ₹'+Number(r.parts_cost).toLocaleString('en-IN')+'</span>':'')
+        +(r.labour_cost?'<span style="font-size:10px;color:#8ab0d0">Labour: ₹'+Number(r.labour_cost).toLocaleString('en-IN')+'</span>':'')
+        +'<strong>₹'+Number(r.total_cost||0).toLocaleString('en-IN')+'</strong>'
+      +'</div>',
+      r.next_service_date ? '<span style="color:'+(r.next_service_date<today?'#f44336':'#00e676')+'">'+r.next_service_date+'</span>' : '-',
+      badge(r.supervisor_pin_verified?'g':'a', r.supervisor_pin_verified?'Approved':'Pending')
+    ]; });
+
+    ct.innerHTML = '<div class="sg">'
+      +sc('#00e676','Done This Month',thisMonth.length,'PM services')
+      +sc('#2196f3','MTD Cost','₹'+(mtdCost/1000).toFixed(1)+'K','Parts + Labour')
+      +sc('#ff9800','Total Records',records.length,'All time')
+      +'</div>'
+      +card('🔧 Preventive Maintenance',
+        '<button class="btn btn-g btn-sm" onclick="newPM()">+ Log PM Service</button>',
+        tbl(['PM ID','Vehicle','Service Type','Date','Odometer','Cost','Next Service','Approval'], rows), true);
+
+    window._pmVehicles = vehicles;
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
 }
-window.newPM=function(){
-  var vOpts=(window._pmVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  modal('🔧 Log PM Service','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="pm_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('PM Type',sel('pm_type',['Engine Oil Change','Air Filter','Fuel Filter','Brake Inspection','Coolant Flush','Full PM Service A','Full PM Service B']),true)+fld('Service Date',inp('pm_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Parts Cost (₹)',inp('pm_parts','','number'))+fld('Labour Cost (₹)',inp('pm_labour','','number'))+fld('Next Service Date',inp('pm_next','','date'))+fld('Supervisor PIN',inp('pm_pin','','password'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="savePM()">Save</button>');
+
+window.newPM = function() {
+  var vOpts = (window._pmVehicles||[]).map(function(v){ return '<option value="'+v.id+'">'+v.reg_no+'</option>'; }).join('');
+  var services = [
+    {id:'engine_oil',label:'Engine Oil Change',icon:'🛢'},
+    {id:'oil_filter',label:'Oil Filter Change',icon:'🔩'},
+    {id:'air_filter',label:'Air Filter Change',icon:'💨'},
+    {id:'fuel_filter',label:'Fuel Filter Change',icon:'⛽'},
+    {id:'brake_inspect',label:'Brake Inspection & Adjustment',icon:'🛑'},
+    {id:'coolant_flush',label:'Coolant Flush & Refill',icon:'💧'},
+    {id:'belt_check',label:'Drive Belt Inspection',icon:'⚙️'},
+    {id:'battery_check',label:'Battery Check & Terminal Clean',icon:'🔋'},
+    {id:'full_pm_a',label:'Full PM Service A (Minor)',icon:'🔧'},
+    {id:'full_pm_b',label:'Full PM Service B (Major)',icon:'🛠️'},
+    {id:'tyre_rotation',label:'Tyre Rotation & Balancing',icon:'⭕'},
+    {id:'ac_service',label:'AC Service & Refrigerant Check',icon:'❄️'},
+    {id:'greasing',label:'Chassis Greasing',icon:'🪛'},
+    {id:'exhaust_check',label:'Exhaust System Check',icon:'💨'},
+  ];
+
+  var body = '<div style="display:flex;flex-direction:column;gap:14px">'
+    // Top row: vehicle + cost fields
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Vehicle *</div><select id="pm_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option value="">— Select —</option>'+vOpts+'</select></div>'
+    +'<div><div class="fl">Parts Cost (₹)</div><input id="pm_parts" type="number" placeholder="0" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Labour Cost (₹)</div><input id="pm_labour" type="number" placeholder="0" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Odometer (km)</div><input id="pm_odo" type="number" placeholder="e.g. 85000" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Supervisor PIN</div><input id="pm_pin" type="password" placeholder="4 digits" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Workshop / Vendor</div><input id="pm_vendor" placeholder="e.g. Tata Motors" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    // Services checklist table
+    +'<div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden">'
+    +'<div style="display:grid;grid-template-columns:2fr 1fr 1fr;background:#0f1724;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.1)">'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Service</div>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Service Date</div>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Next Due Date</div>'
+    +'</div>'
+    +'<div style="max-height:300px;overflow-y:auto">'
+    + services.map(function(svc, idx) {
+        return '<div style="display:grid;grid-template-columns:2fr 1fr 1fr;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.05);align-items:center;background:'+(idx%2===0?'#162033':'#0f1724')+'">'
+          +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer">'
+          +'<input type="checkbox" id="pm_cb_'+idx+'" style="accent-color:#00e676;width:16px;height:16px">'
+          +'<span style="font-size:12.5px;color:#e2eeff">'+svc.icon+' '+svc.label+'</span>'
+          +'</label>'
+          +'<input type="date" id="pm_sd_'+idx+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit">'
+          +'<input type="date" id="pm_nd_'+idx+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit">'
+          +'</div>';
+      }).join('')
+    +'</div></div>'
+    +'<div style="font-size:11px;color:#8ab0d0">Check each service done today. Set Service Date and optionally Next Due Date per service.</div>'
+    +'</div>';
+
+  modal('🔧 Log PM Services', body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-sm" onclick="selectAllPM()">Toggle All</button>'
+    +'<button class="btn btn-g btn-sm" onclick="savePM()">Save All Selected</button>');
+  window._pmServices = services;
+
+  // Set today as default date for all
+  var today = new Date().toISOString().split('T')[0];
+  setTimeout(function(){
+    services.forEach(function(s, idx){
+      var d = document.getElementById('pm_sd_'+idx);
+      if(d) d.value = today;
+    });
+  }, 60);
 };
-window.savePM=async function(){
-  var veh=gv('pm_veh'),type=gv('pm_type'),date=gv('pm_date');if(!veh||!type||!date){alert('Vehicle, type and date required.');return;}
-  try{var parts=parseFloat(gv('pm_parts'))||0;var labour=parseFloat(gv('pm_labour'))||0;await sbInsert('preventive_maintenance',{pm_code:'PM-'+Date.now(),vehicle_id:veh,pm_type:type,service_date:date,parts_cost:parts,labour_cost:labour,total_cost:parts+labour,next_service_date:gv('pm_next')||null,supervisor_pin_verified:gv('pm_pin').length===4});closeModal();success('PM saved!');renderPM();}catch(e){alert('Error: '+e.message);}
+
+window.selectAllPM = function() {
+  var svcs = window._pmServices || [];
+  svcs.forEach(function(s, idx){ var cb = document.getElementById('pm_cb_'+idx); if(cb) cb.checked = !cb.checked; });
 };
-async function renderRM(){
-  var ct=document.getElementById('ct');
-  try{var data=safeArr(await sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no)',order:'breakdown_datetime.desc',limit:30}));
-  var rows=data.map(function(r){return['<strong style="font-family:Consolas,monospace;font-size:11px">'+r.rm_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',r.breakdown_datetime?(r.breakdown_datetime.split('T')[0]):'-',r.fault_category||'-',r.fault_description?r.fault_description.slice(0,40):'-',badge(r.status==='Completed'?'g':'a',r.status||'Pending')];});
-  ct.innerHTML=card('⚡ Reactive Maintenance','<button class="btn btn-g btn-sm" onclick="newRM()">+ Log Breakdown</button>',tbl(['RM ID','Vehicle','Date','Category','Description','Status'],rows),true);var vehicles=safeArr(await sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}));window._rmVehicles=vehicles;}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+
+window.savePM = async function() {
+  var veh = gv('pm_veh');
+  if(!veh) { alert('Please select a vehicle.'); return; }
+  var svcs = window._pmServices || [];
+  var toSave = [];
+  svcs.forEach(function(svc, idx){
+    var cb = document.getElementById('pm_cb_'+idx);
+    var sd = document.getElementById('pm_sd_'+idx);
+    if(cb && cb.checked) {
+      if(!sd || !sd.value) { alert('Please set a service date for: '+svc.label); return; }
+      toSave.push({ label: svc.label, date: sd.value, next: document.getElementById('pm_nd_'+idx) ? document.getElementById('pm_nd_'+idx).value : '' });
+    }
+  });
+  if(toSave.length === 0) { alert('Please select at least one service.'); return; }
+  var parts = parseFloat(gv('pm_parts'))||0;
+  var labour = parseFloat(gv('pm_labour'))||0;
+  var totalPerService = toSave.length > 1 ? 0 : parts + labour;
+  try {
+    var created = 0;
+    for(var i = 0; i < toSave.length; i++) {
+      await sbInsert('preventive_maintenance', {
+        pm_code: 'PM-'+Date.now()+'-'+i,
+        vehicle_id: veh,
+        pm_type: toSave[i].label,
+        service_date: toSave[i].date,
+        odometer_km: gv('pm_odo') || null,
+        parts_cost: toSave.length === 1 ? parts : null,
+        labour_cost: toSave.length === 1 ? labour : null,
+        total_cost: toSave.length === 1 ? parts+labour : null,
+        next_service_date: toSave[i].next || null,
+        supervisor_pin_verified: gv('pm_pin').length === 4
+      });
+      created++;
+    }
+    closeModal();
+    success(created+' PM service(s) saved successfully!');
+    renderPM();
+  } catch(e) { alert('Error: '+e.message); }
+};
+
+// ── REACTIVE MAINTENANCE ──────────────────────────────────
+async function renderRM() {
+  var ct = document.getElementById('ct');
+  try {
+    var [records, vehicles] = await Promise.all([
+      sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no)',order:'breakdown_datetime.desc',limit:50}),
+      sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}})
+    ]);
+    records = safeArr(records); vehicles = safeArr(vehicles);
+
+    var rows = records.map(function(r) { return [
+      '<strong style="font-family:Consolas,monospace;font-size:11px">'+r.rm_code+'</strong>',
+      '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
+      r.breakdown_datetime ? r.breakdown_datetime.split('T')[0] : '-',
+      '<div style="font-size:11px;padding:3px 8px;border-radius:20px;display:inline-block;background:rgba(244,67,54,.12);color:#f44336;font-weight:600">'+(r.fault_category||'-')+'</div>',
+      r.fault_description ? '<span title="'+r.fault_description.replace(/"/g,"'")+'">'+r.fault_description.slice(0,35)+(r.fault_description.length>35?'…':'')+'</span>' : '-',
+      r.repair_cost ? '₹'+Number(r.repair_cost).toLocaleString('en-IN') : '-',
+      r.resolved_datetime ? r.resolved_datetime.split('T')[0] : '-',
+      badge(r.status==='Completed'?'g':r.status==='In Progress'?'a':'r', r.status||'Pending')
+    ]; });
+
+    var pending = records.filter(function(r){ return r.status !== 'Completed'; });
+    var mtdCost = records.filter(function(r){ return r.breakdown_datetime && r.breakdown_datetime.slice(0,7) === new Date().toISOString().slice(0,7); }).reduce(function(s,r){ return s+(r.repair_cost||0); }, 0);
+
+    ct.innerHTML = '<div class="sg">'
+      +sc('#f44336','Open Breakdowns',pending.length,'Pending / In Progress')
+      +sc('#ff9800','In Progress',records.filter(function(r){ return r.status==='In Progress'; }).length,'')
+      +sc('#00e676','Completed',records.filter(function(r){ return r.status==='Completed'; }).length,'')
+      +sc('#2196f3','MTD Repair Cost','₹'+(mtdCost/1000).toFixed(1)+'K','')
+      +'</div>'
+      +card('⚡ Reactive Maintenance',
+        '<button class="btn btn-g btn-sm" onclick="newRM()">+ Log Breakdown</button>',
+        tbl(['RM ID','Vehicle','Date','Category','Description','Repair Cost','Resolved','Status'], rows), true);
+
+    window._rmVehicles = vehicles;
+  } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
 }
-window.newRM=function(){
-  var vOpts=(window._rmVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  modal('⚡ Log Breakdown','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="rm_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date & Time',inp('rm_dt',new Date().toISOString().slice(0,16),'datetime-local'),true)+fld('Fault Category',sel('rm_cat',['Engine Failure','Tyre Puncture','Brake Failure','Electrical','Accident','Body Damage','Other']),true)+'<div class="full">'+fld('Description','<textarea id="rm_desc" rows="3" placeholder="Describe the fault..."></textarea>',true)+'</div>'+fld('Status',sel('rm_status',['Pending','In Progress','Completed']))+fld('Repair Cost (₹)',inp('rm_cost','','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveRM()">Log</button>');
+
+window.newRM = function() {
+  var vOpts = (window._rmVehicles||[]).map(function(v){ return '<option value="'+v.id+'">'+v.reg_no+'</option>'; }).join('');
+
+  var faultTypes = [
+    {id:'engine',label:'Engine Failure / Overheating',icon:'🔥'},
+    {id:'tyre',label:'Tyre Puncture / Blowout',icon:'⭕'},
+    {id:'brake',label:'Brake Failure / Spongy Brakes',icon:'🛑'},
+    {id:'electrical',label:'Electrical / Battery Failure',icon:'⚡'},
+    {id:'transmission',label:'Transmission / Gearbox Issue',icon:'⚙️'},
+    {id:'fuel_system',label:'Fuel System / Injection Problem',icon:'⛽'},
+    {id:'hydraulic',label:'Hydraulic System Failure',icon:'💧'},
+    {id:'cooling',label:'Cooling System / Radiator Leak',icon:'🌡️'},
+    {id:'suspension',label:'Suspension / Steering Problem',icon:'🔩'},
+    {id:'body_damage',label:'Body Damage / Accident',icon:'🚨'},
+    {id:'exhaust',label:'Exhaust / Emission System',icon:'💨'},
+    {id:'adas',label:'ADAS / Camera System Fault',icon:'📹'},
+    {id:'other',label:'Other Fault',icon:'🔧'},
+  ];
+
+  var body = '<div style="display:flex;flex-direction:column;gap:14px">'
+    // Top fields
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Vehicle *</div><select id="rm_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option value="">— Select Vehicle —</option>'+vOpts+'</select></div>'
+    +'<div><div class="fl">Breakdown Date & Time *</div><input id="rm_dt" type="datetime-local" value="'+new Date().toISOString().slice(0,16)+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Status</div><select id="rm_status" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>Pending</option><option>In Progress</option><option>Completed</option></select></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Repair Cost (₹)</div><input id="rm_cost" type="number" placeholder="0" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Workshop / Vendor</div><input id="rm_vendor" placeholder="e.g. Local Garage" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Resolved Date & Time</div><input id="rm_resolved" type="datetime-local" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    // Fault type checklist
+    +'<div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden">'
+    +'<div style="display:grid;grid-template-columns:2fr 1fr;background:#0f1724;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.1)">'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Fault Type</div>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#5a7a9a;font-weight:600">Parts Replaced / Notes</div>'
+    +'</div>'
+    +'<div style="max-height:280px;overflow-y:auto">'
+    + faultTypes.map(function(ft, idx) {
+        return '<div style="display:grid;grid-template-columns:2fr 1fr;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.05);align-items:center;background:'+(idx%2===0?'#162033':'#0f1724')+'">'
+          +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer">'
+          +'<input type="checkbox" id="rm_cb_'+idx+'" style="accent-color:#f44336;width:16px;height:16px">'
+          +'<span style="font-size:12.5px;color:#e2eeff">'+ft.icon+' '+ft.label+'</span>'
+          +'</label>'
+          +'<input id="rm_note_'+idx+'" placeholder="Parts / notes..." style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit">'
+          +'</div>';
+      }).join('')
+    +'</div></div>'
+    +'<div style="font-size:11px;color:#8ab0d0">Check each fault type identified. Add parts replaced or notes in the right column.</div>'
+    +'</div>';
+
+  modal('⚡ Log Breakdown', body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveRM()">Save Breakdown</button>');
+  window._rmFaultTypes = faultTypes;
 };
-window.saveRM=async function(){
-  var veh=gv('rm_veh'),dt=gv('rm_dt'),cat=gv('rm_cat'),desc=gv('rm_desc');if(!veh||!dt||!cat||!desc){alert('All required fields must be filled.');return;}
-  try{await sbInsert('reactive_maintenance',{rm_code:'RM-'+Date.now(),vehicle_id:veh,breakdown_datetime:dt,fault_category:cat,fault_description:desc,status:gv('rm_status'),repair_cost:gv('rm_cost')||null});closeModal();success('Breakdown logged!');renderRM();}catch(e){alert('Error: '+e.message);}
+
+window.saveRM = async function() {
+  var veh = gv('rm_veh'), dt = gv('rm_dt');
+  if(!veh || !dt) { alert('Vehicle and breakdown date/time are required.'); return; }
+
+  var faults = window._rmFaultTypes || [];
+  var selectedFaults = [];
+  faults.forEach(function(ft, idx){
+    var cb = document.getElementById('rm_cb_'+idx);
+    var note = document.getElementById('rm_note_'+idx);
+    if(cb && cb.checked) selectedFaults.push(ft.label + (note && note.value ? ' — '+note.value : ''));
+  });
+  if(selectedFaults.length === 0) { alert('Please select at least one fault type.'); return; }
+
+  try {
+    await sbInsert('reactive_maintenance', {
+      rm_code: 'RM-'+Date.now(),
+      vehicle_id: veh,
+      breakdown_datetime: dt,
+      fault_category: selectedFaults[0].split(' — ')[0].replace(/^[^a-zA-Z]+/,'').trim(),
+      fault_description: selectedFaults.join('; '),
+      status: gv('rm_status') || 'Pending',
+      repair_cost: gv('rm_cost') || null,
+    });
+    closeModal();
+    success('Breakdown logged successfully!');
+    renderRM();
+  } catch(e) { alert('Error: '+e.message); }
 };
+;
 async function renderFuel(){
   var ct=document.getElementById('ct');
   try{var[rec,veh,drv]=await Promise.all([sbFetch('fuel_records',{select:'*,vehicles(reg_no),drivers(full_name)',order:'fill_datetime.desc',limit:30}),sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}})]);
