@@ -2393,7 +2393,39 @@ window.saveQREdit = async function(id) {
     success('QR Location updated!');
     renderQRLocations();
   } catch(e) { alert('Error: ' + e.message); }
+}
+
+window.printQR = function(code, name) {
+  var svg = generateQRSVG(code, 260);
+  var win = window.open('', '_blank');
+  if(!win) { alert('Please allow popups for this site to print QR codes.'); return; }
+  win.document.write(
+    '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<title>QR — '+code+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box}'
+    +'body{font-family:Segoe UI,Arial,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}'
+    +'.card{text-align:center;padding:32px;border:2px solid #000;border-radius:12px;display:inline-block}'
+    +'.brand{font-size:20px;font-weight:700;margin-bottom:4px}'
+    +'.sub{font-size:11px;color:#666;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px}'
+    +'.code{font-family:Consolas,monospace;font-size:18px;font-weight:700;margin-top:10px;color:#000}'
+    +'.name{font-size:16px;font-weight:600;margin-top:4px}'
+    +'.inst{font-size:11px;color:#666;margin-top:10px}'
+    +'@media print{body{-webkit-print-color-adjust:exact}}'
+    +'</style></head><body>'
+    +'<div class="card">'
+    +'<div class="brand">♻️ EcoLoop Pro</div>'
+    +'<div class="sub">Attendance QR Code</div>'
+    +svg
+    +'<div class="code">'+code+'</div>'
+    +'<div class="name">'+name+'</div>'
+    +'<div class="inst">Scan to mark attendance</div>'
+    +'</div>'
+    +'<'+'script>window.onload=function(){window.print();}<'+'/script>'
+    +'</body></html>'
+  );
+  win.document.close();
 };
+;
 
 
 
