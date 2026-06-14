@@ -466,21 +466,233 @@ function go(page){
 }
 
 // ── LOGIN ──────────────────────────────────────────────────
+// ── OTP HELPERS ───────────────────────────────────────────
+// OTP is daily — same OTP valid for the whole calendar day (resets at 00:01)
+// Key: otp_{email}_{YYYY-MM-DD}
+function otpTodayKey(email){
+  return 'otp_'+email+'_'+new Date().toISOString().split('T')[0];
+}
+function otpGenerate(){
+  return String(Math.floor(100000+Math.random()*900000)); // 6-digit
+}
+function otpStore(email,otp){
+  // Store OTP keyed to today's date — auto-invalid tomorrow
+  localStorage.setItem(otpTodayKey(email), otp);
+}
+function otpGet(email){
+  return localStorage.getItem(otpTodayKey(email));
+}
+function otpClear(email){
+  // Clear today and any old keys for this email
+  Object.keys(localStorage).forEach(function(k){
+    if(k.startsWith('otp_'+email+'_'))localStorage.removeItem(k);
+  });
+}
+function otpAlreadyVerifiedToday(email){
+  return localStorage.getItem('otp_verified_'+email) === new Date().toISOString().split('T')[0];
+}
+function otpMarkVerified(email){
+  // Clean up old verified markers first
+  Object.keys(localStorage).forEach(function(k){
+    if(k.startsWith('otp_verified_'))localStorage.removeItem(k);
+  });
+  localStorage.setItem('otp_verified_'+email, new Date().toISOString().split('T')[0]);
+}
+async function otpSend(user, otp){
+  var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template_otp')||localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');
+  if(!s||!t||!k) throw new Error('EmailJS not configured. Go to User Management to set it up.');
+  emailjs.init(k);
+  var result = await emailjs.send(s, t, {
+    to_email:     user.email,
+    contact_name: user.full_name,
+    otp_code:     otp,
+    valid_until:  'midnight tonight (00:01)',
+    login_url:    window.location.origin,
+    company_name: 'EcoLoop Pro'
+  });
+  if(!result||result.status!==200) throw new Error('EmailJS status: '+(result?result.status:'no response'));
+}
+
+// ── LOGIN SCREENS ──────────────────────────────────────────
+function loginCardWrap(inner){
+  document.body.innerHTML='';
+  document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0';
+  document.body.innerHTML='<div style="width:400px;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:32px;box-shadow:0 8px 40px rgba(0,0,0,.4)">'
+    +'<div style="text-align:center;margin-bottom:24px">'
+    +'<div style="font-size:40px;margin-bottom:8px">♻️</div>'
+    +'<div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
+    +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Waste-to-Energy ERP v3.0</div>'
+    +'</div>'
+    +inner
+    +'</div>';
+}
+function loginErr(msg){
+  var el=document.getElementById('login-err');
+  if(el)el.innerHTML='<div style="color:#f44336;font-size:12px;padding:9px 12px;background:rgba(244,67,54,.08);border-radius:8px;border-left:3px solid #f44336;margin-bottom:12px">'+msg+'</div>';
+}
+function loginInfo(msg){
+  var el=document.getElementById('login-err');
+  if(el)el.innerHTML='<div style="color:#00e676;font-size:12px;padding:9px 12px;background:rgba(0,230,118,.08);border-radius:8px;border-left:3px solid #00e676;margin-bottom:12px">'+msg+'</div>';
+}
+
 function showLogin(){
-  document.body.innerHTML='';document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0';
-  document.body.innerHTML='<div style="width:380px;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:32px"><div style="text-align:center;margin-bottom:28px"><div style="font-size:40px;margin-bottom:8px">♻️</div><div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">EcoLoop Pro</div><div style="font-size:11px;color:#5a7a9a;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Waste-to-Energy ERP v3.0</div></div><div id="login-err" style="margin-bottom:12px"></div><div style="display:flex;flex-direction:column;gap:14px"><div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">Email</div><input id="l_email" type="email" placeholder="you@ecoloop.com" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:9px 12px;font-size:13px;width:100%;font-family:inherit"></div><div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:4px">PIN</div><input id="l_pin" type="password" placeholder="4-digit PIN" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:9px 12px;font-size:13px;width:100%;font-family:inherit"></div><button onclick="doLogin()" style="padding:11px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;margin-top:4px">Sign In</button></div><div style="margin-top:20px;padding:12px;background:#0f1724;border-radius:8px;font-size:11px;color:#5a7a9a">Admin: admin@ecoloop.com / 1234 | Manager: manager@ecoloop.com / 2345<br>Driver: driver1@ecoloop.com / 3456 | Inspector: inspector@ecoloop.com / 4567</div></div>';
-  document.getElementById('l_pin').addEventListener('keyup',function(e){if(e.key==='Enter')doLogin();});
+  loginCardWrap(
+    '<div id="login-err"></div>'
+    +'<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:5px">Email</div>'
+    +'<input id="l_email" type="email" placeholder="you@ecoloop.com" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 12px;font-size:13px;width:100%;font-family:inherit;outline:none" onfocus="this.style.borderColor='rgba(0,230,118,.5)'" onblur="this.style.borderColor='rgba(100,160,255,.15)'"></div>'
+    +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:5px">PIN</div>'
+    +'<input id="l_pin" type="password" placeholder="4-digit PIN" maxlength="4" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 12px;font-size:13px;width:100%;font-family:inherit;outline:none;letter-spacing:4px" onfocus="this.style.borderColor='rgba(0,230,118,.5)'" onblur="this.style.borderColor='rgba(100,160,255,.15)'"></div>'
+    +'<button id="login-btn" onclick="doLogin()" style="padding:12px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;transition:opacity .2s">Sign In</button>'
+    +'</div>'
+    +'<div style="margin-top:18px;padding:10px 12px;background:#0f1724;border-radius:8px;font-size:10.5px;color:#3a5a7a;line-height:1.6">'
+    +'Admin: admin@ecoloop.com / 1234 &nbsp;·&nbsp; Manager: manager@ecoloop.com / 2345<br>'
+    +'Driver: driver1@ecoloop.com / 3456 &nbsp;·&nbsp; Inspector: inspector@ecoloop.com / 4567'
+    +'</div>'
+  );
+  var pinEl=document.getElementById('l_pin');
+  if(pinEl)pinEl.addEventListener('keyup',function(e){if(e.key==='Enter')doLogin();});
 }
+
+function showOTPScreen(user){
+  var maskedEmail=user.email.replace(/(.{2})(.*)(@.*)/, function(m,a,b,c){return a+b.replace(/./g,'*')+c;});
+  loginCardWrap(
+    '<div style="text-align:center;margin-bottom:20px">'
+    +'<div style="font-size:32px;margin-bottom:8px">📧</div>'
+    +'<div style="font-size:15px;font-weight:700;color:#e2eeff">Check Your Email</div>'
+    +'<div style="font-size:12px;color:#8ab0d0;margin-top:6px">A 6-digit OTP has been sent to</div>'
+    +'<div style="font-size:13px;color:#00e676;font-weight:600;margin-top:4px">'+maskedEmail+'</div>'
+    +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px">Valid until midnight tonight (00:01)</div>'
+    +'</div>'
+    +'<div id="login-err"></div>'
+    +'<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:5px">Enter OTP</div>'
+    +'<input id="l_otp" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#00e676;padding:14px 12px;font-size:22px;width:100%;font-family:Consolas,monospace;text-align:center;letter-spacing:6px;outline:none" onfocus="this.style.borderColor='rgba(0,230,118,.5)'" onblur="this.style.borderColor='rgba(100,160,255,.15)'">'
+    +'</div>'
+    +'<button onclick="doVerifyOTP()" style="padding:12px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">✅ Verify & Sign In</button>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center">'
+    +'<button onclick="showLogin()" style="background:none;border:none;color:#5a7a9a;cursor:pointer;font-size:12px;font-family:inherit">← Back to Login</button>'
+    +'<button onclick="doResendOTP()" style="background:none;border:none;color:#2196f3;cursor:pointer;font-size:12px;font-family:inherit">Resend OTP</button>'
+    +'</div>'
+    +'</div>'
+  );
+  var otpEl=document.getElementById('l_otp');
+  if(otpEl)otpEl.addEventListener('keyup',function(e){if(e.key==='Enter')doVerifyOTP();});
+  // Store user temporarily for OTP verify step
+  window._pendingLoginUser=user;
+}
+
+var _otpSending=false;
 async function doLogin(){
-  var email=document.getElementById('l_email').value.trim(),pin=document.getElementById('l_pin').value.trim();
-  if(!email||!pin){document.getElementById('login-err').innerHTML='<div style="color:#f44336;font-size:12px;padding:8px;background:rgba(244,67,54,.08);border-radius:6px">Enter email and PIN.</div>';return;}
-  var data=await sbFetch('user_roles',{select:'*',eq:{email:email}});
-  var user=safeArr(data)[0];
-  if(!user||String(user.pin)!==String(pin)){document.getElementById('login-err').innerHTML='<div style="color:#f44336;font-size:12px;padding:8px;background:rgba(244,67,54,.08);border-radius:6px">Invalid email or PIN.</div>';return;}
-  CURRENT_USER=user;localStorage.setItem('ecoloop_user',JSON.stringify(user));
-  if(user.role==='driver')showDriverApp();else if(user.role==='generator')showGeneratorPortal();else initERP();
+  var email=document.getElementById('l_email').value.trim().toLowerCase();
+  var pin=document.getElementById('l_pin').value.trim();
+  if(!email||!pin){loginErr('Enter your email and PIN.');return;}
+
+  var btn=document.getElementById('login-btn');
+  if(btn){btn.textContent='Checking...';btn.disabled=true;}
+
+  try{
+    var data=await sbFetch('user_roles',{select:'*',eq:{email:email}});
+    var user=safeArr(data)[0];
+    if(!user||String(user.pin)!==String(pin)){
+      if(btn){btn.textContent='Sign In';btn.disabled=false;}
+      loginErr('Invalid email or PIN. Please try again.');
+      return;
+    }
+    if(!user.is_active){
+      if(btn){btn.textContent='Sign In';btn.disabled=false;}
+      loginErr('Your account is inactive. Contact admin.');
+      return;
+    }
+
+    // Check if already OTP-verified today
+    if(otpAlreadyVerifiedToday(email)){
+      CURRENT_USER=user;
+      localStorage.setItem('ecoloop_user',JSON.stringify(user));
+      if(user.role==='driver')showDriverApp();
+      else if(user.role==='generator')showGeneratorPortal();
+      else initERP();
+      return;
+    }
+
+    // Check if EmailJS is configured
+    var ejService=localStorage.getItem('ej_service');
+    var ejKey=localStorage.getItem('ej_pubkey');
+    if(!ejService||!ejKey){
+      // EmailJS not set up — skip OTP, warn admin
+      console.warn('EmailJS not configured — OTP skipped');
+      CURRENT_USER=user;
+      localStorage.setItem('ecoloop_user',JSON.stringify(user));
+      if(user.role==='driver')showDriverApp();
+      else if(user.role==='generator')showGeneratorPortal();
+      else initERP();
+      return;
+    }
+
+    // Check if OTP already sent today (don't resend unless user asks)
+    var existingOtp=otpGet(email);
+    if(!existingOtp){
+      existingOtp=otpGenerate();
+      otpStore(email,existingOtp);
+    }
+
+    // Send OTP
+    if(btn){btn.textContent='Sending OTP...';btn.disabled=true;}
+    await otpSend(user, existingOtp);
+    showOTPScreen(user);
+
+  }catch(e){
+    if(btn){btn.textContent='Sign In';btn.disabled=false;}
+    loginErr('Error: '+e.message);
+  }
 }
-function doLogout(){CURRENT_USER=null;localStorage.removeItem('ecoloop_user');localStorage.removeItem('checklist_date');showLogin();}
+
+window.doVerifyOTP=function(){
+  var entered=(document.getElementById('l_otp').value||'').trim();
+  var user=window._pendingLoginUser;
+  if(!user){showLogin();return;}
+  if(!entered||entered.length!==6){loginErr('Enter the 6-digit OTP from your email.');return;}
+
+  var stored=otpGet(user.email);
+  if(!stored){loginErr('OTP expired or not found. Please go back and sign in again.');return;}
+  if(entered!==stored){loginErr('Incorrect OTP. Please check your email and try again.');return;}
+
+  // OTP correct — mark verified for today
+  otpMarkVerified(user.email);
+  otpClear(user.email);
+  window._pendingLoginUser=null;
+
+  CURRENT_USER=user;
+  localStorage.setItem('ecoloop_user',JSON.stringify(user));
+  if(user.role==='driver')showDriverApp();
+  else if(user.role==='generator')showGeneratorPortal();
+  else initERP();
+};
+
+window.doResendOTP=async function(){
+  var user=window._pendingLoginUser;
+  if(!user){showLogin();return;}
+  try{
+    loginInfo('Sending new OTP...');
+    otpClear(user.email);
+    var newOtp=otpGenerate();
+    otpStore(user.email,newOtp);
+    await otpSend(user,newOtp);
+    loginInfo('New OTP sent! Check your email.');
+  }catch(e){
+    loginErr('Failed to resend: '+e.message);
+  }
+};
+
+function doLogout(){
+  var email=CURRENT_USER?CURRENT_USER.email:null;
+  CURRENT_USER=null;
+  localStorage.removeItem('ecoloop_user');
+  localStorage.removeItem('checklist_date');
+  // Clear OTP verified marker on logout so next login requires OTP again
+  if(email)localStorage.removeItem('otp_verified_'+email);
+  showLogin();
+}
 function initERP(){
   document.body.innerHTML='';document.body.style.cssText='';document.body.style.margin='0';
   document.body.innerHTML='<div id="app" style="display:flex;height:100vh;width:100%;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px"><div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0"><div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:22px;margin-bottom:4px">♻️</div><div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">EcoLoop Pro</div><div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div></div><div style="flex:1;padding:6px 0" id="nav"></div><div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'+(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div><button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#1e3048;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button></div></div><div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0"><div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div><div style="font-size:11px;color:#5a7a9a">EcoLoop Waste-to-Energy ERP · Live</div></div><div style="display:flex;align-items:center;gap:10px"><div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#0f1724;border-radius:20px">🟢 All Systems Online</div><button class="btn btn-g btn-sm" onclick="go(\'trips\')">+ New Trip</button></div></div><div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div></div></div><div id="modal-container"></div>';
@@ -1435,13 +1647,16 @@ async function renderUsers(){
   // EmailJS config card
   var ejService=localStorage.getItem('ej_service')||'';
   var ejTemplate=localStorage.getItem('ej_template')||'';
+  var ejOtpTemplate=localStorage.getItem('ej_template_otp')||'';
   var ejKey=localStorage.getItem('ej_pubkey')||'';
   var ejCard='<div style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:12px;padding:14px;margin-bottom:14px">'
     +'<div style="font-size:13px;font-weight:600;color:#e2eeff;margin-bottom:10px">📧 EmailJS Configuration <span style="font-size:10px;color:'+(ejService?'#00e676':'#ff9800')+';font-weight:400;margin-left:6px">'+(ejService?'✅ Configured':'⚠️ Not configured')+'</span></div>'
     +'<div class="fg" style="margin-bottom:10px">'
     +'<div>'+fld('Service ID','<input id="ej_service" value="'+ejService+'" placeholder="e.g. service_abc123">')+'</div>'
-    +'<div>'+fld('Template ID','<input id="ej_template" value="'+ejTemplate+'" placeholder="e.g. template_xyz789">')+'</div>'
     +'<div class="full">'+fld('Public Key','<input id="ej_pubkey" value="'+ejKey+'" placeholder="Your EmailJS public key">')+'</div>'
+    +'<div class="sec" style="grid-column:1/-1;margin-top:4px">Email Templates</div>'
+    +'<div>'+fld('Generator Approval Template ID','<input id="ej_template" value="'+ejTemplate+'" placeholder="template_approval123">')+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Variables: {{to_email}} {{contact_name}} {{gen_code}} {{bin_code}} {{login_pin}}</div></div>'
+    +'<div>'+fld('OTP / Login Verification Template ID','<input id="ej_template_otp" value="'+ejOtpTemplate+'" placeholder="template_otp456">')+'<div style="font-size:10px;color:#5a7a9a;margin-top:3px">Variables: {{to_email}} {{contact_name}} {{otp_code}} {{valid_until}}</div></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px;align-items:center"><button class="btn btn-g btn-sm" onclick="saveEmailJSConfig()">💾 Save Config</button>'
     +'<button class="btn btn-sm" onclick="testEmailJS()">🔔 Send Test Email</button>'
@@ -1451,16 +1666,16 @@ async function renderUsers(){
   setTimeout(wireButtons,150);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.saveEmailJSConfig=function(){
-  var s=document.getElementById('ej_service'),t=document.getElementById('ej_template'),k=document.getElementById('ej_pubkey');
-  if(!s||!t||!k){alert('Fill all EmailJS fields.');return;}
+  var s=document.getElementById('ej_service'),t=document.getElementById('ej_template'),totp=document.getElementById('ej_template_otp'),k=document.getElementById('ej_pubkey');
+  if(!s||!k){alert('Service ID and Public Key are required.');return;}
   localStorage.setItem('ej_service',s.value.trim());
-  localStorage.setItem('ej_template',t.value.trim());
+  if(t)localStorage.setItem('ej_template',t.value.trim());
+  if(totp)localStorage.setItem('ej_template_otp',totp.value.trim());
   localStorage.setItem('ej_pubkey',k.value.trim());
-  // Make available globally for approveGen
   window.EMAILJS_SERVICE_ID=s.value.trim();
-  window.EMAILJS_TEMPLATE_ID=t.value.trim();
+  window.EMAILJS_TEMPLATE_ID=t?t.value.trim():'';
   window.EMAILJS_PUBLIC_KEY=k.value.trim();
-  success('EmailJS config saved! Approval emails will now be sent automatically.');
+  success('EmailJS config saved! OTP login verification and approval emails are now active.');
   renderUsers();
 };
 window.testEmailJS=async function(){
