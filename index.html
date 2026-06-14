@@ -1466,11 +1466,24 @@ window.saveEmailJSConfig=function(){
 window.testEmailJS=async function(){
   var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');
   if(!s||!t||!k){alert('Save EmailJS config first.');return;}
+  if(!s.trim()||!t.trim()||!k.trim()){alert('All three fields must be filled in.');return;}
   var email=prompt('Enter your email address to receive a test:');if(!email)return;
   try{
-    await emailjs.send(s,t,{to_email:email,contact_name:'Test User',company_name:'Test Co',gen_code:'GEN-TEST',bin_code:'BIN-TEST',login_url:window.location.origin,login_email:email,login_pin:'1234'},k);
-    success('Test email sent to '+email+'! Check your inbox.');
-  }catch(e){alert('EmailJS error: '+e.message+'\n\nCheck your Service ID, Template ID and Public Key.');}
+    emailjs.init(k.trim());
+    var result=await emailjs.send(s.trim(),t.trim(),{
+      to_email:email,contact_name:'Test User',company_name:'Test Co Ltd',
+      gen_code:'GEN-TEST-001',bin_code:'BIN-TEST-001',
+      login_url:window.location.origin,login_email:email,login_pin:'1234'
+    });
+    if(result&&result.status===200){
+      success('Test email sent to '+email+'! Check your inbox (also check spam).');
+    }else{
+      alert('EmailJS returned: '+(result?result.status+' '+result.text:'unknown response'));
+    }
+  }catch(e){
+    var msg=(e&&e.text)?e.text:(e&&e.message)?e.message:JSON.stringify(e);
+    alert('EmailJS Error: '+msg+'\n\nPlease check:\n1. Service ID (Email Services page)\n2. Template ID (Email Templates page)\n3. Public Key (Account > API Keys)');
+  }
 };
 // Load saved EmailJS config on startup
 (function(){var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');if(s)window.EMAILJS_SERVICE_ID=s;if(t)window.EMAILJS_TEMPLATE_ID=t;if(k)window.EMAILJS_PUBLIC_KEY=k;})();
@@ -1525,7 +1538,8 @@ window.approveGen=async function(id){
       var EMAILJS_TEMPLATE_ID = window.EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
       var EMAILJS_PUBLIC_KEY  = window.EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY';
       if(EMAILJS_SERVICE_ID!=='YOUR_SERVICE_ID'){
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        var emailResult=await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           to_email:     req.email,
           contact_name: req.contact_person||req.company_name,
           company_name: req.company_name,
@@ -1534,10 +1548,13 @@ window.approveGen=async function(id){
           login_url:    window.location.origin,
           login_email:  req.email,
           login_pin:    defaultPin
-        }, EMAILJS_PUBLIC_KEY);
-        console.log('Approval email sent to', req.email);
+        });
+        console.log('Approval email sent to '+req.email, emailResult);
       }
-    }catch(emailErr){console.warn('Email not sent:', emailErr);}
+    }catch(emailErr){
+      var emsg=(emailErr&&emailErr.text)?emailErr.text:(emailErr&&emailErr.message)?emailErr.message:JSON.stringify(emailErr);
+      console.warn('Email not sent:', emsg);
+    }
   }
   alert('✅ Generator '+genCode+' approved!\n📦 Bin '+binCode+' allocated\n'+(req.email?'🔑 Login: '+req.email+' / PIN: '+defaultPin:''));renderGenRequests();}catch(e){alert('Error: '+e.message);}
 };
