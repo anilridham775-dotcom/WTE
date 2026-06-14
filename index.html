@@ -794,7 +794,6 @@ window.savePM = async function() {
         workshop: gv('pm_vendor') || null,
         parts_cost: toSave.length === 1 ? parts : null,
         labour_cost: toSave.length === 1 ? labour : null,
-        total_cost: toSave.length === 1 ? (parts+labour) : null,
         next_service_km: gv('pm_next_km') ? parseInt(gv('pm_next_km')) : null,
         next_service_date: toSave[i].next || null,
         notes: gv('pm_notes') || null,
