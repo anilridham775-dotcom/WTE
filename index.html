@@ -52,6 +52,21 @@ input,select,textarea{background:#1e3048;border:1px solid rgba(100,160,255,.15);
 input:focus,select:focus,textarea:focus{border-color:#00e676}
 .sec{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5a7a9a;padding:4px 0 8px;border-bottom:1px solid rgba(100,160,255,.1);margin:14px 0 12px;grid-column:1/-1}
 .full{grid-column:1/-1}
+
+/* ── SEARCH + TABLE UPGRADES ── */
+.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:72vh;border-radius:0 0 10px 10px}
+.tbl-wrap table{width:100%;min-width:600px;border-collapse:collapse;font-size:12.5px}
+.tbl-wrap thead tr th{position:sticky;top:0;z-index:5;background:#0a1220;text-align:left;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2);white-space:nowrap}
+.tbl-wrap td{padding:9px 12px;color:#8ab0d0;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;white-space:nowrap}
+.tbl-wrap tr:hover td{background:rgba(100,160,255,.06);cursor:pointer}
+.tbl-wrap tr.tbl-copied td{background:rgba(0,230,118,.1)!important}
+.search-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(100,160,255,.08);background:#0d1929;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:200px;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 12px;font-size:13px;font-family:inherit;outline:none}
+.search-bar input:focus{border-color:rgba(0,230,118,.5);box-shadow:0 0 0 2px rgba(0,230,118,.08)}
+.search-bar input::placeholder{color:#3a5a7a}
+.search-count{font-size:11px;color:#5a7a9a;white-space:nowrap}
+.copy-flash{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#00e676;color:#000;padding:9px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:99999;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:0 4px 20px rgba(0,230,118,.4)}
+.copy-flash.show{opacity:1}
 </style>
 </head>
 <body>
@@ -295,7 +310,114 @@ function badge(c,t){return '<span class="badge b'+c+'">'+t+'</span>';}
 function prog(p,c){return '<div class="prog"><div class="pf" style="width:'+Math.min(p||0,100)+'%;background:'+(c||fc(p||0))+'"></div></div>';}
 function card(title,extra,body,np){return '<div class="card"><div class="ch"><span class="ct2">'+title+'</span>'+(extra||'')+'</div><div class="'+(np?'':'cb')+'">'+body+'</div></div>';}
 function sc(color,label,val,sub){return '<div class="sc" style="--c:'+color+'"><div class="sl">'+label+'</div><div class="sv">'+val+'</div><div class="ss">'+(sub||'')+'</div></div>';}
-function tbl(heads,rows){var h=heads.map(function(h){return'<th>'+h+'</th>';}).join('');var r=(rows||[]).map(function(row){return'<tr>'+row.map(function(c){return'<td>'+c+'</td>';}).join('')+'</tr>';}).join('');return'<div style="overflow-x:auto"><table><thead><tr>'+h+'</tr></thead><tbody>'+r+'</tbody></table></div>';}
+function tbl(heads, rows, tableId) {
+  var tid = tableId || ('tbl'+Math.random().toString(36).slice(2,8));
+  var h = heads.map(function(h,ci){
+    return '<th><div style="display:flex;align-items:center;gap:4px;cursor:pointer" onclick="sortTbl(\''+tid+'\','+ci+')">'
+      +h+'<span id="si-'+tid+'-'+ci+'" style="color:#3a5a7a;font-size:9px">⇅</span></div></th>';
+  }).join('');
+  var r = (rows||[]).map(function(row){
+    var cells = row.map(function(c){ return '<td>'+c+'</td>'; }).join('');
+    var plain = row.map(function(c){ return String(c).replace(/<[^>]+>/g,'').trim(); }).join(' | ');
+    return '<tr data-plain="'+plain.replace(/"/g,'&quot;')+'" onclick="copyRow(this)">'+cells+'</tr>';
+  }).join('');
+  var total = (rows||[]).length;
+  return '<div class="search-bar">'
+    +'<span style="font-size:14px;color:#5a7a9a">🔍</span>'
+    +'<input type="text" placeholder="Search anything in this table..." oninput="filterTbl(\''+tid+'\',this.value)" autocomplete="off">'
+    +'<span class="search-count" id="cnt-'+tid+'">'+total+' rows</span>'
+    +'<button onclick="copyAllVisible(\''+tid+'\')" style="padding:5px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.2);background:#1e3048;color:#8ab0d0;cursor:pointer;font-size:11px;font-family:inherit;white-space:nowrap">📋 Copy All</button>'
+    +'</div>'
+    +'<div class="tbl-wrap"><table id="'+tid+'"><thead><tr>'+h+'</tr></thead><tbody>'+r+'</tbody></table></div>';
+}
+
+function filterTbl(tid, query) {
+  var table = document.getElementById(tid);
+  if(!table) return;
+  var q = query.toLowerCase().trim();
+  var rows = table.querySelectorAll('tbody tr');
+  var visible = 0;
+  rows.forEach(function(row){
+    var text = (row.getAttribute('data-plain')||'').toLowerCase();
+    var show = !q || text.indexOf(q) >= 0;
+    row.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  var cnt = document.getElementById('cnt-'+tid);
+  if(cnt) cnt.textContent = visible + ' / ' + rows.length + ' rows';
+}
+
+function sortTbl(tid, colIdx) {
+  var table = document.getElementById(tid);
+  if(!table) return;
+  var asc = table.getAttribute('data-sort-col') == colIdx && table.getAttribute('data-sort-dir') !== 'asc';
+  table.setAttribute('data-sort-col', colIdx);
+  table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+  table.querySelectorAll('thead th span[id^="si-"]').forEach(function(s){ s.textContent = '⇅'; });
+  var si = document.getElementById('si-'+tid+'-'+colIdx);
+  if(si) si.textContent = asc ? '↑' : '↓';
+  var tbody = table.querySelector('tbody');
+  var rows = Array.from(tbody.querySelectorAll('tr'));
+  rows.sort(function(a, b){
+    var av = (a.querySelectorAll('td')[colIdx]||{}).innerText||'';
+    var bv = (b.querySelectorAll('td')[colIdx]||{}).innerText||'';
+    var an = parseFloat(av.replace(/[^0-9.-]/g,'')), bn = parseFloat(bv.replace(/[^0-9.-]/g,''));
+    if(!isNaN(an) && !isNaN(bn)) return asc ? an-bn : bn-an;
+    return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+  });
+  rows.forEach(function(r){ tbody.appendChild(r); });
+}
+
+function copyRow(row) {
+  var text = (row.getAttribute('data-plain')||'').replace(/\|/g,'  ');
+  navigator.clipboard.writeText(text).then(function(){
+    row.classList.add('tbl-copied');
+    setTimeout(function(){ row.classList.remove('tbl-copied'); }, 1200);
+    showCopyFlash('Row copied to clipboard!');
+  }).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showCopyFlash('Row copied!');
+  });
+}
+
+function copyAllVisible(tid) {
+  var table = document.getElementById(tid);
+  if(!table) return;
+  var heads = Array.from(table.querySelectorAll('thead th')).map(function(th){
+    return th.innerText.replace(/[⇅↑↓]/g,'').trim();
+  }).join('\t');
+  var rows = Array.from(table.querySelectorAll('tbody tr')).filter(function(r){
+    return r.style.display !== 'none';
+  });
+  var lines = rows.map(function(r){ return (r.getAttribute('data-plain')||'').replace(/ \| /g,'\t'); });
+  var text = heads + '\n' + lines.join('\n');
+  navigator.clipboard.writeText(text).then(function(){
+    showCopyFlash(lines.length + ' rows copied to clipboard!');
+  }).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showCopyFlash(lines.length + ' rows copied!');
+  });
+}
+
+function showCopyFlash(msg) {
+  var el = document.getElementById('copy-flash-global');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'copy-flash-global';
+    el.className = 'copy-flash';
+    document.body.appendChild(el);
+  }
+  el.textContent = '✅ ' + msg;
+  el.classList.add('show');
+  clearTimeout(window._flashTimer);
+  window._flashTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+}
+
+
 function fld(label,html,req){return'<div><div class="fl">'+label+(req?'<span style="color:#f44336;margin-left:2px">*</span>':'')+'</div>'+html+'</div>';}
 function inp(id,ph,type){return'<input id="'+id+'" type="'+(type||'text')+'" placeholder="'+(ph||'')+'">';}
 function sel(id,opts){return'<select id="'+id+'">'+opts.map(function(o){return'<option>'+o+'</option>';}).join('')+'</select>';}
