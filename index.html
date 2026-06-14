@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>EcoLoop Pro — Waste-to-Energy ERP</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1724;color:#e2eeff;height:100vh;width:100vw;display:flex;overflow:hidden;margin:0;padding:0}
@@ -499,10 +500,223 @@ async function renderDash(){
       +card('📊 Bin Fill Levels','<button class="btn btn-sm" onclick="go(\'bins\')">All</button>',bins.slice(0,6).map(function(b){return'<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+(b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>';}).join(''))+'</div>';
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
-function renderBoiler(){
+async function renderBoiler(){
   var ct=document.getElementById('ct');
-  ct.innerHTML='<div class="sg">'+sc('#f44336','Combustion Temp','842°C','')+sc('#ff9800','Steam Output','4.2T/h','')+sc('#2196f3','Steam Pressure','9.2 bar','')+sc('#00e676','Efficiency','92%','')+'</div>'+card('🔥 Boiler Operations','<span class="badge bg">Live</span>','<div style="padding:12px;color:#8ab0d0">Boiler operational — 842°C combustion, 4.2T/h steam, 9.2 bar pressure. Log operations via Boiler Operations tab.</div>');
+  try{
+    var sites=safeArr(await sbFetch('processing_sites',{select:'*',order:'created_at.desc'}));
+    var boilerSites=sites.filter(function(s){return s.site_type==='Boiler'||s.site_type==='WTE-Plant';});
+    var crusherSites=sites.filter(function(s){return s.site_type==='Crusher';});
+    var boilerLogs=safeArr(await sbFetch('boiler_operations',{select:'*,processing_sites(site_name)',order:'op_date.desc',limit:30}));
+    var crusherLogs=safeArr(await sbFetch('crusher_operations',{select:'*,processing_sites(site_name)',order:'op_date.desc',limit:30}));
+
+    // Summary stats
+    var todayStr=new Date().toISOString().split('T')[0];
+    var todayBoiler=boilerLogs.filter(function(b){return b.op_date===todayStr;});
+    var todayCrusher=crusherLogs.filter(function(c){return c.op_date===todayStr;});
+    var totalSteam=todayBoiler.reduce(function(a,b){return a+(parseFloat(b.steam_output_tons)||0);},0);
+    var totalCrushed=todayCrusher.reduce(function(a,c){return a+(parseFloat(c.material_crushed_tons)||0);},0);
+
+    var boilerRows=boilerLogs.map(function(b){
+      var siteName=(b.processing_sites&&b.processing_sites.site_name)||b.site_id||'-';
+      return[b.op_code||'-',b.op_date||'-',siteName,
+        b.combustion_temp_c?b.combustion_temp_c+'°C':'-',
+        b.steam_output_tons?b.steam_output_tons+'T':'-',
+        b.steam_pressure_bar?b.steam_pressure_bar+' bar':'-',
+        b.efficiency_pct?b.efficiency_pct+'%':'-',
+        b.fuel_used_kg?b.fuel_used_kg+' kg':'-',
+        badge(b.status==='Running'?'g':b.status==='Shutdown'?'r':'a',b.status||'—'),
+        b.operator_name||'-',
+        '<button class="btn btn-sm" id="ebo'+b.id+'">Edit</button>'];
+    });
+    var crusherRows=crusherLogs.map(function(c){
+      var siteName=(c.processing_sites&&c.processing_sites.site_name)||c.site_id||'-';
+      return[c.op_code||'-',c.op_date||'-',siteName,
+        c.material_type||'-',
+        c.material_crushed_tons?c.material_crushed_tons+'T':'-',
+        c.output_size_mm?c.output_size_mm+' mm':'-',
+        c.machine_hours?c.machine_hours+'h':'-',
+        c.power_consumed_kwh?c.power_consumed_kwh+' kWh':'-',
+        badge(c.status==='Running'?'g':c.status==='Shutdown'?'r':'a',c.status||'—'),
+        c.operator_name||'-',
+        '<button class="btn btn-sm" id="eco'+c.id+'">Edit</button>'];
+    });
+
+    ct.innerHTML=
+      '<div class="sg">'
+        +sc('#f44336','Boiler Sites',boilerSites.length,'Active plants')
+        +sc('#ff9800','Today Steam',totalSteam.toFixed(1)+'T','Output today')
+        +sc('#2196f3','Crusher Sites',crusherSites.length,'Active units')
+        +sc('#00e676','Crushed Today',totalCrushed.toFixed(1)+'T','Material today')
+      +'</div>'
+      +card('🔥 Boiler Operations Log',
+        '<button class="btn btn-g btn-sm" onclick="newBoilerOp()">+ Log Boiler Op</button>',
+        tbl(['Code','Date','Site','Temp','Steam','Pressure','Efficiency','Fuel','Status','Operator',''],boilerRows),true)
+      +card('⚙️ Crusher Operations Log',
+        '<button class="btn btn-g btn-sm" onclick="newCrusherOp()">+ Log Crusher Op</button>',
+        tbl(['Code','Date','Site','Material','Crushed','Output Size','Hours','Power','Status','Operator',''],crusherRows),true);
+
+    setTimeout(function(){
+      document.querySelectorAll('[id^="ebo"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editBoilerOp(id);};});
+      document.querySelectorAll('[id^="eco"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editCrusherOp(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
+
+// ── Boiler Op helpers ─────────────────────────────────────
+async function boilerSiteOptions(){
+  var sites=safeArr(await sbFetch('processing_sites',{select:'id,site_name,site_type',order:'site_name.asc'}));
+  return sites.filter(function(s){return s.site_type==='Boiler'||s.site_type==='WTE-Plant';});
+}
+async function crusherSiteOptions(){
+  var sites=safeArr(await sbFetch('processing_sites',{select:'id,site_name,site_type',order:'site_name.asc'}));
+  return sites.filter(function(s){return s.site_type==='Crusher';});
+}
+
+window.newBoilerOp=async function(){
+  var sites=await boilerSiteOptions();
+  var siteOpts=sites.map(function(s){return{v:s.id,l:s.site_name};});
+  var siteSelHtml=siteOpts.length
+    ?'<select id="bo_site" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+siteOpts.map(function(o){return'<option value="'+o.v+'">'+o.l+'</option>';}).join('')+'</select>'
+    :'<input id="bo_site" placeholder="No boiler sites — add in Processing Sites first" disabled>';
+  var today=new Date().toISOString().split('T')[0];
+  var body='<div class="fg">'
+    +fld('Op Date','<input id="bo_date" type="date" value="'+today+'">',true)
+    +fld('Boiler Site',siteSelHtml,true)
+    +fld('Status',sel('bo_status',['Running','Idle','Maintenance','Shutdown']),true)
+    +fld('Combustion Temp (°C)',inp('bo_temp','','number'))
+    +fld('Steam Output (T/h)',inp('bo_steam','','number'))
+    +fld('Steam Pressure (bar)',inp('bo_pressure','','number'))
+    +fld('Efficiency (%)',inp('bo_eff','','number'))
+    +fld('Fuel Used (kg)',inp('bo_fuel','','number'))
+    +fld('Operator Name',inp('bo_operator',''))
+    +'<div class="full">'+fld('Notes','<textarea id="bo_notes" rows="2" placeholder="Any observations..."></textarea>')+'</div>'
+    +'</div>';
+  modal('🔥 Log Boiler Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBoilerOp()">Save</button>');
+};
+window.saveBoilerOp=async function(){
+  var date=gv('bo_date'),site=gv('bo_site');
+  if(!date||!site||site.includes('No boiler')){alert('Date and boiler site required.');return;}
+  try{
+    var code=await sbRpc('next_boiler_op_code');
+    await sbInsert('boiler_operations',{
+      op_code:code,op_date:date,site_id:site,
+      status:gv('bo_status'),
+      combustion_temp_c:gv('bo_temp')||null,
+      steam_output_tons:gv('bo_steam')||null,
+      steam_pressure_bar:gv('bo_pressure')||null,
+      efficiency_pct:gv('bo_eff')||null,
+      fuel_used_kg:gv('bo_fuel')||null,
+      operator_name:gv('bo_operator')||null,
+      notes:gv('bo_notes')||null
+    });
+    closeModal();success('Boiler op '+code+' logged!');renderBoiler();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editBoilerOp=async function(id){
+  var b=(await sbFetch('boiler_operations',{select:'*',eq:{id:id}}))[0];if(!b)return;
+  var sites=await boilerSiteOptions();
+  var siteSelHtml='<select id="bo_site" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+sites.map(function(s){return'<option value="'+s.id+'"'+(s.id===b.site_id?' selected':'')+'>'+s.site_name+'</option>';}).join('')+'</select>';
+  var body='<div class="fg">'
+    +fld('Op Date','<input id="bo_date" type="date" value="'+(b.op_date||'')+'">',true)
+    +fld('Boiler Site',siteSelHtml,true)
+    +fld('Status',sel('bo_status',['Running','Idle','Maintenance','Shutdown']),true)
+    +fld('Combustion Temp (°C)','<input id="bo_temp" type="number" value="'+(b.combustion_temp_c||'')+'">') 
+    +fld('Steam Output (T/h)','<input id="bo_steam" type="number" value="'+(b.steam_output_tons||'')+'">') 
+    +fld('Steam Pressure (bar)','<input id="bo_pressure" type="number" value="'+(b.steam_pressure_bar||'')+'">') 
+    +fld('Efficiency (%)','<input id="bo_eff" type="number" value="'+(b.efficiency_pct||'')+'">') 
+    +fld('Fuel Used (kg)','<input id="bo_fuel" type="number" value="'+(b.fuel_used_kg||'')+'">') 
+    +fld('Operator Name','<input id="bo_operator" value="'+(b.operator_name||'').replace(/"/g,'&quot;')+'">')
+    +'<div class="full">'+fld('Notes','<textarea id="bo_notes" rows="2">'+(b.notes||'')+'</textarea>')+'</div>'
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sbo">Save</button>';
+  modal('Edit Boiler Op — '+b.op_code,body,foot);
+  setTimeout(function(){document.getElementById('bo_status').value=b.status||'Running';var s=document.getElementById('sbo');if(s)s.onclick=function(){updateBoilerOp(id);};},50);
+};
+window.updateBoilerOp=async function(id){
+  try{
+    await sbUpdate('boiler_operations',{
+      op_date:gv('bo_date'),site_id:gv('bo_site'),status:gv('bo_status'),
+      combustion_temp_c:gv('bo_temp')||null,steam_output_tons:gv('bo_steam')||null,
+      steam_pressure_bar:gv('bo_pressure')||null,efficiency_pct:gv('bo_eff')||null,
+      fuel_used_kg:gv('bo_fuel')||null,operator_name:gv('bo_operator')||null,
+      notes:gv('bo_notes')||null
+    },{id:id});
+    closeModal();success('Boiler op updated!');renderBoiler();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ── Crusher Op helpers ────────────────────────────────────
+window.newCrusherOp=async function(){
+  var sites=await crusherSiteOptions();
+  var siteOpts=sites.map(function(s){return{v:s.id,l:s.site_name};});
+  var siteSelHtml=siteOpts.length
+    ?'<select id="co_site" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+siteOpts.map(function(o){return'<option value="'+o.v+'">'+o.l+'</option>';}).join('')+'</select>'
+    :'<input id="co_site" placeholder="No crusher sites — add in Processing Sites first" disabled>';
+  var today=new Date().toISOString().split('T')[0];
+  var body='<div class="fg">'
+    +fld('Op Date','<input id="co_date" type="date" value="'+today+'">',true)
+    +fld('Crusher Site',siteSelHtml,true)
+    +fld('Status',sel('co_status',['Running','Idle','Maintenance','Shutdown']),true)
+    +fld('Material Type',sel('co_mat',['Plastic','Metal Scrap','Glass','Construction Waste','Mixed Solid Waste','Biomass','Other']),true)
+    +fld('Material Crushed (tons)',inp('co_crushed','','number'))
+    +fld('Output Size (mm)',inp('co_outsize','','number'))
+    +fld('Machine Hours',inp('co_hours','','number'))
+    +fld('Power Consumed (kWh)',inp('co_power','','number'))
+    +fld('Operator Name',inp('co_operator',''))
+    +'<div class="full">'+fld('Notes','<textarea id="co_notes" rows="2" placeholder="Any observations..."></textarea>')+'</div>'
+    +'</div>';
+  modal('⚙️ Log Crusher Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveCrusherOp()">Save</button>');
+};
+window.saveCrusherOp=async function(){
+  var date=gv('co_date'),site=gv('co_site');
+  if(!date||!site||site.includes('No crusher')){alert('Date and crusher site required.');return;}
+  try{
+    var code=await sbRpc('next_crusher_op_code');
+    await sbInsert('crusher_operations',{
+      op_code:code,op_date:date,site_id:site,
+      status:gv('co_status'),material_type:gv('co_mat'),
+      material_crushed_tons:gv('co_crushed')||null,
+      output_size_mm:gv('co_outsize')||null,
+      machine_hours:gv('co_hours')||null,
+      power_consumed_kwh:gv('co_power')||null,
+      operator_name:gv('co_operator')||null,
+      notes:gv('co_notes')||null
+    });
+    closeModal();success('Crusher op '+code+' logged!');renderBoiler();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editCrusherOp=async function(id){
+  var c=(await sbFetch('crusher_operations',{select:'*',eq:{id:id}}))[0];if(!c)return;
+  var sites=await crusherSiteOptions();
+  var siteSelHtml='<select id="co_site" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+sites.map(function(s){return'<option value="'+s.id+'"'+(s.id===c.site_id?' selected':'')+'>'+s.site_name+'</option>';}).join('')+'</select>';
+  var body='<div class="fg">'
+    +fld('Op Date','<input id="co_date" type="date" value="'+(c.op_date||'')+'">',true)
+    +fld('Crusher Site',siteSelHtml,true)
+    +fld('Status',sel('co_status',['Running','Idle','Maintenance','Shutdown']),true)
+    +fld('Material Type',sel('co_mat',['Plastic','Metal Scrap','Glass','Construction Waste','Mixed Solid Waste','Biomass','Other']),true)
+    +fld('Material Crushed (tons)','<input id="co_crushed" type="number" value="'+(c.material_crushed_tons||'')+'">')
+    +fld('Output Size (mm)','<input id="co_outsize" type="number" value="'+(c.output_size_mm||'')+'">')
+    +fld('Machine Hours','<input id="co_hours" type="number" value="'+(c.machine_hours||'')+'">')
+    +fld('Power Consumed (kWh)','<input id="co_power" type="number" value="'+(c.power_consumed_kwh||'')+'">')
+    +fld('Operator Name','<input id="co_operator" value="'+(c.operator_name||'').replace(/"/g,'&quot;')+'">')
+    +'<div class="full">'+fld('Notes','<textarea id="co_notes" rows="2">'+(c.notes||'')+'</textarea>')+'</div>'
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sco">Save</button>';
+  modal('Edit Crusher Op — '+c.op_code,body,foot);
+  setTimeout(function(){document.getElementById('co_status').value=c.status||'Running';document.getElementById('co_mat').value=c.material_type||'Mixed Solid Waste';var s=document.getElementById('sco');if(s)s.onclick=function(){updateCrusherOp(id);};},50);
+};
+window.updateCrusherOp=async function(id){
+  try{
+    await sbUpdate('crusher_operations',{
+      op_date:gv('co_date'),site_id:gv('co_site'),status:gv('co_status'),
+      material_type:gv('co_mat'),material_crushed_tons:gv('co_crushed')||null,
+      output_size_mm:gv('co_outsize')||null,machine_hours:gv('co_hours')||null,
+      power_consumed_kwh:gv('co_power')||null,operator_name:gv('co_operator')||null,
+      notes:gv('co_notes')||null
+    },{id:id});
+    closeModal();success('Crusher op updated!');renderBoiler();
+  }catch(e){alert('Error: '+e.message);}
+};
 // ── GENERATORS ────────────────────────────────────────────
 async function renderGenerators(){
   var ct=document.getElementById('ct');
@@ -1136,16 +1350,130 @@ function renderRoles(){
   modules.forEach(function(mod){html+='<tr><td style="font-size:12px">'+PAGE_TITLES[mod]+'</td>';roles.forEach(function(r){var acc=ROLE_ACCESS[r]||[];html+='<td style="text-align:center">'+(acc.includes(mod)?'<span style="color:#00e676;font-size:14px">✓</span>':'<span style="color:#1e3048;font-size:12px">—</span>')+'</td>';});html+='</tr>';});
   html+='</tbody></table></div>';ct.innerHTML=card('🔐 Role Permissions Matrix','',html,true);
 }
+// ── REPORTS & CSV EXPORT ─────────────────────────────────
+function csvDownload(filename, rows){
+  var csv=rows.map(function(r){return r.map(function(c){var s=String(c===null||c===undefined?'':c);return s.includes(',')|| s.includes('"')|| s.includes('\n')?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  success('Downloaded: '+filename);
+}
+var REPORT_DEFS=[
+  {key:'trips',     icon:'🚛', label:'Trip Summary',        desc:'All trips with driver, vehicle, status, dates'},
+  {key:'fuel',      icon:'⛽', label:'Fuel Consumption',     desc:'Fuel records by vehicle — cost & litres'},
+  {key:'binfill',   icon:'🗑️', label:'Bin Fill History',    desc:'Fill level readings per bin over time'},
+  {key:'invoices',  icon:'💰', label:'Invoice & Revenue',   desc:'All invoices with amounts and payment status'},
+  {key:'drivers',   icon:'👤', label:'Driver Compliance',   desc:'DL expiry, police verification status'},
+  {key:'vehicles',  icon:'🚗', label:'Vehicle Health',      desc:'Fitness, insurance & PUC expiry status'},
+  {key:'generators',icon:'🏭', label:'Generator Register',  desc:'All generators with contact & compliance info'},
+  {key:'maintenance',icon:'🔧',label:'Maintenance Due',     desc:'PM & RM records, costs and schedules'}
+];
+async function exportReport(key){
+  try{
+    var btn=document.getElementById('rpbtn-'+key);
+    if(btn){btn.textContent='⏳ Fetching...';btn.disabled=true;}
+    var rows=[],filename='ecoloop-'+key+'-'+new Date().toISOString().split('T')[0]+'.csv';
+    if(key==='trips'){
+      var data=safeArr(await sbFetch('trips',{select:'*,drivers(full_name,mobile),vehicles(reg_no)',order:'created_at.desc'}));
+      rows=[['Trip Code','Date','Driver','Mobile','Vehicle','Status','Total Weight kg','Created At']];
+      data.forEach(function(t){rows.push([t.trip_code||'',t.trip_date||'',t.drivers&&t.drivers.full_name||'',t.drivers&&t.drivers.mobile||'',t.vehicles&&t.vehicles.reg_no||'',t.status||'',t.total_weight_kg||'',t.created_at||'']);});
+    }else if(key==='fuel'){
+      var data=safeArr(await sbFetch('fuel_records',{select:'*,vehicles(reg_no)',order:'fill_date.desc'}));
+      rows=[['Date','Vehicle','Litres','Rate/L','Total Cost','Odometer km','Fuel Type','Station','Notes']];
+      data.forEach(function(f){rows.push([f.fill_date||'',f.vehicles&&f.vehicles.reg_no||'',f.litres||'',f.rate_per_litre||'',f.total_cost||'',f.odometer_km||'',f.fuel_type||'',f.station_name||'',f.notes||'']);});
+    }else if(key==='binfill'){
+      var data=safeArr(await sbFetch('bin_fill_readings',{select:'*,bins(bin_code,generator_id,generators(company_name))',order:'reading_time.desc',limit:500}));
+      rows=[['Reading Time','Bin Code','Generator','Fill %','Reading By']];
+      data.forEach(function(r){rows.push([r.reading_time||'',r.bins&&r.bins.bin_code||'',r.bins&&r.bins.generators&&r.bins.generators.company_name||'',r.fill_pct||'',r.recorded_by||'']);});
+    }else if(key==='invoices'){
+      var data=safeArr(await sbFetch('invoices',{select:'*,generators(company_name)',order:'invoice_date.desc'}));
+      rows=[['Invoice No','Date','Generator','Amount','GST','Total','Status','Due Date','Paid On']];
+      data.forEach(function(i){rows.push([i.invoice_no||'',i.invoice_date||'',i.generators&&i.generators.company_name||'',i.amount||'',i.gst_amount||'',i.total_amount||'',i.status||'',i.due_date||'',i.paid_on||'']);});
+    }else if(key==='drivers'){
+      var data=safeArr(await sbFetch('drivers',{select:'*',order:'full_name.asc'}));
+      rows=[['Driver Code','Name','Mobile','DL No','DL Expiry','Blood Group','Police Verified','Employment','Joining Date','Status']];
+      data.forEach(function(d){rows.push([d.driver_code||'',d.full_name||'',d.mobile||'',d.dl_no||'',d.dl_expiry||'',d.blood_group||'',d.police_verified?'Yes':'No',d.employment_type||'',d.joining_date||'',d.status||'']);});
+    }else if(key==='vehicles'){
+      var data=safeArr(await sbFetch('vehicles',{select:'*',order:'reg_no.asc'}));
+      rows=[['Reg No','Make','Model','Year','Capacity kg','Fitness Expiry','Insurance Expiry','PUC Expiry','Status']];
+      data.forEach(function(v){rows.push([v.reg_no||'',v.make||'',v.model||'',v.manufacture_year||'',v.capacity_kg||'',v.fitness_expiry||'',v.insurance_expiry||'',v.puc_expiry||'',v.status||'']);});
+    }else if(key==='generators'){
+      var data=safeArr(await sbFetch('generators',{select:'*',order:'company_name.asc'}));
+      rows=[['Gen Code','Company','Industry','Contact','Mobile','Email','GSTIN','City','State','PCB No','PCB Expiry','Waste Category','Avg Waste/Day kg','Active']];
+      data.forEach(function(g){rows.push([g.gen_code||'',g.company_name||'',g.industry_type||'',g.contact_person||'',g.mobile||'',g.email||'',g.gstin||'',g.city||'',g.state||'',g.pcb_auth_no||'',g.pcb_expiry||'',g.waste_category||'',g.avg_waste_per_day||'',g.is_active?'Yes':'No']);});
+    }else if(key==='maintenance'){
+      var pm=safeArr(await sbFetch('preventive_maintenance',{select:'*,vehicles(reg_no)',order:'service_date.desc',limit:200}));
+      var rm=safeArr(await sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no)',order:'breakdown_at.desc',limit:200}));
+      rows=[['Type','Code','Vehicle','Date','Description','Cost','Status','Next Due']];
+      pm.forEach(function(p){rows.push(['Preventive',p.pm_code||'',p.vehicles&&p.vehicles.reg_no||'',p.service_date||'',p.pm_type||'',p.parts_cost||'',p.status||'',p.next_service_date||'']);});
+      rm.forEach(function(r){rows.push(['Reactive',r.rm_code||'',r.vehicles&&r.vehicles.reg_no||'',r.breakdown_at||'',r.fault_description||'',r.repair_cost||'',r.status||'','']);});
+    }
+    if(rows.length<=1){success('No data to export yet.');if(btn){btn.textContent='⬇ Export CSV';btn.disabled=false;}return;}
+    csvDownload(filename,rows);
+    if(btn){btn.textContent='⬇ Export CSV';btn.disabled=false;}
+  }catch(e){alert('Export error: '+e.message);}
+}
 function renderReports(){
   var ct=document.getElementById('ct');
-  ct.innerHTML=card('📊 Reports & Export','','<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+['Trip Summary','Fuel Consumption','Bin Fill History','Invoice & Revenue','Driver Compliance','Vehicle Health','Generator Register','Maintenance Due'].map(function(r){return'<div style="background:#1e3048;border-radius:8px;padding:12px;cursor:pointer;border:1px solid rgba(100,160,255,.08)" onclick="alert(\'Report: '+r+' — CSV export coming soon\')"><div style="font-size:13px;font-weight:600;color:#e2eeff">'+r+'</div><div style="font-size:11px;color:#5a7a9a;margin-top:4px">Export as CSV</div></div>';}).join('')+'</div>');
+  var cards=REPORT_DEFS.map(function(r){
+    return '<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px">'
+      +'<div style="font-size:22px">'+r.icon+'</div>'
+      +'<div><div style="font-size:13px;font-weight:700;color:#e2eeff">'+r.label+'</div>'
+      +'<div style="font-size:11px;color:#5a7a9a;margin-top:3px">'+r.desc+'</div></div>'
+      +'<button id="rpbtn-'+r.key+'" class="btn btn-g btn-sm" onclick="exportReport(\''+r.key+'\')">⬇ Export CSV</button>'
+      +'</div>';
+  }).join('');
+  ct.innerHTML=card('📊 Reports & Export',
+    '<span style="font-size:11px;color:#5a7a9a">Click any report to download as CSV</span>',
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:4px">'+cards+'</div>');
 }
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
   var rows=data.map(function(u){return['<div style="font-weight:600">'+u.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+u.email+'</div>',u.phone||'-',badge(u.role==='admin'?'r':u.role==='manager'?'a':u.role==='driver'?'b':'g',u.role),badge(u.is_active?'g':'gr',u.is_active?'Active':'Inactive'),'<div style="display:flex;gap:4px"><button class="btn btn-sm" id="eu'+u.id+'">Edit</button></div>'];});
-  ct.innerHTML=card('👤 User Management','<button class="btn btn-g btn-sm" onclick="newUser()">+ Add User</button>',tbl(['Name & Email','Phone','Role','Status',''],rows),true);setTimeout(wireButtons,150);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+  // EmailJS config card
+  var ejService=localStorage.getItem('ej_service')||'';
+  var ejTemplate=localStorage.getItem('ej_template')||'';
+  var ejKey=localStorage.getItem('ej_pubkey')||'';
+  var ejCard='<div style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:12px;padding:14px;margin-bottom:14px">'
+    +'<div style="font-size:13px;font-weight:600;color:#e2eeff;margin-bottom:10px">📧 EmailJS Configuration <span style="font-size:10px;color:'+(ejService?'#00e676':'#ff9800')+';font-weight:400;margin-left:6px">'+(ejService?'✅ Configured':'⚠️ Not configured')+'</span></div>'
+    +'<div class="fg" style="margin-bottom:10px">'
+    +'<div>'+fld('Service ID','<input id="ej_service" value="'+ejService+'" placeholder="e.g. service_abc123">')+'</div>'
+    +'<div>'+fld('Template ID','<input id="ej_template" value="'+ejTemplate+'" placeholder="e.g. template_xyz789">')+'</div>'
+    +'<div class="full">'+fld('Public Key','<input id="ej_pubkey" value="'+ejKey+'" placeholder="Your EmailJS public key">')+'</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;align-items:center"><button class="btn btn-g btn-sm" onclick="saveEmailJSConfig()">💾 Save Config</button>'
+    +'<button class="btn btn-sm" onclick="testEmailJS()">🔔 Send Test Email</button>'
+    +'<span style="font-size:10px;color:#5a7a9a">Config is saved in your browser only (localStorage)</span></div>'
+    +'</div>';
+  ct.innerHTML=ejCard+card('👤 User Management','<button class="btn btn-g btn-sm" onclick="newUser()">+ Add User</button>',tbl(['Name & Email','Phone','Role','Status',''],rows),true);
+  setTimeout(wireButtons,150);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
+window.saveEmailJSConfig=function(){
+  var s=document.getElementById('ej_service'),t=document.getElementById('ej_template'),k=document.getElementById('ej_pubkey');
+  if(!s||!t||!k){alert('Fill all EmailJS fields.');return;}
+  localStorage.setItem('ej_service',s.value.trim());
+  localStorage.setItem('ej_template',t.value.trim());
+  localStorage.setItem('ej_pubkey',k.value.trim());
+  // Make available globally for approveGen
+  window.EMAILJS_SERVICE_ID=s.value.trim();
+  window.EMAILJS_TEMPLATE_ID=t.value.trim();
+  window.EMAILJS_PUBLIC_KEY=k.value.trim();
+  success('EmailJS config saved! Approval emails will now be sent automatically.');
+  renderUsers();
+};
+window.testEmailJS=async function(){
+  var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');
+  if(!s||!t||!k){alert('Save EmailJS config first.');return;}
+  var email=prompt('Enter your email address to receive a test:');if(!email)return;
+  try{
+    await emailjs.send(s,t,{to_email:email,contact_name:'Test User',company_name:'Test Co',gen_code:'GEN-TEST',bin_code:'BIN-TEST',login_url:window.location.origin,login_email:email,login_pin:'1234'},k);
+    success('Test email sent to '+email+'! Check your inbox.');
+  }catch(e){alert('EmailJS error: '+e.message+'\n\nCheck your Service ID, Template ID and Public Key.');}
+};
+// Load saved EmailJS config on startup
+(function(){var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');if(s)window.EMAILJS_SERVICE_ID=s;if(t)window.EMAILJS_TEMPLATE_ID=t;if(k)window.EMAILJS_PUBLIC_KEY=k;})();
 window.newUser=function(){
   modal('👤 Add User','<div class="fg">'+fld('Full Name',inp('nu_name'),true)+fld('Email',inp('nu_email','','email'),true)+fld('Phone',inp('nu_phone',''))+fld('Role',sel('nu_role',['admin','manager','inspector','driver','generator']),true)+fld('PIN (4 digits)',inp('nu_pin','','password'),true)+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
 };
@@ -1190,6 +1518,27 @@ window.approveGen=async function(id){
   var genId=genResult[0]&&genResult[0].id;var binCode=await sbRpc('next_bin_code');await sbInsert('bins',{bin_code:binCode,generator_id:genId,operation_type:(req.waste_category==='Hazardous'?'B':'A'),container_category:'Wheelie Bin — 240L',capacity_kg:220,waste_category:req.waste_category||'Non-Hazardous',zone:'Main Gate',fill_alert_threshold:80,alert_channel:'WhatsApp+SMS',current_fill_pct:0,status:'Active'});
   var defaultPin=req.mobile?req.mobile.slice(-4):'0000';if(req.email){try{await sbInsert('user_roles',{full_name:req.contact_person,email:req.email,phone:req.mobile,role:'generator',pin:defaultPin,is_active:true});}catch(ue){console.warn('Login not created:',ue);}}
   await sbUpdate('generator_requests',{status:'Approved',reviewed_at:new Date().toISOString()},{id:id});
+  // ── EmailJS: send approval email ──
+  if(req.email){
+    try{
+      var EMAILJS_SERVICE_ID  = window.EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID';
+      var EMAILJS_TEMPLATE_ID = window.EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
+      var EMAILJS_PUBLIC_KEY  = window.EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY';
+      if(EMAILJS_SERVICE_ID!=='YOUR_SERVICE_ID'){
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email:     req.email,
+          contact_name: req.contact_person||req.company_name,
+          company_name: req.company_name,
+          gen_code:     genCode,
+          bin_code:     binCode,
+          login_url:    window.location.origin,
+          login_email:  req.email,
+          login_pin:    defaultPin
+        }, EMAILJS_PUBLIC_KEY);
+        console.log('Approval email sent to', req.email);
+      }
+    }catch(emailErr){console.warn('Email not sent:', emailErr);}
+  }
   alert('✅ Generator '+genCode+' approved!\n📦 Bin '+binCode+' allocated\n'+(req.email?'🔑 Login: '+req.email+' / PIN: '+defaultPin:''));renderGenRequests();}catch(e){alert('Error: '+e.message);}
 };
 window.rejectGen=async function(id){var reason=prompt('Reason for rejection:');if(!reason)return;await sbUpdate('generator_requests',{status:'Rejected',review_notes:reason,reviewed_at:new Date().toISOString()},{id:id});success('Request rejected.');renderGenRequests();};
