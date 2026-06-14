@@ -659,6 +659,8 @@ async function renderPM() {
       '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
       r.pm_type||'-', r.service_date||'-',
       r.odometer_km ? r.odometer_km.toLocaleString()+' km' : '-',
+      r.technician || '-',
+      r.workshop || '-',
       '<div style="display:flex;flex-direction:column;gap:2px">'
         +(r.parts_cost?'<span style="font-size:10px;color:#8ab0d0">Parts: ₹'+Number(r.parts_cost).toLocaleString('en-IN')+'</span>':'')
         +(r.labour_cost?'<span style="font-size:10px;color:#8ab0d0">Labour: ₹'+Number(r.labour_cost).toLocaleString('en-IN')+'</span>':'')
@@ -675,7 +677,7 @@ async function renderPM() {
       +'</div>'
       +card('🔧 Preventive Maintenance',
         '<button class="btn btn-g btn-sm" onclick="newPM()">+ Log PM Service</button>',
-        tbl(['PM ID','Vehicle','Service Type','Date','Odometer','Cost','Next Service','Approval'], rows), true);
+        tbl(['PM ID','Vehicle','Service Type','Date','Odometer','Technician','Workshop','Cost','Next Service','Approval'], rows), true);
 
     window._pmVehicles = vehicles;
   } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
@@ -709,8 +711,15 @@ window.newPM = function() {
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
     +'<div><div class="fl">Odometer (km)</div><input id="pm_odo" type="number" placeholder="e.g. 85000" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Next Service (km)</div><input id="pm_next_km" type="number" placeholder="e.g. 90000" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
     +'<div><div class="fl">Supervisor PIN</div><input id="pm_pin" type="password" placeholder="4 digits" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
-    +'<div><div class="fl">Workshop / Vendor</div><input id="pm_vendor" placeholder="e.g. Tata Motors" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Technician Name</div><input id="pm_technician" placeholder="e.g. Ramesh Kumar" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Workshop / Vendor</div><input id="pm_vendor" placeholder="e.g. Tata Authorised" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr;gap:10px">'
+    +'<div><div class="fl">Notes / Remarks</div><input id="pm_notes" placeholder="Any additional notes..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
     +'</div>'
     // Services checklist table
     +'<div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden">'
@@ -780,11 +789,16 @@ window.savePM = async function() {
         vehicle_id: veh,
         pm_type: toSave[i].label,
         service_date: toSave[i].date,
-        odometer_km: gv('pm_odo') || null,
+        odometer_km: gv('pm_odo') ? parseInt(gv('pm_odo')) : null,
+        technician: gv('pm_technician') || null,
+        workshop: gv('pm_vendor') || null,
         parts_cost: toSave.length === 1 ? parts : null,
         labour_cost: toSave.length === 1 ? labour : null,
-        total_cost: toSave.length === 1 ? parts+labour : null,
+        total_cost: toSave.length === 1 ? (parts+labour) : null,
+        next_service_km: gv('pm_next_km') ? parseInt(gv('pm_next_km')) : null,
         next_service_date: toSave[i].next || null,
+        notes: gv('pm_notes') || null,
+        data_source: 'MANUAL',
         supervisor_pin_verified: gv('pm_pin').length === 4
       });
       created++;
@@ -800,7 +814,7 @@ async function renderRM() {
   var ct = document.getElementById('ct');
   try {
     var [records, vehicles] = await Promise.all([
-      sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no)',order:'breakdown_datetime.desc',limit:50}),
+      sbFetch('reactive_maintenance',{select:'*,vehicles(reg_no)',order:'breakdown_at.desc',limit:50}),
       sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}})
     ]);
     records = safeArr(records); vehicles = safeArr(vehicles);
@@ -808,7 +822,7 @@ async function renderRM() {
     var rows = records.map(function(r) { return [
       '<strong style="font-family:Consolas,monospace;font-size:11px">'+r.rm_code+'</strong>',
       '<span style="font-family:Consolas,monospace;font-size:11px">'+(r.vehicles&&r.vehicles.reg_no||'-')+'</span>',
-      r.breakdown_datetime ? r.breakdown_datetime.split('T')[0] : '-',
+      r.breakdown_at ? r.breakdown_at.split('T')[0] : '-',
       '<div style="font-size:11px;padding:3px 8px;border-radius:20px;display:inline-block;background:rgba(244,67,54,.12);color:#f44336;font-weight:600">'+(r.fault_category||'-')+'</div>',
       r.fault_description ? '<span title="'+r.fault_description.replace(/"/g,"'")+'">'+r.fault_description.slice(0,35)+(r.fault_description.length>35?'…':'')+'</span>' : '-',
       r.repair_cost ? '₹'+Number(r.repair_cost).toLocaleString('en-IN') : '-',
@@ -817,7 +831,7 @@ async function renderRM() {
     ]; });
 
     var pending = records.filter(function(r){ return r.status !== 'Completed'; });
-    var mtdCost = records.filter(function(r){ return r.breakdown_datetime && r.breakdown_datetime.slice(0,7) === new Date().toISOString().slice(0,7); }).reduce(function(s,r){ return s+(r.repair_cost||0); }, 0);
+    var mtdCost = records.filter(function(r){ return r.breakdown_at && r.breakdown_at.slice(0,7) === new Date().toISOString().slice(0,7); }).reduce(function(s,r){ return s+(r.repair_cost||0); }, 0);
 
     ct.innerHTML = '<div class="sg">'
       +sc('#f44336','Open Breakdowns',pending.length,'Pending / In Progress')
@@ -860,9 +874,12 @@ window.newRM = function() {
     +'<div><div class="fl">Status</div><select id="rm_status" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>Pending</option><option>In Progress</option><option>Completed</option></select></div>'
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+    +'<div><div class="fl">Severity</div><select id="rm_severity" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></div>'
     +'<div><div class="fl">Repair Cost (₹)</div><input id="rm_cost" type="number" placeholder="0" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
-    +'<div><div class="fl">Workshop / Vendor</div><input id="rm_vendor" placeholder="e.g. Local Garage" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
-    +'<div><div class="fl">Resolved Date & Time</div><input id="rm_resolved" type="datetime-local" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'<div><div class="fl">Downtime (hours)</div><input id="rm_downtime" type="number" placeholder="e.g. 4.5" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr;gap:10px">'
+    +'<div><div class="fl">Location / Road / Area</div><input id="rm_location" placeholder="e.g. Hazira Road, near Gate 3" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
     +'</div>'
     // Fault type checklist
     +'<div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden">'
@@ -907,11 +924,12 @@ window.saveRM = async function() {
     await sbInsert('reactive_maintenance', {
       rm_code: 'RM-'+Date.now(),
       vehicle_id: veh,
-      breakdown_datetime: dt,
+      breakdown_at: dt,
       fault_category: selectedFaults[0].split(' — ')[0].replace(/^[^a-zA-Z]+/,'').trim(),
       fault_description: selectedFaults.join('; '),
-      status: gv('rm_status') || 'Pending',
-      repair_cost: gv('rm_cost') || null,
+      severity: gv('rm_severity') || 'Medium',
+      location: gv('rm_location') || null,
+      downtime_hours: gv('rm_downtime') ? parseFloat(gv('rm_downtime')) : null,
     });
     closeModal();
     success('Breakdown logged successfully!');
