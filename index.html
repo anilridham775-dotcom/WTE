@@ -997,14 +997,6 @@ async function renderAttendance(){
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 
-window.saveQRLocation=async function(){
-  var name=gv('ql_name'),type=gv('ql_type');if(!name||!type){alert('Name and type required.');return;}
-  try{var code=await sbRpc('next_qr_code');var lat=gv('ql_lat')?parseFloat(gv('ql_lat')):null,lng=gv('ql_lng')?parseFloat(gv('ql_lng')):null;await sbInsert('qr_locations',{qr_code:code,location_name:name,location_type:type,latitude:lat,longitude:lng,radius_meters:gv('ql_radius')||50,description:gv('ql_desc')||null,is_active:true});closeModal();success('QR Location '+code+' created!');renderQRLocations();}catch(e){alert('Error: '+e.message);}
-};
-window.saveQREdit=async function(id){
-  var lat=gv('ql_lat')?parseFloat(gv('ql_lat')):null,lng=gv('ql_lng')?parseFloat(gv('ql_lng')):null;
-  try{await sbUpdate('qr_locations',{location_name:gv('ql_name'),location_type:gv('ql_type'),latitude:lat,longitude:lng,radius_meters:gv('ql_radius')||50,description:gv('ql_desc')||null},{id:id});closeModal();success('QR Location updated!');renderQRLocations();}catch(e){alert('Error: '+e.message);}
-};
 
 
 var SB_URL='https://oddvetoasqjziohmqugg.supabase.co';
@@ -1042,65 +1034,6 @@ async function renderStaff() {
     setTimeout(wireButtons,150);
   } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
 }
-
-window.newStaff = function() {
-  var body = '<div class="fg">'
-    +'<div class="sec">Personal Information</div>'
-    +fld('Full Name',inp('sf_name','Legal full name as per Aadhaar'),true)
-    +fld('Designation','<select id="sf_desig"><option>Driver</option><option>Cleaner</option><option>WTE-Inspector</option><option>WTE-Manager</option><option>Admin</option><option>Security</option></select>',true)
-    +fld('Mobile',inp('sf_mobile','+91 XXXXXXXXXX'),true)
-    +fld('Email',inp('sf_email','email@company.com','email'))
-    +fld('Date of Birth',inp('sf_dob','','date'))
-    +fld('Blood Group','<select id="sf_blood"><option value="">-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>')
-    +fld('Gender','<select id="sf_gender"><option value="">-</option><option>Male</option><option>Female</option><option>Other</option></select>')
-    +'<div class="sec">Aadhaar Details</div>'
-    +fld('Aadhaar Number',inp('sf_aadhaar','XXXX XXXX XXXX'))
-    +fld('Aadhaar Verified','<select id="sf_aadv"><option value="false">Pending</option><option value="true">Verified</option></select>')
-    +'<div class="sec">Address</div>'
-    +fld('Address Line 1',inp('sf_addr1','House/Flat, Street'),true)
-    +fld('Address Line 2',inp('sf_addr2','Area, Landmark'))
-    +fld('City',inp('sf_city','City'),true)
-    +fld('State',inp('sf_state','State'))
-    +fld('PIN Code',inp('sf_pin','400001'))
-    +'<div class="sec">Emergency Contact</div>'
-    +fld('Contact Name',inp('sf_ecname','Full name'))
-    +fld('Contact Mobile',inp('sf_ecmob','+91 XXXXXXXXXX'))
-    +fld('Relation',inp('sf_ecrel','Spouse / Parent / Sibling'))
-    +'<div class="sec">Employment</div>'
-    +fld('Joining Date',inp('sf_join','','date'))
-    +fld('Employment Type','<select id="sf_emp"><option>Permanent</option><option>Contract</option><option>Outsourced</option></select>')
-    +fld('Department',inp('sf_dept','Operations / Fleet / Compliance'))
-    +fld('Reporting To',inp('sf_report','Manager name'))
-    +'</div>';
-  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
-    +'<button class="btn btn-g btn-sm" onclick="saveStaff()">Register Staff</button>';
-  modal('👥 Register Staff Member',body,foot);
-};
-
-window.saveStaff = async function() {
-  var name=gv('sf_name'),mobile=gv('sf_mobile'),desig=gv('sf_desig'),city=gv('sf_city'),addr=gv('sf_addr1');
-  if(!name||!mobile||!desig||!addr||!city){alert('Name, mobile, designation, address and city required.');return;}
-  try {
-    var code = await sbRpc('next_staff_code');
-    await sbInsert('staff_profiles',{
-      staff_code:code, full_name:name, designation:desig, mobile:mobile,
-      email:gv('sf_email')||null, date_of_birth:gv('sf_dob')||null,
-      blood_group:gv('sf_blood')||null, gender:gv('sf_gender')||null,
-      aadhaar_no:gv('sf_aadhaar')||null, aadhaar_verified:gv('sf_aadv')==='true',
-      address_line1:addr, address_line2:gv('sf_addr2')||null,
-      city:city, state:gv('sf_state')||null, pincode:gv('sf_pin')||null,
-      emergency_contact_name:gv('sf_ecname')||null,
-      emergency_contact_mobile:gv('sf_ecmob')||null,
-      emergency_contact_relation:gv('sf_ecrel')||null,
-      joining_date:gv('sf_join')||null, employment_type:gv('sf_emp'),
-      department:gv('sf_dept')||null, reporting_to:gv('sf_report')||null,
-      is_active:true
-    });
-    closeModal();
-    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Staff '+code+' registered!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
-    renderStaff();
-  } catch(e){alert('Error: '+e.message);}
-};
 
 // ── ROLE PERMISSIONS ──────────────────────────────────────
 async function renderRoles() {
@@ -1187,166 +1120,6 @@ async function renderGenRequests() {
     },150);
   } catch(e) { ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
 }
-
-window.editGenRequest = async function(id) {
-  var req = await sbFetch('generator_requests',{select:'*',eq:{id:id}});
-  var r = req[0]; if(!r) return;
-
-  var body = '<div class="fg">'
-    +'<div style="grid-column:1/-1;padding:8px 12px;background:rgba(255,152,0,.08);border-left:3px solid #ff9800;border-radius:6px;font-size:12px;color:#ff9800;margin-bottom:4px">Editing request '+r.request_code+' — changes will be saved before approval</div>'
-    +'<div class="sec">Company Information</div>'
-    +fld('Company Name','<input id="er_name" value="'+(r.company_name||'').replace(/"/g,"&quot;")+'">',true)
-    +fld('Industry Type','<select id="er_ind"><option>Chemical</option><option>Petrochemical</option><option>Textile</option><option>Pharmaceutical</option><option>Metal/Foundry</option><option>Food Processing</option><option>Cement</option><option>Refinery</option><option>Power Plant</option><option>Other</option></select>')
-    +fld('Contact Person','<input id="er_contact" value="'+(r.contact_person||'').replace(/"/g,"&quot;")+'">',true)
-    +fld('Mobile','<input id="er_mobile" value="'+(r.mobile||'').replace(/"/g,"&quot;")+'">',true)
-    +fld('Email','<input id="er_email" type="email" value="'+(r.email||'').replace(/"/g,"&quot;")+'">') 
-    +fld('GSTIN','<input id="er_gstin" value="'+(r.gstin||'').replace(/"/g,"&quot;")+'">') 
-    +'<div class="sec">PCB Authorization</div>'
-    +fld('PCB Auth No.','<input id="er_pcb" value="'+(r.pcb_auth_no||'').replace(/"/g,"&quot;")+'">') 
-    +fld('PCB Expiry','<input id="er_pcbexp" type="date" value="'+(r.pcb_expiry||'')+'">') 
-    +'<div class="sec">Address</div>'
-    +'<div class="full">'+fld('Address','<input id="er_addr" value="'+(r.address||'').replace(/"/g,"&quot;")+'">',true)+'</div>'
-    +fld('City','<input id="er_city" value="'+(r.city||'').replace(/"/g,"&quot;")+'">',true)
-    +fld('State','<input id="er_state" value="'+(r.state||'').replace(/"/g,"&quot;")+'">') 
-    +fld('PIN Code','<input id="er_pin" value="'+(r.pincode||'').replace(/"/g,"&quot;")+'">') 
-    +'<div class="sec">GPS Location</div>'
-    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:11.5px;color:#9ab8d4">Plant GPS Coordinates</span><button type="button" onclick="showLocationPicker("g_lat","g_lng","gen-loc-status","gen-maps-link")" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(100,160,255,.3);background:#1e3048;color:#00e676;cursor:pointer;font-size:11px;font-family:inherit">📍 Pick Location</button></div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="g_lat" placeholder="Latitude" value="'+(r.latitude||'')+'"><input id="g_lng" placeholder="Longitude" value="'+(r.longitude||'')+'"></div>'
-    +'<div id="gen-loc-status" style="font-size:11px;color:#8ab0d0;margin-top:4px"></div>'
-    +(r.latitude&&r.longitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+r.latitude+','+r.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">🗺️ Current location on Maps →</a></div>':'')
-    +'</div>'
-    +'<div class="sec">Waste Details</div>'
-    +fld('Avg Waste/Day (kg)','<input id="er_waste" type="number" value="'+(r.avg_waste_per_day||'')+'">') 
-    +fld('Waste Category','<select id="er_cat"><option>Hazardous</option><option>Non-Hazardous</option><option>Mixed</option><option>Biomedical</option></select>',true)
-    +'<div class="full">'+fld('Review Notes','<textarea id="er_notes" rows="2" placeholder="Optional notes for approval..."></textarea>')+'</div>'
-    +'</div>';
-
-  var _eid2 = id;
-  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" id="segrbtn">Save Only</button><button class="btn btn-g btn-sm" id="seapbtn">Save and Approve</button>';
-  modal('Edit Generator Request', body, foot);
-  setTimeout(function(){
-    document.getElementById('er_ind').value = r.industry_type||'';
-    document.getElementById('er_cat').value = r.waste_category||'';
-    var sb2=document.getElementById('segrbtn');if(sb2)sb2.onclick=function(){saveEditGenRequest(_eid2);};
-    var ab2=document.getElementById('seapbtn');if(ab2)ab2.onclick=function(){saveEditAndApprove(_eid2);};
-  },50);
-};
-
-window.saveEditGenRequest = async function(id) {
-  try {
-    await sbUpdate('generator_requests',{
-      company_name:name, industry_type:gv('er_ind'),
-      contact_person:contact, mobile:mobile, email:gv('er_email')||null,
-      gstin:gv('er_gstin')||null, pcb_auth_no:gv('er_pcb')||null,
-      pcb_expiry:gv('er_pcbexp')||null, address:addr, city:city,
-      state:gv('er_state')||null, pincode:gv('er_pin')||null,
-      avg_waste_per_day:gv('er_waste')||null, waste_category:gv('er_cat'),
-      latitude:gv('g_lat')?parseFloat(gv('g_lat')):null,
-      longitude:gv('g_lng')?parseFloat(gv('g_lng')):null,
-    },{id:id});
-    closeModal();
-    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Request updated successfully!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
-    renderGenRequests();
-  } catch(e){alert('Error: '+e.message);}
-};
-
-window.saveEditAndApprove = async function(id) {
-  var name=gv('er_name'),contact=gv('er_contact'),mobile=gv('er_mobile'),addr=gv('er_addr'),city=gv('er_city');
-  if(!name||!contact||!mobile||!addr||!city){alert('Please fill all required fields.');return;}
-  try {
-    // First save the edits
-    await sbUpdate('generator_requests',{
-      company_name:name, industry_type:gv('er_ind'),
-      contact_person:contact, mobile:mobile, email:gv('er_email')||null,
-      gstin:gv('er_gstin')||null, pcb_auth_no:gv('er_pcb')||null,
-      pcb_expiry:gv('er_pcbexp')||null, address:addr, city:city,
-      state:gv('er_state')||null, pincode:gv('er_pin')||null,
-      avg_waste_per_day:gv('er_waste')||null, waste_category:gv('er_cat'),
-      latitude:gv('g_lat')?parseFloat(gv('g_lat')):null,
-      longitude:gv('g_lng')?parseFloat(gv('g_lng')):null,
-    },{id:id});
-    closeModal();
-    // Then approve
-    await approveGen(id);
-  } catch(e){alert('Error: '+e.message);}
-};
-
-window.approveGen = async function(id) {
-  var notes = prompt('Approval notes (optional):') || 'Approved';
-  try {
-    var req = await sbFetch('generator_requests',{select:'*',eq:{id:id}});
-    var r = req[0]; if(!r) return;
-
-    // Step 1: Create Generator
-    var genCode = await sbRpc('next_gen_code');
-    var genResult = await sbInsert('generators',{
-      gen_code:genCode, company_name:r.company_name, industry_type:r.industry_type,
-      contact_person:r.contact_person, mobile:r.mobile, email:r.email,
-      gstin:r.gstin, pcb_auth_no:r.pcb_auth_no, pcb_expiry:r.pcb_expiry,
-      address:r.address, city:r.city, state:r.state, pincode:r.pincode,
-      avg_waste_per_day:r.avg_waste_per_day, waste_category:r.waste_category,
-      is_active:true
-    });
-    var genId = genResult[0] && genResult[0].id;
-
-    // Step 2: Auto-allocate a default bin
-    var binCode = await sbRpc('next_bin_code');
-    var wasteCategory = r.waste_category || 'Non-Hazardous';
-    var binType = wasteCategory === 'Hazardous' ? 'B' : 'A';
-    await sbInsert('bins',{
-      bin_code:binCode,
-      generator_id:genId,
-      operation_type:binType,
-      container_category:'Wheelie Bin — 240L',
-      body_material:'HDPE Plastic',
-      capacity_kg:220,
-      waste_category:wasteCategory,
-      hazard_class:'Not applicable',
-      zone:'Main Gate',
-      tag_technology:'QR Code',
-      fill_alert_threshold:80,
-      alert_channel:'WhatsApp+SMS',
-      current_fill_pct:0,
-      status:'Active'
-    });
-
-    // Step 3: Create login account for generator contact
-    if(r.email){
-      var defaultPin = r.mobile ? r.mobile.slice(-4) : '0000';
-      try {
-        await sbInsert('user_roles',{
-          full_name:r.contact_person,
-          email:r.email,
-          phone:r.mobile,
-          role:'generator',
-          pin:defaultPin,
-          is_active:true
-        });
-      } catch(ue){ console.warn('Login not created:',ue); }
-    }
-
-    // Step 4: Update request status
-    await sbUpdate('generator_requests',{
-      status:'Approved',
-      review_notes:notes,
-      reviewed_at:new Date().toISOString()
-    },{id:id});
-
-    // Show success
-    var msg = '✅ Generator '+genCode+' approved!\n'
-      +'📦 Bin '+binCode+' auto-allocated\n'
-      +(r.email ? '🔑 Login created: '+r.email+' / PIN: '+r.mobile.slice(-4) : '');
-    alert(msg);
-    renderGenRequests();
-  } catch(e){alert('Error: '+e.message);}
-};
-
-window.rejectGen = async function(id) {
-  var notes = prompt('Reason for rejection:');
-  if(!notes) return;
-  await sbUpdate('generator_requests',{status:'Rejected',review_notes:notes,reviewed_at:new Date().toISOString()},{id:id});
-  renderGenRequests();
-};
 
 window.showGenRegForm = function() {
   var body = '<div class="fg">'
@@ -1580,30 +1353,6 @@ window.newPaymentForInvoice = function(invoiceId, inv) {
   modal("Record Payment", body, foot);
   setTimeout(function(){var b=document.getElementById("spbtn");if(b){b.onclick=function(){savePayment(window._pay_inv);};}},50);
 };
-window.newPayment = function() {
-  window.newPaymentForInvoice(null,null);
-};
-
-window.savePayment = async function(invoiceId) {
-  var date=gv('pay_date'),amt=gv('pay_amt');
-  if(!date||!amt){alert('Date and amount required.');return;}
-  try {
-    var code = await sbRpc('next_payment_code');
-    await sbInsert('payments',{
-      payment_code:code, invoice_id:invoiceId||null,
-      payment_date:date, amount:parseFloat(amt),
-      payment_mode:gv('pay_mode'), transaction_ref:gv('pay_ref')||null,
-      bank_name:gv('pay_bank')||null, remarks:gv('pay_remarks')||null
-    });
-    if(invoiceId) {
-      await sbUpdate('invoices',{payment_status:'Paid',paid_at:new Date().toISOString()},{id:invoiceId});
-    }
-    closeModal();
-    setTimeout(function(){var s=document.createElement('div');s.className='alert al-g';s.textContent='Payment '+code+' recorded!';document.getElementById('ct').prepend(s);setTimeout(function(){s.remove();},4000);},100);
-    renderPayments();
-  } catch(e){alert('Error: '+e.message);}
-};
-
 // ── GENERATOR SELF-REGISTRATION (Public Form) ─────────────
 function checkPublicRegistration() {
   var params = new URLSearchParams(window.location.search);
@@ -1714,37 +1463,6 @@ window.detectGenLocation = function() {
     {enableHighAccuracy:true,timeout:10000}
   );
 };
-
-window.submitPublicGenForm = async function() {
-  var name=gv('pg_name'),contact=gv('pg_contact'),mobile=gv('pg_mobile'),addr=gv('pg_addr'),city=gv('pg_city');
-  if(!name||!contact||!mobile||!addr||!city){
-    document.getElementById('pub-msg').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:10px 14px;border-radius:6px;color:#f44336;margin-bottom:12px">Please fill all required fields.</div>';
-    return;
-  }
-  try {
-    var code = await sbRpc('next_request_code');
-    var lat = gv('pg_lat')||null;
-    var lng = gv('pg_lng')||null;
-    await sbInsert('generator_requests',{
-      request_code:code, company_name:name, industry_type:gv('pg_ind'),
-      contact_person:contact, mobile:mobile, email:gv('pg_email')||null,
-      gstin:gv('pg_gstin')||null, pcb_auth_no:gv('pg_pcb')||null,
-      pcb_expiry:gv('pg_pcbexp')||null, address:addr, city:city,
-      state:gv('pg_state')||null, pincode:gv('pg_pin')||null,
-      avg_waste_per_day:gv('pg_waste')||null, waste_category:gv('pg_cat'),
-      latitude:lat?parseFloat(lat):null, longitude:lng?parseFloat(lng):null,
-      status:'Pending'
-    });
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;text-align:center;padding:20px">'
-      +'<div style="font-size:60px">✅</div>'
-      +'<div style="font-family:Consolas,monospace;font-size:20px;color:#00e676">Registration Submitted!</div>'
-      +'<div style="font-size:14px;color:#8ab0d0;max-width:400px">Your request <strong style="color:#e2eeff">'+code+'</strong> has been submitted. Our team will review and contact you within 24 hours.</div>'
-      +'</div>';
-  } catch(e) {
-    document.getElementById('pub-msg').innerHTML='<div style="background:rgba(244,67,54,.1);border-left:3px solid #f44336;padding:10px 14px;border-radius:6px;color:#f44336;margin-bottom:12px">Error: '+e.message+'</div>';
-  }
-};
-
 
 // ── AUTO TRIP PLANNER ─────────────────────────────────────
 async function autoTripPlanner() {
@@ -2021,74 +1739,6 @@ async function renderGeneratorPortal() {
     gpc.innerHTML = '<div style="background:rgba(244,67,54,.08);border-left:3px solid #f44336;padding:12px;border-radius:6px;color:#f44336">Error: '+e.message+'</div>';
   }
 }
-
-window.genUpdateFill = function(binId, binCode) {
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px';
-  overlay.innerHTML = '<div style="background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;width:320px;padding:20px">'
-    +'<div style="font-size:15px;font-weight:700;color:#e2eeff;margin-bottom:16px">📊 Update Fill Level — '+binCode+'</div>'
-    +'<div style="margin-bottom:12px">'
-    +'<div style="font-size:11px;color:#9ab8d4;margin-bottom:6px">Current Fill Level (%)</div>'
-    +'<input id="gf_pct" type="number" min="0" max="100" placeholder="e.g. 85" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:16px;width:100%;font-family:Consolas,monospace;text-align:center">'
-    +'</div>'
-    +'<div style="margin-bottom:16px">'
-    +'<div style="font-size:11px;color:#9ab8d4;margin-bottom:6px">Notes (optional)</div>'
-    +'<textarea id="gf_note" rows="2" placeholder="Waste type, observations..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:12px;width:100%;font-family:inherit;resize:none"></textarea>'
-    +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-    +'<button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:#0f1724;color:#8ab0d0;cursor:pointer;font-family:inherit">Cancel</button>'
-    +'<button onclick="window._gfBinId=\''+binId+'\';doGenUpdateFill(window._gfBinId)" style="padding:10px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-family:inherit">Save Update</button>'
-    +'</div></div>';
-  document.body.appendChild(overlay);
-  document.getElementById('gf_pct').focus();
-};
-
-window.doGenUpdateFill = async function(binId) {
-  var pct = parseInt(document.getElementById('gf_pct').value);
-  if(isNaN(pct)||pct<0||pct>100){alert('Please enter a valid fill level (0-100).');return;}
-  try {
-    var newStatus = pct >= 95 ? 'Critical' : pct >= 80 ? 'Warning' : 'Active';
-    await sbUpdate('bins',{current_fill_pct:pct, status:newStatus},{id:binId});
-    await sbInsert('bin_fill_readings',{bin_id:binId,fill_pct:pct,data_source:'GENERATOR-PORTAL',notes:document.getElementById('gf_note').value||null,supervisor_pin_verified:false});
-    
-    // Remove overlay
-    document.querySelectorAll('div[style*="position:fixed"]').forEach(function(el){el.remove();});
-    
-    // Show success flash
-    var flash = document.createElement('div');
-    flash.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#00e676;color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap';
-    flash.textContent = 'Fill level updated to '+pct+'%'+(pct>=95?' — Pickup alert triggered!':'');
-    document.body.appendChild(flash);
-    setTimeout(function(){flash.remove();},3000);
-
-    // If critical, auto-trigger planner
-    if(pct >= 95) {
-      setTimeout(autoTripPlanner, 500);
-    }
-    
-    renderGeneratorPortal();
-  } catch(e){alert('Error: '+e.message);}
-};
-
-window.genRequestPickup = async function(binId, binCode) {
-  if(!confirm('Request urgent pickup for bin '+binCode+'?\n\nThis will notify EcoLoop operations team immediately.')) return;
-  try {
-    // Mark bin as critical
-    await sbUpdate('bins',{status:'Critical'},{id:binId});
-    // Auto-trigger planner
-    var result = await autoTripPlanner();
-    
-    var msg = '🚨 Pickup request submitted for '+binCode+'!\n\n';
-    if(result.triggered && result.trips.length > 0) {
-      msg += 'Trip automatically created: '+result.trips[0].trip+'\nVehicle: '+result.trips[0].vehicle+'\nDriver: '+result.trips[0].driver;
-    } else {
-      msg += 'Operations team has been notified. A vehicle will be assigned shortly.';
-    }
-    alert(msg);
-    renderGeneratorPortal();
-  } catch(e){alert('Error: '+e.message);}
-};
-
 
 // ── PROCESSING SITES (Yards, Crushers, Boilers) ──────────
 async function renderSites() {
@@ -2596,18 +2246,14 @@ function generateQRSVG(text, size) {
 }
 
 // ── QR LOCATIONS MODULE ───────────────────────────────────
+
+// ── QR LOCATIONS (complete replacement) ──────────────────
 async function renderQRLocations() {
   var ct = document.getElementById('ct');
   try {
-    var [locations, vehicles] = await Promise.all([
-      sbFetch('qr_locations',{select:'*',order:'location_type,location_name'}),
-      sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}),
-    ]);
-    locations = safeArr(locations);
-    vehicles = safeArr(vehicles);
-
+    var locations = safeArr(await sbFetch('qr_locations',{select:'*',order:'location_type,location_name'}));
     var html = '<div class="sg">'
-      +sc('#2196f3','Total QR Codes',locations.length,'Registered')
+      +sc('#2196f3','Total QR Codes',locations.length,'')
       +sc('#00e676','Active',locations.filter(function(l){return l.is_active;}).length,'')
       +sc('#ff9800','Yard/Parking',locations.filter(function(l){return l.location_type==='Yard'||l.location_type==='Parking';}).length,'')
       +sc('#9c27b0','Vehicles',locations.filter(function(l){return l.location_type==='Vehicle';}).length,'')
@@ -2617,49 +2263,142 @@ async function renderQRLocations() {
       +'<button class="btn btn-g btn-sm" onclick="newQRLocation()">+ Add QR Location</button></div>'
       +'<div class="cb"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">';
 
-    locations.forEach(function(loc) {
-      var typeColor = loc.location_type==='Yard'?'#2196f3':loc.location_type==='Parking'?'#ff9800':loc.location_type==='Vehicle'?'#9c27b0':loc.location_type==='Office'?'#00e676':'#f44336';
-      var typeIcon = loc.location_type==='Yard'?'🏗️':loc.location_type==='Parking'?'🅿️':loc.location_type==='Vehicle'?'🚛':loc.location_type==='Office'?'🏢':'🏭';
+    if(locations.length === 0) {
+      html += '<div style="padding:30px;text-align:center;color:#5a7a9a;grid-column:1/-1">No QR locations created yet. Click <strong>+ Add QR Location</strong> to create one.</div>';
+    }
 
-      html += '<div style="background:#0f1724;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px">'
+    locations.forEach(function(loc) {
+      var typeColor = loc.location_type==='Yard'?'#2196f3':loc.location_type==='Parking'?'#ff9800':loc.location_type==='Vehicle'?'#9c27b0':'#00e676';
+      var typeIcon = loc.location_type==='Yard'?'🏗️':loc.location_type==='Parking'?'🅿️':loc.location_type==='Vehicle'?'🚛':'📍';
+      html += '<div style="background:#0f1724;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px">'
         +'<div style="font-size:11px;font-weight:700;color:'+typeColor+'">'+typeIcon+' '+loc.location_type+'</div>'
         +generateQRSVG(loc.qr_code, 140)
         +'<div style="text-align:center">'
         +'<div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">'+loc.qr_code+'</div>'
         +'<div style="font-size:12px;color:#e2eeff;font-weight:600;margin-top:2px">'+loc.location_name+'</div>'
-        +(loc.latitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+loc.latitude+','+loc.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 View on Maps</a></div>':'<div style="font-size:10px;color:#5a7a9a;margin-top:4px">No GPS set</div>')
-        +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">Radius: '+loc.radius_meters+'m</div>'
+        +(loc.latitude?'<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+loc.latitude+','+loc.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 Maps</a></div>':'')
+        +'<div style="font-size:10px;color:#5a7a9a;margin-top:2px">Radius: '+(loc.radius_meters||50)+'m</div>'
         +'</div>'
         +'<div style="display:flex;gap:6px">'
-        +'<button class="btn btn-sm" id="pq'+loc.id+'">Print</button>'
+        +'<button class="btn btn-sm" id="pq'+loc.id+'" data-qc="'+loc.qr_code+'" data-qn="'+loc.location_name+'">Print</button>'
         +'<button class="btn btn-sm" id="eql'+loc.id+'">Edit</button>'
         +'</div></div>';
     });
 
     html += '</div></div></div>';
     ct.innerHTML = html;
+
     setTimeout(function(){
       document.querySelectorAll('[id^="eql"]').forEach(function(b){
         var id=b.id.slice(3); b.onclick=function(){editQRLocation(id);};
       });
+      document.querySelectorAll('[id^="pq"]').forEach(function(b){
+        var qc=b.getAttribute('data-qc'); var qn=b.getAttribute('data-qn');
+        b.onclick=function(){printQR(qc,qn);};
+      });
     },150);
-    window._qrVehicles = vehicles;
   } catch(e){ ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>'; }
 }
 
-window.printQR = function(code, name) {
-  var svg = generateQRSVG(code, 250);
-  var win = window.open('','_blank');
-  win.document.write('<html><body style="display:flex;flex-direction:column;align-items:center;padding:30px;font-family:Arial">'
-    +'<h2 style="margin-bottom:4px">EcoLoop Pro</h2>'
-    +'<p style="color:#666;margin-bottom:16px">Attendance QR Code</p>'
-    +svg
-    +'<h3 style="margin-top:12px;font-family:Consolas">'+code+'</h3>'
-    +'<p style="font-size:16px;font-weight:bold">'+name+'</p>'
-    +'<p style="color:#999;font-size:12px">Scan to mark attendance</p>'
-    +'<sc'+'ript>window.print();<'+'/sc'+'ript>'
-  +'</body></html>');
+window.newQRLocation = function() {
+  var body = '<div class="fg">'
+    +fld('Location Name',inp('ql_name','e.g. Main Gate, Vehicle GJ-05-AB-1234'),true)
+    +fld('Location Type',sel('ql_type',['Yard','Parking','Vehicle','Office','Weighbridge','Gate']),true)
+    +fld('GPS Radius (metres)',inp('ql_radius','50','number'))
+    +'<div class="full">'+fld('Description',inp('ql_desc','Optional description'))+'</div>'
+    +'<div class="sec">Location — Search address or use GPS to auto-fill</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<span style="font-size:11.5px;color:#9ab8d4">GPS Coordinates</span>'
+    +'<button type="button" onclick="showLocationPicker(\"ql_lat\",\"ql_lng\",\"qr-loc-status\",\"qr-maps-link\")" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(0,230,118,.4);background:rgba(0,230,118,.08);color:#00e676;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">📍 Search & Pick Location</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
+    +'<input id="ql_lat" placeholder="Latitude (auto-filled)">'
+    +'<input id="ql_lng" placeholder="Longitude (auto-filled)">'
+    +'</div>'
+    +'<div id="qr-loc-status" style="font-size:11px;color:#8ab0d0"></div>'
+    +'<div id="qr-maps-link" style="margin-top:4px"></div>'
+    +'</div>'
+    +'</div>';
+  modal('📱 Add QR Location', body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveQRLocation()">Create QR Code</button>');
 };
+
+window.saveQRLocation = async function() {
+  var name = gv('ql_name'), type = gv('ql_type');
+  if(!name || !type) { alert('Location name and type are required.'); return; }
+  try {
+    var code = await sbRpc('next_qr_code');
+    var lat = gv('ql_lat') ? parseFloat(gv('ql_lat')) : null;
+    var lng = gv('ql_lng') ? parseFloat(gv('ql_lng')) : null;
+    await sbInsert('qr_locations', {
+      qr_code: code,
+      location_name: name,
+      location_type: type,
+      latitude: lat,
+      longitude: lng,
+      radius_meters: parseInt(gv('ql_radius')) || 50,
+      description: gv('ql_desc') || null,
+      is_active: true
+    });
+    closeModal();
+    success('QR Location ' + code + ' created! Print the QR code and display it at the location.');
+    renderQRLocations();
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.editQRLocation = async function(id) {
+  var locs = await sbFetch('qr_locations',{select:'*',eq:{id:id}});
+  var loc = safeArr(locs)[0]; if(!loc) return;
+  var body = '<div class="fg">'
+    +fld('Location Name','<input id="ql_name" value="'+loc.location_name.replace(/"/g,'&quot;')+'">',true)
+    +fld('Location Type',sel('ql_type',['Yard','Parking','Vehicle','Office','Weighbridge','Gate']))
+    +fld('GPS Radius (metres)','<input id="ql_radius" type="number" value="'+(loc.radius_meters||50)+'">')
+    +'<div class="full">'+fld('Description','<input id="ql_desc" value="'+(loc.description||'').replace(/"/g,'&quot;')+'">')+'</div>'
+    +'<div class="sec">Location — Search address or use GPS to update</div>'
+    +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<span style="font-size:11.5px;color:#9ab8d4">GPS Coordinates</span>'
+    +'<button type="button" onclick="showLocationPicker(\"ql_lat\",\"ql_lng\",\"qr-loc-status\",\"qr-maps-link\")" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(0,230,118,.4);background:rgba(0,230,118,.08);color:#00e676;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">📍 Search & Pick Location</button>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">'
+    +'<input id="ql_lat" placeholder="Latitude" value="'+(loc.latitude||'')+'">'
+    +'<input id="ql_lng" placeholder="Longitude" value="'+(loc.longitude||'')+'">'
+    +'</div>'
+    +(loc.latitude ? '<div style="margin-top:4px"><a href="https://www.google.com/maps?q='+loc.latitude+','+loc.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 Current location on Google Maps →</a></div>' : '<div id="qr-loc-status" style="font-size:11px;color:#8ab0d0"></div><div id="qr-maps-link"></div>')
+    +'</div>'
+    +fld('Status',sel('ql_active',['true','false']))
+    +'</div>';
+  var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" id="sqebtn">Save Changes</button>';
+  modal('Edit QR — ' + loc.qr_code, body, foot);
+  setTimeout(function(){
+    document.getElementById('ql_type').value = loc.location_type || 'Yard';
+    document.getElementById('ql_active').value = String(loc.is_active);
+    var sb = document.getElementById('sqebtn');
+    if(sb) { var lid = id; sb.onclick = function(){ saveQREdit(lid); }; }
+  }, 50);
+};
+
+window.saveQREdit = async function(id) {
+  var lat = gv('ql_lat') ? parseFloat(gv('ql_lat')) : null;
+  var lng = gv('ql_lng') ? parseFloat(gv('ql_lng')) : null;
+  try {
+    await sbUpdate('qr_locations', {
+      location_name: gv('ql_name'),
+      location_type: gv('ql_type'),
+      latitude: lat,
+      longitude: lng,
+      radius_meters: parseInt(gv('ql_radius')) || 50,
+      description: gv('ql_desc') || null,
+      is_active: gv('ql_active') === 'true'
+    }, {id: id});
+    closeModal();
+    success('QR Location updated!');
+    renderQRLocations();
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+
 
 </script>
 </body>
