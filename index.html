@@ -2305,7 +2305,7 @@ window.newQRLocation = function() {
     +fld('Location Name',inp('ql_name','e.g. Main Gate, Vehicle GJ-05-AB-1234'),true)
     +fld('Location Type',sel('ql_type',['Yard','Parking','Vehicle','Office','Weighbridge','Gate']),true)
     +fld('GPS Radius (metres)',inp('ql_radius','50','number'))
-    +'<div class="full">'+fld('Description',inp('ql_desc','Optional description'))+'</div>'
+    +'<div class="full">'+'</div>'
     +'<div class="sec">Location — Search address or use GPS to auto-fill</div>'
     +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
     +'<span style="font-size:11.5px;color:#9ab8d4">GPS Coordinates</span>'
@@ -2338,7 +2338,6 @@ window.saveQRLocation = async function() {
       latitude: lat,
       longitude: lng,
       radius_meters: parseInt(gv('ql_radius')) || 50,
-      description: gv('ql_desc') || null,
       is_active: true
     });
     closeModal();
@@ -2354,7 +2353,6 @@ window.editQRLocation = async function(id) {
     +fld('Location Name','<input id="ql_name" value="'+loc.location_name.replace(/"/g,'&quot;')+'">',true)
     +fld('Location Type',sel('ql_type',['Yard','Parking','Vehicle','Office','Weighbridge','Gate']))
     +fld('GPS Radius (metres)','<input id="ql_radius" type="number" value="'+(loc.radius_meters||50)+'">')
-    +'<div class="full">'+fld('Description','<input id="ql_desc" value="'+(loc.description||'').replace(/"/g,'&quot;')+'">')+'</div>'
     +'<div class="sec">Location — Search address or use GPS to update</div>'
     +'<div class="full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
     +'<span style="font-size:11.5px;color:#9ab8d4">GPS Coordinates</span>'
@@ -2389,7 +2387,6 @@ window.saveQREdit = async function(id) {
       latitude: lat,
       longitude: lng,
       radius_meters: parseInt(gv('ql_radius')) || 50,
-      description: gv('ql_desc') || null,
       is_active: gv('ql_active') === 'true'
     }, {id: id});
     closeModal();
