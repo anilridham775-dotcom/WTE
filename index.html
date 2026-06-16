@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1724;color:#e2eeff;height:100vh;width:100vw;display:flex;overflow:hidden;margin:0;padding:0}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#2a4066;border-radius:3px}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#0f1724}::-webkit-scrollbar-thumb{background:#2a4066;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#3a5a8a}.tbl-wrap::-webkit-scrollbar{width:6px;height:6px}.tbl-wrap::-webkit-scrollbar-thumb{background:#2a6090;border-radius:3px}
 #sb{width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 #tb{background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -55,7 +55,7 @@ input:focus,select:focus,textarea:focus{border-color:#00e676}
 .full{grid-column:1/-1}
 
 /* ── SEARCH + TABLE UPGRADES ── */
-.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:72vh;border-radius:0 0 10px 10px}
+.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px);min-height:120px;border-radius:0 0 10px 10px}
 .tbl-wrap table{width:100%;min-width:600px;border-collapse:collapse;font-size:12.5px}
 .tbl-wrap thead tr th{position:sticky;top:0;z-index:5;background:#0a1220;text-align:left;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2);white-space:nowrap}
 .tbl-wrap td{padding:9px 12px;color:#8ab0d0;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;white-space:nowrap}
@@ -1558,9 +1558,12 @@ function renderRoles(){
   var ct=document.getElementById('ct');
   var roles=['admin','manager','inspector','driver','generator'];
   var modules=Object.keys(PAGE_TITLES);
-  var html='<div style="overflow-x:auto"><table><thead><tr><th>Module</th>'+roles.map(function(r){return'<th style="text-align:center">'+r+'</th>';}).join('')+'</tr></thead><tbody>';
-  modules.forEach(function(mod){html+='<tr><td style="font-size:12px">'+PAGE_TITLES[mod]+'</td>';roles.forEach(function(r){var acc=ROLE_ACCESS[r]||[];html+='<td style="text-align:center">'+(acc.includes(mod)?'<span style="color:#00e676;font-size:14px">✓</span>':'<span style="color:#1e3048;font-size:12px">—</span>')+'</td>';});html+='</tr>';});
-  html+='</tbody></table></div>';ct.innerHTML=card('🔐 Role Permissions Matrix','',html,true);
+  var html='<div class="tbl-wrap"><table style="min-width:500px"><thead><tr>'
+    +'<th style="position:sticky;top:0;z-index:5;background:#0a1220;text-align:left;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2)">Module</th>'
+    +roles.map(function(r){return'<th style="position:sticky;top:0;z-index:5;background:#0a1220;text-align:center;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#5a7a9a;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2)">'+r+'</th>';}).join('')
+    +'</tr></thead><tbody>';
+  modules.forEach(function(mod){html+='<tr><td style="padding:9px 12px;color:#e2eeff;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04)">'+PAGE_TITLES[mod]+'</td>';roles.forEach(function(r){var acc=ROLE_ACCESS[r]||[];html+='<td style="text-align:center;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)">'+(acc.includes(mod)?'<span style="color:#00e676;font-size:14px">✓</span>':'<span style="color:#1e3048;font-size:12px">—</span>')+'</td>';});html+='</tr>';});
+  html+='</tbody></table></div>';ct.innerHTML=card('🔐 Role Permissions Matrix','<span style="font-size:11px;color:#5a7a9a">✓ = Access Allowed</span>',html,true);
 }
 // ── REPORTS & CSV EXPORT ─────────────────────────────────
 function csvDownload(filename, rows){
@@ -2015,11 +2018,11 @@ async function renderRoles() {
     var modules = ['dashboard','generators','bins','trips','billing','drivers','vehicles','cleaning','pm','rm','fuel','tyres','reports','users'];
 
     var html = '<div class="card"><div class="ch"><span class="ct2">🔐 Role Permissions Matrix</span>'
-      +'<div style="font-size:11px;color:#8ab0d0">Green = Allowed · Click to toggle</div></div>'
-      +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px">'
-      +'<thead><tr style="border-bottom:1px solid rgba(100,160,255,.15)">'
-      +'<th style="text-align:left;padding:8px 12px;color:#8ab0d0;font-size:10px;text-transform:uppercase">Module</th>'
-      +roles.map(function(r){return '<th style="text-align:center;padding:8px 12px;color:#8ab0d0;font-size:10px;text-transform:uppercase">'+r.toUpperCase()+'</th>';}).join('')
+      +'<div style="font-size:11px;color:#8ab0d0">Green = Allowed</div></div>'
+      +'<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px">'
+      +'<thead><tr>'
+      +'<th style="position:sticky;top:0;z-index:5;background:#0a1220;text-align:left;padding:9px 12px;color:#5a7a9a;font-size:10px;text-transform:uppercase;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2);white-space:nowrap">Module</th>'
+      +roles.map(function(r){return '<th style="position:sticky;top:0;z-index:5;background:#0a1220;text-align:center;padding:9px 12px;color:#5a7a9a;font-size:10px;text-transform:uppercase;font-weight:600;border-bottom:2px solid rgba(100,160,255,.2);white-space:nowrap">'+r.toUpperCase()+'</th>';}).join('')
       +'</tr></thead><tbody>';
 
     modules.forEach(function(mod){
