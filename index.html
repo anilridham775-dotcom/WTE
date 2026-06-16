@@ -2556,7 +2556,7 @@ window.linkDriverToStaff=async function(driverId){
     +'</div>';
   modal('🔗 Link Driver to HR Profile',body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
-    +'<button class="btn btn-g btn-sm" onclick="doLinkDriver(''+driverId+'')">Link</button>');
+    +'<button class="btn btn-g btn-sm" onclick="doLinkDriver(\''+driverId+'\')">Link</button>');
 };
 
 window.doLinkDriver=async function(driverId){
@@ -2612,7 +2612,7 @@ window.viewPersonProfile=async function(driverId){
        +'</div>'
       :'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(244,67,54,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">'
        +'<div style="font-size:24px">👥</div><div style="font-size:12px;color:#5a7a9a;text-align:center">No HR Profile linked</div>'
-       +'<button class="btn btn-sm" onclick="closeModal();linkDriverToStaff(''+driverId+'')">Link Now</button>'
+       +'<button class="btn btn-sm" onclick="closeModal();linkDriverToStaff(\''+driverId+'\')">Link Now</button>'
        +'</div>')
     // User/Login card
     +(user
@@ -2624,7 +2624,7 @@ window.viewPersonProfile=async function(driverId){
        +'</div>'
       :'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(244,67,54,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">'
        +'<div style="font-size:24px">🔐</div><div style="font-size:12px;color:#5a7a9a;text-align:center">No Login created</div>'
-       +'<button class="btn btn-sm" onclick="closeModal();createDriverLogin(''+driverId+'')">Create Login</button>'
+       +'<button class="btn btn-sm" onclick="closeModal();createDriverLogin(\''+driverId+'\')">Create Login</button>'
        +'</div>')
     +'</div>';
   modal('👤 '+driver.full_name+' — Full Profile',html,'<button class="btn btn-sm" onclick="closeModal()">Close</button>');
@@ -2639,7 +2639,7 @@ window.createDriverLogin=async function(driverId){
     +'</div>';
   modal('🔐 Create Login for '+driver.full_name,body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
-    +'<button class="btn btn-g btn-sm" onclick="saveDriverLogin(''+driverId+'')">Create</button>');
+    +'<button class="btn btn-g btn-sm" onclick="saveDriverLogin(\''+driverId+'\')">Create</button>');
 };
 window.saveDriverLogin=async function(driverId){
   var email=gv('cdl_email'),pin=gv('cdl_pin');
