@@ -432,12 +432,12 @@ function locBtn(latId,lngId,statusId,mapsId){
 // ── AUTH & ROUTING ────────────────────────────────────────
 var CURRENT_USER=null,DRIVER_LOCATION=null,DRIVER_RECORD=null,CHECKLIST_DONE_TODAY=false;
 var ROLE_ACCESS={
-  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users'],
-  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports'],
+  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances'],
+  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances'],
   inspector:['dashboard','inspection','trips','billing','bins','fillalerts','boiler'],
   driver:[],generator:['dashboard','bins','fillalerts'],
 };
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances'};
 var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
@@ -446,6 +446,7 @@ var NAV=[
   {s:'Fleet Management',items:[{id:'vehicles',l:'Vehicle Registry',i:'🚛'},{id:'checklist',l:'Pre-Trip Checklist',i:'✅'},{id:'drivers',l:'Driver Registry',i:'👤'},{id:'cleaning',l:'Vehicle Cleaning',i:'🧹'},{id:'pm',l:'Preventive Maint.',i:'🔧'},{id:'rm',l:'Reactive Maint.',i:'⚡'},{id:'schedule',l:'Maint. Schedule',i:'📅'},{id:'fuel',l:'Fuel Management',i:'⛽'},{id:'tyres',l:'Tyre Management',i:'⭕'}]},
   {s:'Infrastructure',items:[{id:'sites',l:'Processing Sites',i:'🏭'}]},
   {s:'Admin',items:[{id:'staff',l:'Staff Master',i:'👥'},{id:'roles',l:'Role Permissions',i:'🔐'},{id:'reports',l:'Reports & Export',i:'📊'},{id:'users',l:'User Management',i:'👤'}]},
+  {s:'Payroll',items:[{id:'incentive',l:'Incentive Master',i:'⚡'},{id:'payroll',l:'Payroll Management',i:'💰'},{id:'advances',l:'Staff Advances',i:'💵'}]},
 ];
 var CUR='dashboard';
 function buildNav(){
@@ -1080,16 +1081,45 @@ window.completeTrip=async function(id){
   if(!confirm('Mark trip as Complete?'))return;
   try{await sbUpdate('trips',{status:'Completed',actual_end_time:new Date().toISOString()},{id:id});success('Trip completed!');var dc=document.getElementById('driver-content');if(dc){dc.innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:50px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:#00e676">Trip Completed!</div></div>';setTimeout(renderDriverHome,1500);}else{setTimeout(renderTrips,500);}}catch(e){alert('Error: '+e.message);}
 };
-window.newTrip=function(){
+window.newTrip=async function(){
   var d=window._tripData||{vehicles:[],drivers:[],bins:[]};
+  var collectors=safeArr(await sbFetch('staff_profiles',{select:'id,staff_code,full_name,designation_type',order:'full_name.asc'})).filter(function(s){return s.designation_type==='Collector'||s.designation_type==='Helper';});
   var vOpts=d.vehicles.map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
   var dOpts=d.drivers.map(function(dr){return'<option value="'+dr.id+'">'+dr.driver_code+' — '+dr.full_name+'</option>';}).join('');
+  var cOpts='<option value="">— None —</option>'+collectors.map(function(c){return'<option value="'+c.id+'">'+c.staff_code+' — '+c.full_name+'</option>';}).join('');
   var bOpts=d.bins.sort(function(a,b){return b.current_fill_pct-a.current_fill_pct;}).map(function(b){return'<option value="'+b.id+'">'+b.bin_code+' — '+(b.generators&&b.generators.company_name||'')+' ('+b.current_fill_pct+'%)</option>';}).join('');
-  modal('📍 Create Trip','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="t_veh"><option value="">— Select —</option>'+vOpts+'</select></div><div class="full"><div class="fl">Driver *</div><select id="t_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'+fld('Trip Date',inp('t_date','','date'),true)+fld('Priority',sel('t_priority',['Urgent Fill First','Shortest Distance','Manual Order']))+'<div class="full"><div class="fl">Bins to Collect</div><select id="t_bins" multiple style="height:120px">'+bOpts+'</select></div><div class="full">'+fld('Instructions','<textarea id="t_note" rows="2" placeholder="Driver notes..."></textarea>')+'</div></div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTrip()">Push to Driver</button>');
+  modal('📍 Create Trip','<div class="fg">'
+    +'<div class="full"><div class="fl">Vehicle *</div><select id="t_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'
+    +'<div class="full"><div class="fl">Driver *</div><select id="t_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'
+    +'<div class="sec" style="grid-column:1/-1">Trip Crew (Collectors)</div>'
+    +'<div><div class="fl">Collector 1</div><select id="t_col1" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+cOpts+'</select></div>'
+    +'<div><div class="fl">Collector 2</div><select id="t_col2" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+cOpts+'</select></div>'
+    +fld('Trip Date',inp('t_date','','date'),true)
+    +fld('Priority',sel('t_priority',['Urgent Fill First','Shortest Distance','Manual Order']))
+    +'<div class="full"><div class="fl">Bins to Collect</div><select id="t_bins" multiple style="height:120px">'+bOpts+'</select></div>'
+    +'<div class="full">'+fld('Instructions','<textarea id="t_note" rows="2" placeholder="Driver notes..."></textarea>')+'</div>'
+    +'</div>',
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTrip()">Push to Driver</button>');
 };
 window.saveTrip=async function(){
   var veh=gv('t_veh'),drv=gv('t_drv'),date=gv('t_date');if(!veh||!drv||!date){alert('Vehicle, driver and date required.');return;}
-  try{var code=await sbRpc('next_trip_code');var trip=await sbInsert('trips',{trip_code:code,vehicle_id:veh,driver_id:drv,trip_date:date,route_priority:gv('t_priority'),instructions:gv('t_note')||null,status:'Planned'});var tripId=trip[0]&&trip[0].id;var selBins=Array.from(document.getElementById('t_bins').selectedOptions).map(function(o){return o.value;});if(tripId&&selBins.length){await sbInsert('trip_pickups',selBins.map(function(bid,i){return{trip_id:tripId,bin_id:bid,sequence_no:i+1,status:'Pending'};}));}closeModal();success('Trip '+code+' created!');renderTrips();}catch(e){alert('Error: '+e.message);}
+  try{
+    var code=await sbRpc('next_trip_code');
+    var trip=await sbInsert('trips',{trip_code:code,vehicle_id:veh,driver_id:drv,trip_date:date,route_priority:gv('t_priority'),instructions:gv('t_note')||null,status:'Planned'});
+    var tripId=trip[0]&&trip[0].id;
+    // Save bins
+    var selBins=Array.from(document.getElementById('t_bins').selectedOptions).map(function(o){return o.value;});
+    if(tripId&&selBins.length){await sbInsert('trip_pickups',selBins.map(function(bid,i){return{trip_id:tripId,bin_id:bid,sequence_no:i+1,status:'Pending'};}));}
+    // Save crew (collectors)
+    if(tripId){
+      var crew=[];
+      var c1=gv('t_col1'),c2=gv('t_col2');
+      if(c1)crew.push({trip_id:tripId,staff_id:c1,role:'Collector',trip_incentive_earned:0,weight_incentive_earned:0,total_earned:0});
+      if(c2&&c2!==c1)crew.push({trip_id:tripId,staff_id:c2,role:'Collector',trip_incentive_earned:0,weight_incentive_earned:0,total_earned:0});
+      if(crew.length)await sbInsert('trip_crew',crew);
+    }
+    closeModal();success('Trip '+code+' created with crew!');renderTrips();
+  }catch(e){alert('Error: '+e.message);}
 };
 window.startTrip=async function(id){
   var upd={status:'In Transit',actual_start_time:new Date().toISOString()};if(DRIVER_LOCATION){upd.driver_lat=DRIVER_LOCATION.lat;upd.driver_lng=DRIVER_LOCATION.lng;}
@@ -1544,15 +1574,42 @@ window.saveBulkSchedule=async function(){
 async function renderStaff(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('staff_profiles',{select:'*',order:'created_at.desc'}));
-  var rows=data.map(function(s){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+s.staff_code+'</strong>','<div style="font-weight:600">'+s.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+s.mobile+'</div>',s.department||'-',s.designation||'-',badge(s.is_active?'g':'gr',s.is_active?'Active':'Inactive')];});
-  ct.innerHTML=card('👥 Staff Master','<button class="btn btn-g btn-sm" onclick="newStaff()">+ Add Staff</button>',tbl(['Staff ID','Name & Mobile','Department','Designation','Status'],rows),true);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+  var rows=data.map(function(s){return[
+    '<strong style="font-family:Consolas,monospace;color:#00e676">'+s.staff_code+'</strong>',
+    '<div style="font-weight:600">'+s.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+s.mobile+'</div>',
+    s.department||'-',
+    badge(s.designation_type==='Driver'?'b':s.designation_type==='Collector'?'g':s.designation_type==='Supervisor'?'a':'gr',s.designation_type||'Other'),
+    s.designation||'-',
+    s.basic_salary?'<strong>₹'+Number(s.basic_salary).toLocaleString('en-IN')+'</strong>':'-',
+    badge(s.is_active?'g':'gr',s.is_active?'Active':'Inactive')
+  ];});
+  ct.innerHTML=card('👥 Staff Master','<button class="btn btn-g btn-sm" onclick="newStaff()">+ Add Staff</button>',tbl(['Staff ID','Name & Mobile','Department','Type','Designation','Basic Salary','Status'],rows),true);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.newStaff=function(){
-  modal('👥 Add Staff','<div class="fg">'+fld('Full Name',inp('sf_name'),true)+fld('Mobile',inp('sf_mob'),true)+fld('Email',inp('sf_email','','email'))+fld('Department',sel('sf_dept',['Operations','Fleet','Finance','HR','Compliance','Admin']))+fld('Designation',inp('sf_desig',''))+fld('Joining Date',inp('sf_join','','date'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveStaff()">Add</button>');
+  modal('👥 Add Staff','<div class="fg">'
+    +fld('Full Name',inp('sf_name'),true)
+    +fld('Mobile',inp('sf_mob'),true)
+    +fld('Email',inp('sf_email','','email'))
+    +fld('Department',sel('sf_dept',['Operations','Fleet','Finance','HR','Compliance','Admin']))
+    +fld('Designation Type',sel('sf_dtype',['Driver','Collector','Helper','Supervisor','Admin Staff','Finance','Other']),true)
+    +fld('Designation / Job Title',inp('sf_desig','e.g. Senior Driver'))
+    +fld('Basic Salary ₹',inp('sf_salary','','number'),true)
+    +fld('Joining Date',inp('sf_join','','date'))
+    +'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveStaff()">Add</button>');
 };
 window.saveStaff=async function(){
-  var name=gv('sf_name'),mob=gv('sf_mob');if(!name||!mob){alert('Name and mobile required.');return;}
-  try{var code=await sbRpc('next_staff_code');await sbInsert('staff_profiles',{staff_code:code,full_name:name,mobile:mob,email:gv('sf_email')||null,department:gv('sf_dept')||null,designation:gv('sf_desig')||null,joining_date:gv('sf_join')||null,is_active:true});closeModal();success('Staff '+code+' added!');renderStaff();}catch(e){alert('Error: '+e.message);}
+  var name=gv('sf_name'),mob=gv('sf_mob');
+  if(!name||!mob){alert('Name and Mobile are required.');return;}
+  try{
+    var code=await sbRpc('next_staff_code');
+    await sbInsert('staff_profiles',{
+      staff_code:code,full_name:name,mobile:mob,email:gv('sf_email')||null,
+      department:gv('sf_dept')||null,designation_type:gv('sf_dtype')||'Other',
+      designation:gv('sf_desig')||null,basic_salary:parseFloat(gv('sf_salary'))||0,
+      joining_date:gv('sf_join')||null,is_active:true
+    });
+    closeModal();success('Staff '+code+' added!');renderStaff();
+  }catch(e){alert('Error: '+e.message);}
 };
 function renderRoles(){
   var ct=document.getElementById('ct');
@@ -1643,6 +1700,470 @@ function renderReports(){
     '<span style="font-size:11px;color:#5a7a9a">Click any report to download as CSV</span>',
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:4px">'+cards+'</div>');
 }
+
+// ══════════════════════════════════════════════════════════
+// INCENTIVE RATE MASTER
+// ══════════════════════════════════════════════════════════
+async function renderIncentive(){
+  var ct=document.getElementById('ct');
+  try{
+    var rates=safeArr(await sbFetch('incentive_master',{select:'*',order:'created_at.desc'}));
+    var today=new Date().toISOString().split('T')[0];
+    var active=rates.filter(function(r){return r.status==='Active'&&(!r.effective_to||r.effective_to>=today);});
+    var rows=rates.map(function(r){
+      var isActive=r.status==='Active'&&(!r.effective_to||r.effective_to>=today);
+      return[
+        '<strong style="font-family:Consolas,monospace;font-size:11px;color:#00e676">'+r.im_code+'</strong>',
+        badge(r.applicable_to==='Driver'?'b':r.applicable_to==='Collector'?'g':'a',r.applicable_to),
+        r.vehicle_type||'Any',
+        '<strong>₹'+Number(r.trip_incentive_rate||0).toLocaleString('en-IN')+'</strong><div style="font-size:10px;color:#5a7a9a">per trip</div>',
+        '₹'+Number(r.weight_incentive_rate||0).toLocaleString('en-IN')+' <span style="font-size:10px;color:#5a7a9a">/ ton</span>',
+        '₹'+Number(r.attendance_bonus||0).toLocaleString('en-IN'),
+        r.effective_from||'-',
+        r.effective_to||'<span style="color:#00e676">No Expiry</span>',
+        badge(isActive?'g':'gr',isActive?'Active':'Expired'),
+        '<button class="btn btn-sm" id="eim'+r.id+'">Edit</button>'
+      ];
+    });
+    ct.innerHTML='<div class="sg">'
+      +sc('#00e676','Active Rates',active.length,'Currently applicable')
+      +sc('#2196f3','Driver Rates',active.filter(function(r){return r.applicable_to==='Driver'||r.applicable_to==='Both';}).length,'')
+      +sc('#ff9800','Collector Rates',active.filter(function(r){return r.applicable_to==='Collector'||r.applicable_to==='Both';}).length,'')
+      +'</div>'
+      +card('⚡ Incentive Rate Master',
+        '<button class="btn btn-g btn-sm" onclick="newIncentiveRate()">+ Add Rate</button>',
+        tbl(['Code','Applicable To','Vehicle Type','Trip Incentive','Weight Incentive','Attendance Bonus','Effective From','Effective To','Status',''],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="eim"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editIncentiveRate(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+window.newIncentiveRate=function(){
+  var today=new Date().toISOString().split('T')[0];
+  var body='<div class="fg">'
+    +fld('Applicable To',sel('im_to',['Driver','Collector','Both']),true)
+    +fld('Vehicle Type',sel('im_veh',['Any','3-Wheeler / Auto','Tata Ace','Tata 407','Tata 709','Tata 1109','Tipper','Compactor']),true)
+    +fld('Trip Incentive ₹ (per trip)',inp('im_trip','','number'),true)
+    +fld('Weight Incentive ₹ (per ton)',inp('im_wt','','number'),true)
+    +fld('Attendance Bonus ₹ (per month)',inp('im_att','','number'))
+    +fld('Effective From','<input id="im_from" type="date" value="'+today+'">',true)
+    +fld('Effective To','<input id="im_to2" type="date" placeholder="Leave blank = No expiry">')
+    +'<div class="full">'+fld('Notes',inp('im_notes','Optional notes'))+'</div>'
+    +'</div>';
+  modal('⚡ Add Incentive Rate',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveIncentiveRate()">Save</button>');
+};
+window.saveIncentiveRate=async function(){
+  var to=document.getElementById('im_to').value,tripR=gv('im_trip'),from=gv('im_from');
+  if(!to||!tripR||!from){alert('Applicable To, Trip Incentive and Effective From are required.');return;}
+  try{
+    var code=await sbRpc('next_im_code');
+    await sbInsert('incentive_master',{
+      im_code:code,applicable_to:to,
+      vehicle_type:gv('im_veh')||'Any',
+      trip_incentive_rate:parseFloat(tripR)||0,
+      weight_incentive_rate:parseFloat(gv('im_wt'))||0,
+      attendance_bonus:parseFloat(gv('im_att'))||0,
+      effective_from:from,
+      effective_to:gv('im_to2')||null,
+      notes:gv('im_notes')||null,
+      status:'Active',
+      created_by:CURRENT_USER&&CURRENT_USER.full_name
+    });
+    closeModal();success('Incentive rate '+code+' saved!');renderIncentive();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editIncentiveRate=async function(id){
+  var r=(await sbFetch('incentive_master',{select:'*',eq:{id:id}}))[0];if(!r)return;
+  var body='<div class="fg">'
+    +fld('Applicable To',sel('im_to',['Driver','Collector','Both']),true)
+    +fld('Vehicle Type',sel('im_veh',['Any','3-Wheeler / Auto','Tata Ace','Tata 407','Tata 709','Tata 1109','Tipper','Compactor']),true)
+    +fld('Trip Incentive ₹',inp('im_trip',r.trip_incentive_rate||'','number'),true)
+    +fld('Weight Incentive ₹ / ton',inp('im_wt',r.weight_incentive_rate||'','number'),true)
+    +fld('Attendance Bonus ₹',inp('im_att',r.attendance_bonus||'','number'))
+    +fld('Effective From','<input id="im_from" type="date" value="'+(r.effective_from||'')+'">',true)
+    +fld('Effective To','<input id="im_to2" type="date" value="'+(r.effective_to||'')+'">')
+    +fld('Status',sel('im_status',['Active','Inactive']))
+    +'<div class="full">'+fld('Notes',inp('im_notes',r.notes||''))+'</div>'
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="seim">Save</button>';
+  modal('Edit Rate — '+r.im_code,body,foot);
+  setTimeout(function(){
+    document.getElementById('im_to').value=r.applicable_to||'Driver';
+    document.getElementById('im_veh').value=r.vehicle_type||'Any';
+    document.getElementById('im_status').value=r.status||'Active';
+    var s=document.getElementById('seim');if(s)s.onclick=function(){updateIncentiveRate(id);};
+  },50);
+};
+window.updateIncentiveRate=async function(id){
+  try{
+    await sbUpdate('incentive_master',{
+      applicable_to:document.getElementById('im_to').value,
+      vehicle_type:gv('im_veh'),trip_incentive_rate:parseFloat(gv('im_trip'))||0,
+      weight_incentive_rate:parseFloat(gv('im_wt'))||0,attendance_bonus:parseFloat(gv('im_att'))||0,
+      effective_from:gv('im_from'),effective_to:gv('im_to2')||null,
+      status:gv('im_status'),notes:gv('im_notes')||null
+    },{id:id});
+    closeModal();success('Rate updated!');renderIncentive();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// STAFF ADVANCES
+// ══════════════════════════════════════════════════════════
+async function renderAdvances(){
+  var ct=document.getElementById('ct');
+  try{
+    var advances=safeArr(await sbFetch('staff_advances',{select:'*,staff_profiles(staff_code,full_name)',order:'advance_date.desc'}));
+    var pending=advances.filter(function(a){return a.status!=='Cleared';});
+    var totalPending=pending.reduce(function(s,a){return s+(a.balance||0);},0);
+    var rows=advances.map(function(a){
+      var st=a.staff_profiles||{};
+      return[
+        '<strong style="font-family:Consolas,monospace;font-size:11px">'+a.adv_code+'</strong>',
+        '<div style="font-weight:600">'+(st.full_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(st.staff_code||'')+'</div>',
+        a.advance_date||'-',
+        '<strong>₹'+Number(a.amount||0).toLocaleString('en-IN')+'</strong>',
+        '₹'+Number(a.recovered_amount||0).toLocaleString('en-IN'),
+        '<strong style="color:'+(a.balance>0?'#ff9800':'#00e676')+'">₹'+Number(a.balance||0).toLocaleString('en-IN')+'</strong>',
+        a.reason||'-',
+        badge(a.status==='Cleared'?'g':a.status==='Partial'?'a':'r',a.status||'Pending'),
+        '<button class="btn btn-sm" id="eadv'+a.id+'">Edit</button>'
+      ];
+    });
+    ct.innerHTML='<div class="sg">'
+      +sc('#ff9800','Pending Advances',pending.length,'Outstanding')
+      +sc('#f44336','Total Outstanding','₹'+Number(totalPending).toLocaleString('en-IN'),'')
+      +sc('#00e676','Cleared',advances.filter(function(a){return a.status==='Cleared';}).length,'')
+      +'</div>'
+      +card('💵 Staff Advances',
+        '<button class="btn btn-g btn-sm" onclick="newAdvance()">+ Give Advance</button>',
+        tbl(['Code','Staff','Date','Amount','Recovered','Balance','Reason','Status',''],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="eadv"]').forEach(function(b){var id=b.id.slice(4);b.onclick=function(){editAdvance(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+window.newAdvance=async function(){
+  var staff=safeArr(await sbFetch('staff_profiles',{select:'id,staff_code,full_name',order:'full_name.asc'}));
+  var sOpts='<option value="">— Select Staff —</option>'+staff.map(function(s){return'<option value="'+s.id+'">'+s.staff_code+' — '+s.full_name+'</option>';}).join('');
+  var today=new Date().toISOString().split('T')[0];
+  var body='<div class="fg">'
+    +'<div class="full"><div class="fl">Staff *</div><select id="adv_staff" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+sOpts+'</select></div>'
+    +fld('Advance Date','<input id="adv_date" type="date" value="'+today+'">',true)
+    +fld('Amount ₹',inp('adv_amount','','number'),true)
+    +'<div class="full">'+fld('Reason',inp('adv_reason','e.g. Medical, Personal, Festival'))+'</div>'
+    +'</div>';
+  modal('💵 Give Advance',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveAdvance()">Save</button>');
+};
+window.saveAdvance=async function(){
+  var staff=gv('adv_staff'),amt=gv('adv_amount');
+  if(!staff||!amt){alert('Staff and Amount are required.');return;}
+  try{
+    var code=await sbRpc('next_adv_code');
+    var amount=parseFloat(amt);
+    await sbInsert('staff_advances',{adv_code:code,staff_id:staff,advance_date:gv('adv_date'),amount:amount,balance:amount,recovered_amount:0,reason:gv('adv_reason')||null,status:'Pending'});
+    closeModal();success('Advance '+code+' recorded!');renderAdvances();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editAdvance=async function(id){
+  var a=(await sbFetch('staff_advances',{select:'*,staff_profiles(staff_code,full_name)',eq:{id:id}}))[0];if(!a)return;
+  var st=a.staff_profiles||{};
+  var body='<div class="fg">'
+    +'<div class="full"><div style="padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#e2eeff">Staff: <strong>'+(st.full_name||'-')+'</strong> ('+a.adv_code+')</div></div>'
+    +fld('Advance Amount ₹','<input id="adv_amount" type="number" value="'+(a.amount||0)+'" readonly style="opacity:.6">')
+    +fld('Recovered So Far ₹',inp('adv_recovered',a.recovered_amount||'','number'),true)
+    +fld('Status',sel('adv_status',['Pending','Partial','Cleared']),true)
+    +'<div class="full">'+fld('Notes',inp('adv_notes',a.reason||''))+'</div>'
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sadv">Update</button>';
+  modal('Update Advance — '+a.adv_code,body,foot);
+  setTimeout(function(){
+    document.getElementById('adv_status').value=a.status||'Pending';
+    var s=document.getElementById('sadv');if(s)s.onclick=function(){updateAdvance(id,a.amount);};
+  },50);
+};
+window.updateAdvance=async function(id,totalAmount){
+  var recovered=parseFloat(gv('adv_recovered'))||0;
+  var balance=totalAmount-recovered;
+  var status=gv('adv_status');
+  if(balance<=0){status='Cleared';balance=0;}
+  try{
+    await sbUpdate('staff_advances',{recovered_amount:recovered,balance:balance,status:status,reason:gv('adv_notes')||null},{id:id});
+    closeModal();success('Advance updated!');renderAdvances();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// PAYROLL MANAGEMENT
+// ══════════════════════════════════════════════════════════
+async function renderPayroll(){
+  var ct=document.getElementById('ct');
+  try{
+    var now=new Date();
+    var curMonth=now.getMonth()+1,curYear=now.getFullYear();
+    var payrolls=safeArr(await sbFetch('payroll',{select:'*,staff_profiles(staff_code,full_name,designation_type)',order:'created_at.desc',limit:50}));
+    var thisMonth=payrolls.filter(function(p){return p.month===curMonth&&p.year===curYear;});
+    var totalNet=thisMonth.reduce(function(s,p){return s+(p.net_pay||0);},0);
+    var paid=thisMonth.filter(function(p){return p.status==='Paid';});
+
+    var MONTHS=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var rows=payrolls.map(function(p){
+      var st=p.staff_profiles||{};
+      return[
+        '<strong style="font-family:Consolas,monospace;font-size:11px;color:#00e676">'+p.payroll_code+'</strong>',
+        '<div style="font-weight:600">'+(st.full_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(st.staff_code||'')+' · '+(st.designation_type||'')+'</div>',
+        MONTHS[p.month]+' '+p.year,
+        p.present_days+'/'+p.working_days+' days',
+        p.trips_count+' trips',
+        '₹'+Number(p.basic_salary||0).toLocaleString('en-IN'),
+        '<span style="color:#00e676">₹'+Number(p.trip_incentive||0).toLocaleString('en-IN')+'</span>',
+        '<span style="color:#f44336">-₹'+Number(p.total_deductions||0).toLocaleString('en-IN')+'</span>',
+        '<strong style="color:#00e676;font-size:13px">₹'+Number(p.net_pay||0).toLocaleString('en-IN')+'</strong>',
+        badge(p.status==='Paid'?'g':p.status==='Approved'?'b':p.status==='Draft'?'gr':'a',p.status||'Draft'),
+        '<div style="display:flex;gap:4px"><button class="btn btn-sm" id="epr'+p.id+'">View</button>'+(p.status==='Approved'?'<button class="btn btn-sm btn-g" id="ppr'+p.id+'">Pay</button>':'')+'</div>'
+      ];
+    });
+
+    ct.innerHTML='<div class="sg">'
+      +sc('#00e676','This Month Net','₹'+Number(totalNet).toLocaleString('en-IN'),'Total payable')
+      +sc('#2196f3','Processed',thisMonth.length,'Payslips this month')
+      +sc('#ff9800','Pending',thisMonth.filter(function(p){return p.status==='Draft';}).length,'Awaiting approval')
+      +sc('#00e676','Paid',paid.length,'Completed')
+      +'</div>'
+      +card('💰 Payroll Management',
+        '<button class="btn btn-g btn-sm" onclick="newPayroll()">+ Process Payroll</button>',
+        tbl(['Code','Staff','Month','Attendance','Trips','Basic','Incentive','Deductions','Net Pay','Status',''],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="epr"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){viewPayslip(id);};});
+      document.querySelectorAll('[id^="ppr"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){markPayrollPaid(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+
+window.newPayroll=async function(){
+  var staff=safeArr(await sbFetch('staff_profiles',{select:'id,staff_code,full_name,basic_salary,designation_type',order:'full_name.asc'}));
+  var advances=safeArr(await sbFetch('staff_advances',{select:'*',order:'advance_date.desc'})).filter(function(a){return a.status!=='Cleared';});
+  var sOpts='<option value="">— Select Staff —</option>'+staff.map(function(s){return'<option value="'+s.id+'" data-sal="'+(s.basic_salary||0)+'" data-type="'+(s.designation_type||'')+'">'+s.staff_code+' — '+s.full_name+' ('+s.designation_type+')</option>';}).join('');
+  var now=new Date();
+  var body='<div class="fg">'
+    +'<div class="full"><div class="fl">Staff *</div><select id="pr_staff" onchange="prLoadStaff(this)" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+sOpts+'</select></div>'
+    +fld('Month','<select id="pr_month" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>',true)
+    +fld('Year',inp('pr_year',now.getFullYear(),'number'),true)
+    +'<div class="sec" style="grid-column:1/-1">Salary</div>'
+    +fld('Basic Salary ₹',inp('pr_basic','','number'),true)
+    +fld('Working Days',inp('pr_wdays','26','number'))
+    +fld('Present Days',inp('pr_pdays','','number'),true)
+    +fld('Late Days',inp('pr_ldays','0','number'))
+    +'<div class="sec" style="grid-column:1/-1">Incentives (auto-fill or override)</div>'
+    +fld('Trips This Month',inp('pr_trips','','number'),true)
+    +fld('Trip Incentive ₹',inp('pr_tripinc','','number'),true)
+    +fld('Total Weight (tons)',inp('pr_wtons','','number'))
+    +fld('Weight Incentive ₹',inp('pr_wtinc','','number'))
+    +fld('Attendance Bonus ₹',inp('pr_attbonus','0','number'))
+    +'<div class="sec" style="grid-column:1/-1">Deductions</div>'
+    +fld('Advance Recovery ₹',inp('pr_advrec','0','number'))
+    +fld('Late Deduction ₹',inp('pr_lateded','0','number'))
+    +fld('Absent Deduction ₹',inp('pr_absded','0','number'))
+    +fld('Other Deduction ₹',inp('pr_othded','0','number'))
+    +'<div class="full">'+fld('Notes',inp('pr_notes',''))+'</div>'
+    +'<div class="full" id="pr_summary"></div>'
+    +'</div>';
+  modal('💰 Process Payroll',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-sm" onclick="prCalc()">🧮 Calculate</button>'
+    +'<button class="btn btn-g btn-sm" onclick="savePayroll()">Save Draft</button>');
+  // Set current month
+  setTimeout(function(){document.getElementById('pr_month').value=now.getMonth()+1;},50);
+  window._prAdvances=advances;
+};
+
+window.prLoadStaff=async function(sel){
+  var opt=sel.options[sel.selectedIndex];
+  var sal=opt.getAttribute('data-sal')||0;
+  var type=opt.getAttribute('data-type')||'';
+  var salEl=document.getElementById('pr_basic');
+  if(salEl)salEl.value=sal;
+  // Auto-load trips for this staff this month
+  var staffId=sel.value;
+  var month=document.getElementById('pr_month').value;
+  var year=gv('pr_year');
+  if(!staffId||!month||!year)return;
+  var startDate=year+'-'+(String(month).padStart(2,'0'))+'-01';
+  var endDate=new Date(year,month,0).toISOString().split('T')[0];
+  try{
+    // Count trips where this staff was driver or collector
+    var staffData=safeArr(await sbFetch('staff_profiles',{select:'id,driver_id',eq:{id:staffId}}));
+    // Count from trip_crew
+    var crewTrips=safeArr(await sbFetch('trip_crew',{select:'trip_id,trips(trip_date,total_weight_kg)',eq:{staff_id:staffId}}));
+    var monthTrips=crewTrips.filter(function(c){return c.trips&&c.trips.trip_date>=startDate&&c.trips.trip_date<=endDate;});
+    var tripCount=monthTrips.length;
+    var totalWt=monthTrips.reduce(function(s,c){return s+(c.trips&&c.trips.total_weight_kg||0);},0)/1000;
+    if(document.getElementById('pr_trips'))document.getElementById('pr_trips').value=tripCount;
+    if(document.getElementById('pr_wtons'))document.getElementById('pr_wtons').value=totalWt.toFixed(2);
+    // Get active incentive rate
+    var rates=safeArr(await sbFetch('incentive_master',{select:'*',eq:{status:'Active'},order:'effective_from.desc'}));
+    var today=new Date().toISOString().split('T')[0];
+    var rate=rates.find(function(r){return(r.applicable_to===type||r.applicable_to==='Both')&&r.effective_from<=today&&(!r.effective_to||r.effective_to>=today);});
+    if(rate){
+      var tripInc=(tripCount*(rate.trip_incentive_rate||0));
+      var wtInc=(totalWt*(rate.weight_incentive_rate||0));
+      var attBonus=rate.attendance_bonus||0;
+      if(document.getElementById('pr_tripinc'))document.getElementById('pr_tripinc').value=tripInc.toFixed(0);
+      if(document.getElementById('pr_wtinc'))document.getElementById('pr_wtinc').value=wtInc.toFixed(0);
+      if(document.getElementById('pr_attbonus'))document.getElementById('pr_attbonus').value=attBonus;
+    }
+    // Check pending advances
+    var staffAdvances=(window._prAdvances||[]).filter(function(a){return a.staff_id===staffId;});
+    if(staffAdvances.length){
+      var totalBal=staffAdvances.reduce(function(s,a){return s+(a.balance||0);},0);
+      if(document.getElementById('pr_advrec'))document.getElementById('pr_advrec').value=Math.min(totalBal,parseFloat(document.getElementById('pr_basic').value||0)*0.5).toFixed(0);
+    }
+  }catch(e){console.warn('Auto-load error:',e);}
+};
+
+window.prCalc=function(){
+  var basic=parseFloat(gv('pr_basic'))||0;
+  var wdays=parseFloat(gv('pr_wdays'))||26;
+  var pdays=parseFloat(gv('pr_pdays'))||wdays;
+  var ldays=parseFloat(gv('pr_ldays'))||0;
+  var absdays=wdays-pdays;
+  var tripInc=parseFloat(gv('pr_tripinc'))||0;
+  var wtInc=parseFloat(gv('pr_wtinc'))||0;
+  var attBonus=parseFloat(gv('pr_attbonus'))||0;
+  var advRec=parseFloat(gv('pr_advrec'))||0;
+  var lateDed=parseFloat(gv('pr_lateded'))||0;
+  var absDed=absdays>0?Math.round((basic/wdays)*absdays):0;
+  if(document.getElementById('pr_absded'))document.getElementById('pr_absded').value=absDed;
+  var otherDed=parseFloat(gv('pr_othded'))||0;
+  var gross=basic+tripInc+wtInc+attBonus;
+  var totalDed=advRec+lateDed+absDed+otherDed;
+  var net=gross-totalDed;
+  var sum=document.getElementById('pr_summary');
+  if(sum)sum.innerHTML='<div style="background:#0f1724;border-radius:10px;padding:14px;font-size:12.5px">'
+    +'<div style="font-size:13px;font-weight:700;color:#00e676;margin-bottom:10px">💰 Payslip Preview</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+    +'<div style="color:#9ab8d4">Basic Salary</div><div style="text-align:right">₹'+basic.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#9ab8d4">Trip Incentive</div><div style="text-align:right;color:#00e676">+₹'+tripInc.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#9ab8d4">Weight Incentive</div><div style="text-align:right;color:#00e676">+₹'+wtInc.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#9ab8d4">Attendance Bonus</div><div style="text-align:right;color:#00e676">+₹'+attBonus.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#9ab8d4;border-top:1px solid rgba(100,160,255,.1);padding-top:6px;margin-top:4px">Gross Pay</div><div style="text-align:right;border-top:1px solid rgba(100,160,255,.1);padding-top:6px;margin-top:4px;font-weight:700">₹'+gross.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#f44336">Absent Deduction</div><div style="text-align:right;color:#f44336">-₹'+absDed.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#f44336">Late Deduction</div><div style="text-align:right;color:#f44336">-₹'+lateDed.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#f44336">Advance Recovery</div><div style="text-align:right;color:#f44336">-₹'+advRec.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#f44336">Other Deductions</div><div style="text-align:right;color:#f44336">-₹'+otherDed.toLocaleString('en-IN')+'</div>'
+    +'<div style="color:#9ab8d4;border-top:1px solid rgba(100,160,255,.1);padding-top:6px;margin-top:4px">Total Deductions</div><div style="text-align:right;color:#f44336;border-top:1px solid rgba(100,160,255,.1);padding-top:6px;margin-top:4px;font-weight:700">-₹'+totalDed.toLocaleString('en-IN')+'</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#00e676;border-top:2px solid rgba(0,230,118,.3);padding-top:8px;margin-top:4px">Net Payable</div><div style="text-align:right;font-size:16px;font-weight:700;color:#00e676;border-top:2px solid rgba(0,230,118,.3);padding-top:8px;margin-top:4px">₹'+net.toLocaleString('en-IN')+'</div>'
+    +'</div></div>';
+};
+
+window.savePayroll=async function(){
+  var staffId=gv('pr_staff');var month=document.getElementById('pr_month').value;var year=gv('pr_year');
+  if(!staffId||!month||!year){alert('Staff, Month and Year are required.');return;}
+  var basic=parseFloat(gv('pr_basic'))||0;
+  var wdays=parseFloat(gv('pr_wdays'))||26;
+  var pdays=parseFloat(gv('pr_pdays'))||wdays;
+  var ldays=parseFloat(gv('pr_ldays'))||0;
+  var absdays=wdays-pdays;
+  var tripInc=parseFloat(gv('pr_tripinc'))||0;
+  var wtInc=parseFloat(gv('pr_wtinc'))||0;
+  var attBonus=parseFloat(gv('pr_attbonus'))||0;
+  var advRec=parseFloat(gv('pr_advrec'))||0;
+  var lateDed=parseFloat(gv('pr_lateded'))||0;
+  var absDed=parseFloat(gv('pr_absded'))||Math.round((basic/wdays)*absdays);
+  var otherDed=parseFloat(gv('pr_othded'))||0;
+  var gross=basic+tripInc+wtInc+attBonus;
+  var totalDed=advRec+lateDed+absDed+otherDed;
+  var net=gross-totalDed;
+  try{
+    var code=await sbRpc('next_payroll_code');
+    await sbInsert('payroll',{
+      payroll_code:code,staff_id:staffId,month:parseInt(month),year:parseInt(year),
+      basic_salary:basic,working_days:wdays,present_days:pdays,late_days:ldays,
+      absent_days:absdays,trips_count:parseInt(gv('pr_trips'))||0,
+      total_weight_tons:parseFloat(gv('pr_wtons'))||0,
+      trip_incentive:tripInc,weight_incentive:wtInc,attendance_bonus:attBonus,
+      gross_pay:gross,advance_recovery:advRec,late_deduction:lateDed,
+      absent_deduction:absDed,other_deduction:otherDed,
+      total_deductions:totalDed,net_pay:net,
+      status:'Draft',notes:gv('pr_notes')||null
+    });
+    closeModal();success('Payroll '+code+' saved as Draft!');renderPayroll();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.markPayrollPaid=async function(id){
+  var mode=prompt('Payment Mode:\n1. Cash\n2. Bank Transfer\n3. UPI\n\nEnter mode:');
+  if(!mode)return;
+  var modeMap={'1':'Cash','2':'Bank Transfer','3':'UPI'};
+  try{
+    await sbUpdate('payroll',{status:'Paid',paid_on:new Date().toISOString().split('T')[0],payment_mode:modeMap[mode]||mode},{id:id});
+    success('Payroll marked as Paid!');renderPayroll();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.viewPayslip=async function(id){
+  var p=(await sbFetch('payroll',{select:'*,staff_profiles(staff_code,full_name,designation_type,mobile,department)',eq:{id:id}}))[0];
+  if(!p)return;
+  var st=p.staff_profiles||{};
+  var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+  var html='<div id="payslip-print" style="background:#fff;color:#000;padding:24px;border-radius:8px;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #00a651;padding-bottom:12px;margin-bottom:16px">'
+    +'<div><div style="font-size:20px;font-weight:800;color:#00a651">♻️ EcoLoop Pro</div><div style="font-size:11px;color:#666">Waste-to-Energy ERP</div></div>'
+    +'<div style="text-align:right"><div style="font-size:14px;font-weight:700">PAYSLIP</div><div style="font-size:12px;color:#666">'+MONTHS[p.month]+' '+p.year+'</div><div style="font-size:11px;color:#999">'+p.payroll_code+'</div></div>'
+    +'</div>'
+    +'<div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Name</div><div style="font-weight:700">'+(st.full_name||'-')+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Staff ID</div><div style="font-weight:700">'+(st.staff_code||'-')+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Designation</div><div style="font-weight:700">'+(st.designation_type||'-')+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Mobile</div><div style="font-weight:700">'+(st.mobile||'-')+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Working Days</div><div style="font-weight:700">'+p.working_days+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Present Days</div><div style="font-weight:700">'+p.present_days+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Trips Completed</div><div style="font-weight:700">'+p.trips_count+'</div></div>'
+    +'<div><div style="font-size:10px;color:#666;text-transform:uppercase">Status</div><div style="font-weight:700;color:'+(p.status==='Paid'?'#00a651':'#ff6600')+'">'+p.status+'</div></div>'
+    +'</div>'
+    +'<table style="width:100%;border-collapse:collapse;margin-bottom:16px">'
+    +'<thead><tr style="background:#00a651;color:#fff"><th style="padding:8px;text-align:left;font-size:12px">Earnings</th><th style="padding:8px;text-align:right;font-size:12px">Amount</th></tr></thead>'
+    +'<tbody>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Basic Salary</td><td style="padding:7px;text-align:right;font-size:12px">₹'+Number(p.basic_salary||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Trip Incentive ('+p.trips_count+' trips)</td><td style="padding:7px;text-align:right;font-size:12px;color:#00a651">₹'+Number(p.trip_incentive||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Weight Incentive ('+p.total_weight_tons+' tons)</td><td style="padding:7px;text-align:right;font-size:12px;color:#00a651">₹'+Number(p.weight_incentive||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Attendance Bonus</td><td style="padding:7px;text-align:right;font-size:12px;color:#00a651">₹'+Number(p.attendance_bonus||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="background:#f9f9f9"><td style="padding:8px;font-weight:700;font-size:12px">Gross Pay</td><td style="padding:8px;text-align:right;font-weight:700;font-size:13px">₹'+Number(p.gross_pay||0).toLocaleString('en-IN')+'</td></tr>'
+    +'</tbody>'
+    +'<thead><tr style="background:#c0392b;color:#fff"><th style="padding:8px;text-align:left;font-size:12px">Deductions</th><th style="padding:8px;text-align:right;font-size:12px">Amount</th></tr></thead>'
+    +'<tbody>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Absent Days ('+p.absent_days+' days)</td><td style="padding:7px;text-align:right;font-size:12px;color:#c0392b">₹'+Number(p.absent_deduction||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Late Deduction</td><td style="padding:7px;text-align:right;font-size:12px;color:#c0392b">₹'+Number(p.late_deduction||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Advance Recovery</td><td style="padding:7px;text-align:right;font-size:12px;color:#c0392b">₹'+Number(p.advance_recovery||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="border-bottom:1px solid #eee"><td style="padding:7px;font-size:12px">Other Deductions</td><td style="padding:7px;text-align:right;font-size:12px;color:#c0392b">₹'+Number(p.other_deduction||0).toLocaleString('en-IN')+'</td></tr>'
+    +'<tr style="background:#fef9f9"><td style="padding:8px;font-weight:700;font-size:12px">Total Deductions</td><td style="padding:8px;text-align:right;font-weight:700;font-size:13px;color:#c0392b">₹'+Number(p.total_deductions||0).toLocaleString('en-IN')+'</td></tr>'
+    +'</tbody>'
+    +'<tfoot><tr style="background:#00a651;color:#fff"><td style="padding:12px;font-size:15px;font-weight:800">NET PAYABLE</td><td style="padding:12px;text-align:right;font-size:18px;font-weight:800">₹'+Number(p.net_pay||0).toLocaleString('en-IN')+'</td></tr></tfoot>'
+    +'</table>'
+    +(p.paid_on?'<div style="text-align:center;font-size:11px;color:#666;margin-bottom:12px">Paid on: '+p.paid_on+' via '+(p.payment_mode||'-')+'</div>':'')
+    +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — EcoLoop Pro ERP</div>'
+    +'</div>';
+  modal('💰 Payslip — '+(st.full_name||''),html,
+    '<button class="btn btn-sm" onclick="closeModal()">Close</button>'
+    +'<button class="btn btn-g btn-sm" onclick="printPayslip()">🖨️ Print</button>'
+    +(p.status==="Draft"?'<button class="btn btn-sm" onclick="approvePayroll(\''+id+'\')">✅ Approve</button>':''));
+};
+
+window.printPayslip=function(){
+  var el=document.getElementById('payslip-print');
+  if(!el)return;
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>Payslip</title></head><body>'+el.outerHTML+'</body></html>');
+  w.document.close();w.print();
+};
+
+window.approvePayroll=async function(id){
+  try{
+    await sbUpdate('payroll',{status:'Approved',approved_by:CURRENT_USER&&CURRENT_USER.full_name,approved_at:new Date().toISOString()},{id:id});
+    closeModal();success('Payroll approved!');renderPayroll();
+  }catch(e){alert('Error: '+e.message);}
+};
+
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
