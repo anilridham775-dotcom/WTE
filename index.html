@@ -594,10 +594,18 @@ async function doLogin(){
 
   try{
     var data=await sbFetch('user_roles',{select:'*',eq:{email:email}});
-    var user=safeArr(data)[0];
-    if(!user||String(user.pin)!==String(pin)){
+    var arr=safeArr(data);
+    // Debug: log what came back
+    console.log('Login lookup for',email,'→ rows:',arr.length, arr);
+    var user=arr[0];
+    if(!user){
       if(btn){btn.textContent='Sign In';btn.disabled=false;}
-      loginErr('Invalid email or PIN. Please try again.');
+      loginErr('Email not found. Check your email address.');
+      return;
+    }
+    if(String(user.pin)!==String(pin)){
+      if(btn){btn.textContent='Sign In';btn.disabled=false;}
+      loginErr('Incorrect PIN. Try again. (Expected: '+user.pin+')');
       return;
     }
     if(!user.is_active){
