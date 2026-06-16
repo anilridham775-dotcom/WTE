@@ -507,7 +507,7 @@ async function otpSend(user, otp){
     to_email:     user.email,
     contact_name: user.full_name,
     otp_code:     otp,
-    valid_until:  'midnight tonight (00:01)',
+    valid_until:  'midnight tonight — same OTP valid all day',
     login_url:    window.location.origin,
     company_name: 'EcoLoop Pro'
   });
@@ -561,9 +561,9 @@ function showOTPScreen(user){
     '<div style="text-align:center;margin-bottom:20px">'
     +'<div style="font-size:32px;margin-bottom:8px">📧</div>'
     +'<div style="font-size:15px;font-weight:700;color:#e2eeff">Check Your Email</div>'
-    +'<div style="font-size:12px;color:#8ab0d0;margin-top:6px">A 6-digit OTP has been sent to</div>'
+    +'<div style="font-size:12px;color:#8ab0d0;margin-top:6px">Your daily OTP has been sent to</div>'
     +'<div style="font-size:13px;color:#00e676;font-weight:600;margin-top:4px">'+maskedEmail+'</div>'
-    +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px">Valid until midnight tonight (00:01)</div>'
+    +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px">Same OTP is valid all day — resets at midnight</div>'
     +'</div>'
     +'<div id="login-err"></div>'
     +'<div style="display:flex;flex-direction:column;gap:14px">'
@@ -612,16 +612,6 @@ async function doLogin(){
       return;
     }
 
-    // Check if already OTP-verified today
-    if(otpAlreadyVerifiedToday(email)){
-      CURRENT_USER=user;
-      localStorage.setItem('ecoloop_user',JSON.stringify(user));
-      if(user.role==='driver')showDriverApp();
-      else if(user.role==='generator')showGeneratorPortal();
-      else initERP();
-      return;
-    }
-
     // Check if EmailJS is configured
     var ejService=localStorage.getItem('ej_service');
     var ejKey=localStorage.getItem('ej_pubkey');
@@ -664,9 +654,8 @@ window.doVerifyOTP=function(){
   if(!stored){loginErr('OTP expired or not found. Please go back and sign in again.');return;}
   if(entered!==stored){loginErr('Incorrect OTP. Please check your email and try again.');return;}
 
-  // OTP correct — mark verified for today
-  otpMarkVerified(user.email);
-  otpClear(user.email);
+  // OTP correct — clear used OTP (new one generated next login same day from stored)
+  // Do NOT clear — keep OTP stored so user can login again today with same OTP
   window._pendingLoginUser=null;
 
   CURRENT_USER=user;
@@ -680,12 +669,20 @@ window.doResendOTP=async function(){
   var user=window._pendingLoginUser;
   if(!user){showLogin();return;}
   try{
-    loginInfo('Sending new OTP...');
-    otpClear(user.email);
-    var newOtp=otpGenerate();
-    otpStore(user.email,newOtp);
-    await otpSend(user,newOtp);
-    loginInfo('New OTP sent! Check your email.');
+    // Check if OTP already exists for today — resend same one, don't generate new
+    var existingOtp=otpGet(user.email);
+    if(existingOtp){
+      loginInfo('Resending your OTP for today...');
+      await otpSend(user,existingOtp);
+      loginInfo('OTP resent! Check your email (same code as before).');
+    }else{
+      // New day — generate fresh OTP
+      loginInfo('Sending new OTP...');
+      var newOtp=otpGenerate();
+      otpStore(user.email,newOtp);
+      await otpSend(user,newOtp);
+      loginInfo('OTP sent! Check your email.');
+    }
   }catch(e){
     loginErr('Failed to resend: '+e.message);
   }
@@ -696,8 +693,7 @@ function doLogout(){
   CURRENT_USER=null;
   localStorage.removeItem('ecoloop_user');
   localStorage.removeItem('checklist_date');
-  // Clear OTP verified marker on logout so next login requires OTP again
-  if(email)localStorage.removeItem('otp_verified_'+email);
+  // OTP stays valid for the day — user must re-enter it on next login
   showLogin();
 }
 function initERP(){
@@ -980,19 +976,74 @@ async function renderDrivers(){
   var ct=document.getElementById('ct');
   try{
     var data=safeArr(await sbFetch('drivers',{select:'*',order:'created_at.desc'}));
-    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
-    ct.innerHTML='<div class="sg">'+sc('#00e676','Drivers',data.length,'')+sc('#ff9800','DL Due',data.filter(function(d){return d.dl_expiry&&new Date(d.dl_expiry)<new Date(Date.now()+60*864e5);}).length,'60 days')+'</div>'+card('👤 Driver Registry','<button class="btn btn-g btn-sm" onclick="newDriver()">+ Register Driver</button>',tbl(['Code','Name & Mobile','DL No','DL Status','Police','Status',''],rows),true);
-    setTimeout(wireButtons,150);
+    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),d.staff_id?badge('g','✓ HR Linked'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','✗ No HR')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="lnkdr'+d.id+'">Link</button></div>',d.user_id?badge('g','✓ Login'):badge('r','✗ No Login'),badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
+    ct.innerHTML='<div class="sg">'+sc('#00e676','Drivers',data.length,'')+sc('#ff9800','DL Due',data.filter(function(d){return d.dl_expiry&&new Date(d.dl_expiry)<new Date(Date.now()+60*864e5);}).length,'60 days')+sc('#2196f3','Linked to Staff',data.filter(function(d){return d.staff_id;}).length,'HR profile linked')+sc('#00e676','Linked to Login',data.filter(function(d){return d.user_id;}).length,'Can login')+'</div>'+card('👤 Driver Registry','<button class="btn btn-g btn-sm" onclick="newDriver()">+ Register Driver</button>',tbl(['Code','Name & Mobile','DL No','DL Status','Police','HR Profile','Login','Status',''],rows),true);
+    setTimeout(function(){wireButtons();document.querySelectorAll('[id^="lnkdr"]').forEach(function(b){var id=b.id.slice(5);b.onclick=function(){linkDriverToStaff(id);};});},150);
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.newDriver=function(){
-  var body='<div class="fg">'+fld('Full Name',inp('d_name'),true)+fld('Mobile',inp('d_mobile','+91 XXXXXXXXXX'),true)+fld('DL Number',inp('d_dl'),true)+fld('DL Expiry',inp('d_dlexp','','date'),true)+fld('Blood Group',sel('d_blood',['A+','A-','B+','B-','O+','O-','AB+','AB-']))+fld('Police Verified',sel('d_police',['Pending','Verified']))+fld('Employment Type',sel('d_emp',['Permanent','Contract','Outsourced']))+fld('Joining Date',inp('d_join','','date'))+'<div class="sec">Login Access</div>'+fld('Email',inp('d_email','','email'))+fld('PIN (4 digits)',inp('d_pin','','password'))+'</div>';
+  var body='<div class="fg">'
+    +'<div class="sec" style="grid-column:1/-1">👤 Personal Details</div>'
+    +fld('Full Name',inp('d_name'),true)
+    +fld('Mobile',inp('d_mobile','+91 XXXXXXXXXX'),true)
+    +fld('Blood Group',sel('d_blood',['A+','A-','B+','B-','O+','O-','AB+','AB-']))
+    +fld('Employment Type',sel('d_emp',['Permanent','Contract','Outsourced']))
+    +fld('Joining Date',inp('d_join','','date'))
+    +'<div class="sec" style="grid-column:1/-1">🪪 Driving Licence</div>'
+    +fld('DL Number',inp('d_dl'),true)
+    +fld('DL Expiry',inp('d_dlexp','','date'),true)
+    +fld('Police Verified',sel('d_police',['Pending','Verified']))
+    +'<div class="sec" style="grid-column:1/-1">💰 HR / Payroll</div>'
+    +fld('Department',sel('d_dept',['Fleet','Operations','Admin']))
+    +fld('Basic Salary ₹',inp('d_salary','','number'),true)
+    +'<div class="sec" style="grid-column:1/-1">🔐 Login Access</div>'
+    +fld('Email',inp('d_email','','email'),true)
+    +fld('PIN',inp('d_pin','','password'),true)
+    +'</div>';
   modal('👤 Register Driver',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveDriver()">Register</button>');
 };
 window.saveDriver=async function(){
-  var name=gv('d_name'),mobile=gv('d_mobile'),dl=gv('d_dl'),dlexp=gv('d_dlexp');
-  if(!name||!mobile||!dl||!dlexp){alert('Name, mobile, DL and expiry required.');return;}
-  try{var code=await sbRpc('next_driver_code');await sbInsert('drivers',{driver_code:code,full_name:name,mobile:mobile,blood_group:gv('d_blood')||null,dl_no:dl,dl_expiry:dlexp,police_verified:gv('d_police')==='Verified',employment_type:gv('d_emp')||'Permanent',joining_date:gv('d_join')||null,status:'Active'});var email=gv('d_email'),pin=gv('d_pin');if(email&&pin){try{await sbInsert('user_roles',{full_name:name,email:email,phone:mobile,role:'driver',pin:pin,is_active:true});}catch(ue){console.warn('Login not created:',ue);}}closeModal();success('Driver '+code+' registered!');renderDrivers();}catch(e){alert('Error: '+e.message);}
+  var name=gv('d_name'),mobile=gv('d_mobile'),dl=gv('d_dl'),dlexp=gv('d_dlexp'),email=gv('d_email'),pin=gv('d_pin');
+  if(!name||!mobile||!dl||!dlexp){alert('Name, Mobile, DL Number and DL Expiry are required.');return;}
+  if(email&&!pin){alert('PIN is required when Email is provided.');return;}
+  try{
+    // Step 1 — Create Staff Profile (HR record)
+    var staffCode=await sbRpc('next_staff_code');
+    var staffRec=await sbInsert('staff_profiles',{
+      staff_code:staffCode,full_name:name,mobile:mobile,email:email||null,
+      department:gv('d_dept')||'Fleet',designation_type:'Driver',
+      designation:'Driver',basic_salary:parseFloat(gv('d_salary'))||0,
+      joining_date:gv('d_join')||null,is_active:true
+    });
+    var staffId=staffRec[0]&&staffRec[0].id;
+
+    // Step 2 — Create Login (User Role)
+    var userId=null;
+    if(email&&pin){
+      try{
+        var userRec=await sbInsert('user_roles',{
+          full_name:name,email:email,phone:mobile,
+          role:'driver',pin:pin,is_active:true,staff_id:staffId||null
+        });
+        userId=userRec[0]&&userRec[0].id;
+      }catch(ue){console.warn('Login creation failed:',ue);}
+    }
+
+    // Step 3 — Create Driver Registry record (linked to staff + user)
+    var driverCode=await sbRpc('next_driver_code');
+    await sbInsert('drivers',{
+      driver_code:driverCode,full_name:name,mobile:mobile,
+      blood_group:gv('d_blood')||null,dl_no:dl,dl_expiry:dlexp,
+      police_verified:gv('d_police')==='Verified',
+      employment_type:gv('d_emp')||'Permanent',
+      joining_date:gv('d_join')||null,status:'Active',
+      staff_id:staffId||null,user_id:userId||null
+    });
+
+    closeModal();
+    success('Driver '+driverCode+' registered! ✅ Staff profile '+staffCode+' created.'+(email?' 🔐 Login created.':' ⚠️ No login (no email provided).'));
+    renderDrivers();
+  }catch(e){alert('Error: '+e.message);}
 };
 window.editDriver=async function(id){
   var d=(await sbFetch('drivers',{select:'*',eq:{id:id}}))[0];if(!d)return;
@@ -2173,7 +2224,7 @@ window.approvePayroll=async function(id){
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
-  var rows=data.map(function(u){return['<div style="font-weight:600">'+u.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+u.email+'</div>',u.phone||'-',badge(u.role==='admin'?'r':u.role==='manager'?'a':u.role==='driver'?'b':'g',u.role),badge(u.is_active?'g':'gr',u.is_active?'Active':'Inactive'),'<div style="display:flex;gap:4px"><button class="btn btn-sm" id="eu'+u.id+'">Edit</button></div>'];});
+  var rows=data.map(function(u){return['<div style="font-weight:600">'+u.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+u.email+'</div>',u.phone||'-',badge(u.role==='admin'?'r':u.role==='manager'?'a':u.role==='driver'?'b':'g',u.role),u.staff_id?badge('g','✓ HR Linked'):badge('gr','No HR'),badge(u.is_active?'g':'gr',u.is_active?'Active':'Inactive'),'<div style="display:flex;gap:4px"><button class="btn btn-sm" id="eu'+u.id+'">Edit</button></div>'];});
   // EmailJS config card
   var ejService=localStorage.getItem('ej_service')||'';
   var ejTemplate=localStorage.getItem('ej_template')||'';
@@ -2192,7 +2243,7 @@ async function renderUsers(){
     +'<button class="btn btn-sm" onclick="testEmailJS()">🔔 Send Test Email</button>'
     +'<span style="font-size:10px;color:#5a7a9a">Config is saved in your browser only (localStorage)</span></div>'
     +'</div>';
-  ct.innerHTML=ejCard+card('👤 User Management','<button class="btn btn-g btn-sm" onclick="newUser()">+ Add User</button>',tbl(['Name & Email','Phone','Role','Status',''],rows),true);
+  ct.innerHTML=ejCard+card('👤 User Management','<button class="btn btn-g btn-sm" onclick="newUser()">+ Add User</button>',tbl(['Name & Email','Phone','Role','HR Profile','Status',''],rows),true);
   setTimeout(wireButtons,150);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.saveEmailJSConfig=function(){
@@ -2233,11 +2284,37 @@ window.testEmailJS=async function(){
 // Load saved EmailJS config on startup
 (function(){var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');if(s)window.EMAILJS_SERVICE_ID=s;if(t)window.EMAILJS_TEMPLATE_ID=t;if(k)window.EMAILJS_PUBLIC_KEY=k;})();
 window.newUser=function(){
-  modal('👤 Add User','<div class="fg">'+fld('Full Name',inp('nu_name'),true)+fld('Email',inp('nu_email','','email'),true)+fld('Phone',inp('nu_phone',''))+fld('Role',sel('nu_role',['admin','manager','inspector','driver','generator']),true)+fld('PIN (4 digits)',inp('nu_pin','','password'),true)+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
+  modal('👤 Add User','<div class="fg">'
+    +fld('Full Name',inp('nu_name'),true)
+    +fld('Email',inp('nu_email','','email'),true)
+    +fld('Phone',inp('nu_phone',''))
+    +fld('Role',sel('nu_role',['admin','manager','inspector','driver','generator']),true)
+    +fld('PIN',inp('nu_pin','','password'),true)
+    +'<div class="sec" style="grid-column:1/-1">HR Profile (auto-created for staff roles)</div>'
+    +fld('Department',sel('nu_dept',['Operations','Fleet','Finance','HR','Compliance','Admin']))
+    +fld('Basic Salary ₹',inp('nu_salary','','number'))
+    +'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
 };
 window.saveUser=async function(){
-  var name=gv('nu_name'),email=gv('nu_email'),pin=gv('nu_pin'),role=gv('nu_role');if(!name||!email||!pin||!role){alert('All fields required.');return;}
-  try{await sbInsert('user_roles',{full_name:name,email:email,phone:gv('nu_phone')||null,role:role,pin:pin,is_active:true});closeModal();success('User created!');renderUsers();}catch(e){alert('Error: '+e.message);}
+  var name=gv('nu_name'),email=gv('nu_email'),pin=gv('nu_pin'),role=gv('nu_role');
+  if(!name||!email||!pin||!role){alert('All fields required.');return;}
+  try{
+    var staffId=null;
+    // Auto-create staff profile for non-generator roles
+    if(role!=='generator'){
+      var dtype=role==='driver'?'Driver':role==='inspector'?'Supervisor':'Admin Staff';
+      var scode=await sbRpc('next_staff_code');
+      var srec=await sbInsert('staff_profiles',{
+        staff_code:scode,full_name:name,mobile:gv('nu_phone')||null,
+        email:email,department:gv('nu_dept')||'Operations',
+        designation_type:dtype,designation:role,
+        basic_salary:parseFloat(gv('nu_salary'))||0,is_active:true
+      });
+      staffId=srec[0]&&srec[0].id;
+    }
+    await sbInsert('user_roles',{full_name:name,email:email,phone:gv('nu_phone')||null,role:role,pin:pin,is_active:true,staff_id:staffId});
+    closeModal();success('User created!'+(staffId?' Staff profile auto-created.':''));renderUsers();
+  }catch(e){alert('Error: '+e.message);}
 };
 window.editUser=async function(id){
   var u=(await sbFetch('user_roles',{select:'*',eq:{id:id}}))[0];if(!u)return;
@@ -2461,6 +2538,124 @@ window.genRequestPickup=async function(binId,binCode){
   try{await sbUpdate('bins',{status:'Critical'},{id:binId});await autoTripPlanner();alert('Pickup request submitted for '+binCode+'!');renderGeneratorPortal();}catch(e){alert('Error: '+e.message);}
 };
 // ── WIRE BUTTONS ──────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════
+// LINKAGE FUNCTIONS — Driver ↔ Staff ↔ User
+// ══════════════════════════════════════════════════════════
+
+// Link existing driver to existing staff profile
+window.linkDriverToStaff=async function(driverId){
+  var staff=safeArr(await sbFetch('staff_profiles',{select:'id,staff_code,full_name,designation_type',order:'full_name.asc'}));
+  var staffOpts='<option value="">— Select Staff Profile —</option>'
+    +staff.map(function(s){return'<option value="'+s.id+'">'+s.staff_code+' — '+s.full_name+' ('+s.designation_type+')</option>';}).join('');
+  var body='<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div style="font-size:12px;color:#8ab0d0;padding:10px;background:#0f1724;border-radius:8px">Link this driver to an existing Staff Master record for HR & Payroll, OR auto-create a new one.</div>'
+    +'<div><div class="fl">Link to Existing Staff</div><select id="lnk_staff" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 10px;font-size:12.5px;width:100%;font-family:inherit">'+staffOpts+'</select></div>'
+    +'<div style="text-align:center;color:#5a7a9a;font-size:11px">— OR —</div>'
+    +'<div><div class="fl">Basic Salary ₹ (auto-create new staff profile)</div><input id="lnk_salary" type="number" placeholder="Enter to auto-create staff profile" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
+    +'</div>';
+  modal('🔗 Link Driver to HR Profile',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="doLinkDriver(''+driverId+'')">Link</button>');
+};
+
+window.doLinkDriver=async function(driverId){
+  var driver=safeArr(await sbFetch('drivers',{select:'*',eq:{id:driverId}}))[0];
+  if(!driver)return;
+  var existingStaffId=document.getElementById('lnk_staff').value;
+  var salary=gv('lnk_salary');
+  try{
+    var staffId=existingStaffId;
+    if(!staffId&&salary){
+      // Auto-create staff profile
+      var code=await sbRpc('next_staff_code');
+      var rec=await sbInsert('staff_profiles',{
+        staff_code:code,full_name:driver.full_name,mobile:driver.mobile,
+        department:'Fleet',designation_type:'Driver',designation:'Driver',
+        basic_salary:parseFloat(salary)||0,joining_date:driver.joining_date||null,is_active:true
+      });
+      staffId=rec[0]&&rec[0].id;
+    }
+    if(!staffId){alert('Select an existing staff profile or enter salary to auto-create one.');return;}
+    await sbUpdate('drivers',{staff_id:staffId},{id:driverId});
+    // Also update staff_id in user_roles if driver has user_id
+    if(driver.user_id)await sbUpdate('user_roles',{staff_id:staffId},{id:driver.user_id});
+    closeModal();success('Driver linked to HR profile successfully!');renderDrivers();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// Show unified profile view - Driver + Staff + User in one modal
+window.viewPersonProfile=async function(driverId){
+  var driver=safeArr(await sbFetch('drivers',{select:'*',eq:{id:driverId}}))[0];
+  if(!driver)return;
+  var staff=driver.staff_id?safeArr(await sbFetch('staff_profiles',{select:'*',eq:{id:driver.staff_id}}))[0]:null;
+  var user=driver.user_id?safeArr(await sbFetch('user_roles',{select:'id,email,role,is_active,pin',eq:{id:driver.user_id}}))[0]:null;
+  var html='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">'
+    // Driver card
+    +'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(0,230,118,.2)">'
+    +'<div style="font-size:11px;color:#00e676;font-weight:700;margin-bottom:10px;text-transform:uppercase">🪪 Driver Registry</div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Code</div><div style="font-weight:700;margin-bottom:8px">'+driver.driver_code+'</div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">DL Number</div><div style="margin-bottom:8px">'+( driver.dl_no||'—')+'</div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">DL Expiry</div><div style="margin-bottom:8px">'+(driver.dl_expiry||'—')+'</div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Blood Group</div><div style="margin-bottom:8px">'+(driver.blood_group||'—')+'</div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Police Verified</div><div>'+(driver.police_verified?'✅ Yes':'⚠️ Pending')+'</div>'
+    +'</div>'
+    // Staff card
+    +(staff
+      ?'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(33,150,243,.2)">'
+       +'<div style="font-size:11px;color:#2196f3;font-weight:700;margin-bottom:10px;text-transform:uppercase">👥 HR Profile</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Staff Code</div><div style="font-weight:700;margin-bottom:8px">'+staff.staff_code+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Department</div><div style="margin-bottom:8px">'+(staff.department||'—')+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Designation</div><div style="margin-bottom:8px">'+(staff.designation||'—')+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Basic Salary</div><div style="margin-bottom:8px;color:#00e676;font-weight:700">₹'+Number(staff.basic_salary||0).toLocaleString('en-IN')+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Joining Date</div><div>'+(staff.joining_date||'—')+'</div>'
+       +'</div>'
+      :'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(244,67,54,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">'
+       +'<div style="font-size:24px">👥</div><div style="font-size:12px;color:#5a7a9a;text-align:center">No HR Profile linked</div>'
+       +'<button class="btn btn-sm" onclick="closeModal();linkDriverToStaff(''+driverId+'')">Link Now</button>'
+       +'</div>')
+    // User/Login card
+    +(user
+      ?'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(255,152,0,.2)">'
+       +'<div style="font-size:11px;color:#ff9800;font-weight:700;margin-bottom:10px;text-transform:uppercase">🔐 Login Access</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Email</div><div style="font-weight:700;margin-bottom:8px">'+user.email+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Role</div><div style="margin-bottom:8px">'+badge('b',user.role)+'</div>'
+       +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:3px">Status</div><div>'+badge(user.is_active?'g':'r',user.is_active?'Active':'Inactive')+'</div>'
+       +'</div>'
+      :'<div style="background:#0f1724;border-radius:10px;padding:14px;border:1px solid rgba(244,67,54,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">'
+       +'<div style="font-size:24px">🔐</div><div style="font-size:12px;color:#5a7a9a;text-align:center">No Login created</div>'
+       +'<button class="btn btn-sm" onclick="closeModal();createDriverLogin(''+driverId+'')">Create Login</button>'
+       +'</div>')
+    +'</div>';
+  modal('👤 '+driver.full_name+' — Full Profile',html,'<button class="btn btn-sm" onclick="closeModal()">Close</button>');
+};
+
+// Create login for existing driver who has no login yet
+window.createDriverLogin=async function(driverId){
+  var driver=safeArr(await sbFetch('drivers',{select:'*',eq:{id:driverId}}))[0];if(!driver)return;
+  var body='<div class="fg">'
+    +fld('Email',inp('cdl_email',driver.mobile?'':'','email'),true)
+    +fld('PIN',inp('cdl_pin','','password'),true)
+    +'</div>';
+  modal('🔐 Create Login for '+driver.full_name,body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-g btn-sm" onclick="saveDriverLogin(''+driverId+'')">Create</button>');
+};
+window.saveDriverLogin=async function(driverId){
+  var email=gv('cdl_email'),pin=gv('cdl_pin');
+  if(!email||!pin){alert('Email and PIN required.');return;}
+  var driver=safeArr(await sbFetch('drivers',{select:'*,staff_profiles(id)',eq:{id:driverId}}))[0];
+  try{
+    var rec=await sbInsert('user_roles',{
+      full_name:driver.full_name,email:email,phone:driver.mobile,
+      role:'driver',pin:pin,is_active:true,
+      staff_id:driver.staff_id||null
+    });
+    var userId=rec[0]&&rec[0].id;
+    await sbUpdate('drivers',{user_id:userId},{id:driverId});
+    closeModal();success('Login created for '+driver.full_name+'!');renderDrivers();
+  }catch(e){alert('Error: '+e.message);}
+};
 function wireButtons(){
   document.querySelectorAll('[id^="eg"]').forEach(function(b){var id=b.id.slice(2);b.onclick=function(){editGen(id);};});
   document.querySelectorAll('[id^="ed"]').forEach(function(b){var id=b.id.slice(2);b.onclick=function(){editDriver(id);};});
