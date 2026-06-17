@@ -978,9 +978,13 @@ async function renderDrivers(){
   var ct=document.getElementById('ct');
   try{
     var data=safeArr(await sbFetch('drivers',{select:'*',order:'created_at.desc'}));
-    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+(d.dob?' · DOB: '+d.dob:'')+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),d.staff_id?badge('g','✓ HR Linked'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','✗ No HR')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="lnkdr'+d.id+'">Link</button></div>',d.user_id?badge('g','✓ Login'):badge('r','✗ No Login'),badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
+    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+(d.dob?' · DOB: '+d.dob:'')+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),d.staff_id?badge('g','✓ HR Linked'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','✗ No HR')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="lnkdr'+d.id+'">Link</button></div>',d.user_id?badge('g','\u2713 Login'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','\u2717 No Login')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="crdl'+d.id+'">\ud83d\udd10 Add</button></div>',badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
     ct.innerHTML='<div class="sg">'+sc('#00e676','Drivers',data.length,'')+sc('#ff9800','DL Due',data.filter(function(d){return d.dl_expiry&&new Date(d.dl_expiry)<new Date(Date.now()+60*864e5);}).length,'60 days')+sc('#2196f3','Linked to Staff',data.filter(function(d){return d.staff_id;}).length,'HR profile linked')+sc('#00e676','Linked to Login',data.filter(function(d){return d.user_id;}).length,'Can login')+'</div>'+card('👤 Driver Registry','<button class="btn btn-g btn-sm" onclick="newDriver()">+ Register Driver</button>',tbl(['Code','Name & Mobile','DL No','DL Status','Police','HR Profile','Login','Status',''],rows),true);
-    setTimeout(function(){wireButtons();document.querySelectorAll('[id^="lnkdr"]').forEach(function(b){var id=b.id.slice(5);b.onclick=function(){linkDriverToStaff(id);};});},150);
+    setTimeout(function(){
+      wireButtons();
+      document.querySelectorAll('[id^="lnkdr"]').forEach(function(b){var id=b.id.slice(5);b.onclick=function(){linkDriverToStaff(id);};});
+      document.querySelectorAll('[id^="crdl"]').forEach(function(b){var id=b.id.slice(4);b.onclick=function(){createDriverLogin(id);};});
+    },150);
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.newDriver=function(){
@@ -1660,8 +1664,14 @@ async function renderStaff(){
   ];});
   ct.innerHTML=card('👥 Staff Master','<button class="btn btn-g btn-sm" onclick="newStaff()">+ Add Staff</button>',tbl(['Staff ID','Name & Mobile','Department','Type','Designation','Basic Salary','Status'],rows),true);}catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
-window.newStaff=function(){
+window.newStaff=async function(){
+  var drivers=safeArr(await sbFetch('drivers',{select:'id,driver_code,full_name,mobile',eq:{status:'Active'},order:'full_name.asc'}));
+  window._sfDrivers=drivers;
+  var selStyle='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var drvOpts='<option value="">— Not from Driver Registry —</option>'+drivers.map(function(d){return'<option value="'+d.id+'">'+d.driver_code+' — '+d.full_name+'</option>';}).join('');
   modal('👥 Add Staff','<div class="fg">'
+    +'<div class="full"><div class="fl">Link to Driver Registry <span style="color:#5a7a9a;font-size:10px">(if this staff is a driver)</span></div>'
+    +'<select id="sf_drv_pick" onchange="sfDriverPick()" style="'+selStyle+'">'+drvOpts+'</select></div>'
     +fld('Full Name',inp('sf_name'),true)
     +fld('Mobile',inp('sf_mob'),true)
     +fld('Email',inp('sf_email','','email'))
@@ -1672,18 +1682,39 @@ window.newStaff=function(){
     +fld('Joining Date',inp('sf_join','','date'))
     +'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveStaff()">Add</button>');
 };
+window.sfDriverPick=function(){
+  var sel=document.getElementById('sf_drv_pick');
+  if(!sel||!sel.value)return;
+  var drv=(window._sfDrivers||[]).find(function(d){return d.id===sel.value;});
+  if(!drv)return;
+  var nameEl=document.getElementById('sf_name');
+  var mobEl=document.getElementById('sf_mob');
+  var typeEl=document.getElementById('sf_dtype');
+  if(nameEl)nameEl.value=drv.full_name||'';
+  if(mobEl)mobEl.value=drv.mobile||'';
+  if(typeEl)typeEl.value='Driver';
+};
 window.saveStaff=async function(){
   var name=gv('sf_name'),mob=gv('sf_mob');
   if(!name||!mob){alert('Name and Mobile are required.');return;}
   try{
     var code=await sbRpc('next_staff_code');
-    await sbInsert('staff_profiles',{
+    var srec=await sbInsert('staff_profiles',{
       staff_code:code,full_name:name,mobile:mob,email:gv('sf_email')||null,
       department:gv('sf_dept')||null,designation_type:gv('sf_dtype')||'Other',
       designation:gv('sf_desig')||null,basic_salary:parseFloat(gv('sf_salary'))||0,
       joining_date:gv('sf_join')||null,is_active:true
     });
-    closeModal();success('Staff '+code+' added!');renderStaff();
+    var staffId=srec[0]&&srec[0].id;
+    // Link to driver record if selected
+    var drvPickId=document.getElementById('sf_drv_pick')?document.getElementById('sf_drv_pick').value:'';
+    if(drvPickId&&staffId){
+      await sbUpdate('drivers',{staff_id:staffId},{id:drvPickId});
+      success('Staff '+code+' added and linked to driver record!');
+    }else{
+      success('Staff '+code+' added!');
+    }
+    closeModal();renderStaff();
   }catch(e){alert('Error: '+e.message);}
 };
 function renderRoles(){
@@ -2635,28 +2666,102 @@ window.testEmailJS=async function(){
 };
 // Load saved EmailJS config on startup
 (function(){var s=localStorage.getItem('ej_service'),t=localStorage.getItem('ej_template'),k=localStorage.getItem('ej_pubkey');if(s)window.EMAILJS_SERVICE_ID=s;if(t)window.EMAILJS_TEMPLATE_ID=t;if(k)window.EMAILJS_PUBLIC_KEY=k;})();
-window.newUser=function(){
-  modal('👤 Add User','<div class="fg">'
+window.newUser=async function(){
+  // Pre-load drivers and staff for dropdowns
+  var drivers=safeArr(await sbFetch('drivers',{select:'id,driver_code,full_name,mobile',eq:{status:'Active'},order:'full_name.asc'}));
+  var staffList=safeArr(await sbFetch('staff_profiles',{select:'id,staff_code,full_name,designation_type,basic_salary',order:'full_name.asc'}));
+  window._nuDrivers=drivers;
+  window._nuStaff=staffList;
+  var drvOpts='<option value="">— New (not in Driver Registry) —</option>'+drivers.map(function(d){return'<option value="'+d.id+'">'+d.driver_code+' — '+d.full_name+' ('+d.mobile+')</option>';}).join('');
+  var stfOpts='<option value="">— New (not in Staff Master) —</option>'+staffList.map(function(s){return'<option value="'+s.id+'">'+s.staff_code+' — '+s.full_name+' ('+s.designation_type+')</option>';}).join('');
+  var selStyle='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'
+    +'<div class="sec" style="grid-column:1/-1">Role & Login</div>'
+    +fld('Role','<select id="nu_role" onchange="nuRoleChange()" style="'+selStyle+'"><option value="admin">Admin</option><option value="manager">Manager</option><option value="inspector">Inspector</option><option value="driver">Driver</option><option value="generator">Generator</option></select>',true)
+    +fld('PIN',inp('nu_pin','','password'),true)
+    // Driver picker — shown only for driver role
+    +'<div class="full" id="nu_drv_row" style="display:none">'
+    +'<div class="fl">Link to Existing Driver <span style="color:#5a7a9a;font-size:10px">(optional)</span></div>'
+    +'<select id="nu_drv_pick" onchange="nuDriverPick()" style="'+selStyle+'">'+drvOpts+'</select>'
+    +'<div style="font-size:10px;color:#5a7a9a;margin-top:4px">Selecting a driver auto-fills their details and links the login to their record</div>'
+    +'</div>'
+    // Staff picker — shown for all non-generator roles
+    +'<div class="full" id="nu_stf_row">'
+    +'<div class="fl">Link to Existing Staff <span style="color:#5a7a9a;font-size:10px">(optional)</span></div>'
+    +'<select id="nu_stf_pick" onchange="nuStaffPick()" style="'+selStyle+'">'+stfOpts+'</select>'
+    +'<div style="font-size:10px;color:#5a7a9a;margin-top:4px">Selecting staff links HR profile and auto-fills details</div>'
+    +'</div>'
+    +'<div class="sec" style="grid-column:1/-1">Personal Details</div>'
     +fld('Full Name',inp('nu_name'),true)
     +fld('Email',inp('nu_email','','email'),true)
     +fld('Phone',inp('nu_phone',''))
-    +fld('Role',sel('nu_role',['admin','manager','inspector','driver','generator']),true)
-    +fld('PIN',inp('nu_pin','','password'),true)
-    +'<div class="sec" style="grid-column:1/-1">HR Profile (auto-created for staff roles)</div>'
+    +'<div class="sec" style="grid-column:1/-1" id="nu_hr_sec">HR Profile</div>'
+    +'<div id="nu_hr_fields" style="display:contents">'
     +fld('Department',sel('nu_dept',['Operations','Fleet','Finance','HR','Compliance','Admin']))
     +fld('Basic Salary ₹',inp('nu_salary','','number'))
-    +'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
+    +'</div>'
+    +'</div>';
+  modal('👤 Add User',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
+  setTimeout(function(){nuRoleChange();},50);
+};
+
+window.nuRoleChange=function(){
+  var role=document.getElementById('nu_role')?document.getElementById('nu_role').value:'';
+  var drvRow=document.getElementById('nu_drv_row');
+  var stfRow=document.getElementById('nu_stf_row');
+  var hrSec=document.getElementById('nu_hr_sec');
+  var hrFields=document.getElementById('nu_hr_fields');
+  if(drvRow)drvRow.style.display=role==='driver'?'block':'none';
+  if(stfRow)stfRow.style.display=role==='generator'?'none':'block';
+  if(hrSec)hrSec.style.display=role==='generator'?'none':'block';
+  if(hrFields)hrFields.style.display=role==='generator'?'none':'contents';
+};
+
+window.nuDriverPick=function(){
+  var sel=document.getElementById('nu_drv_pick');
+  if(!sel||!sel.value)return;
+  var drv=(window._nuDrivers||[]).find(function(d){return d.id===sel.value;});
+  if(!drv)return;
+  // Auto-fill personal details from driver record
+  var nameEl=document.getElementById('nu_name');
+  var phoneEl=document.getElementById('nu_phone');
+  if(nameEl)nameEl.value=drv.full_name||'';
+  if(phoneEl)phoneEl.value=drv.mobile||'';
+  // Also pick staff if driver has staff_id
+  if(drv.staff_id){
+    var stfPick=document.getElementById('nu_stf_pick');
+    if(stfPick)stfPick.value=drv.staff_id;
+    nuStaffPick();
+  }
+};
+
+window.nuStaffPick=function(){
+  var sel=document.getElementById('nu_stf_pick');
+  if(!sel||!sel.value)return;
+  var stf=(window._nuStaff||[]).find(function(s){return s.id===sel.value;});
+  if(!stf)return;
+  // Auto-fill from staff record
+  var nameEl=document.getElementById('nu_name');
+  var salEl=document.getElementById('nu_salary');
+  if(nameEl&&!nameEl.value)nameEl.value=stf.full_name||'';
+  if(salEl)salEl.value=stf.basic_salary||'';
 };
 window.saveUser=async function(){
-  var name=gv('nu_name'),email=gv('nu_email'),pin=gv('nu_pin'),role=gv('nu_role');
-  if(!name||!email||!pin||!role){alert('All fields required.');return;}
+  var name=gv('nu_name'),email=gv('nu_email'),pin=gv('nu_pin'),role=document.getElementById('nu_role')?document.getElementById('nu_role').value:'';
+  if(!name||!email||!pin||!role){alert('Name, Email, PIN and Role are required.');return;}
   try{
-    // Check duplicate email first
+    // Check duplicate email
     var existingU=safeArr(await sbFetch('user_roles',{select:'id',eq:{email:email}}));
-    if(existingU.length>0){alert('This email is already registered. Use a different email or edit the existing user.');return;}
+    if(existingU.length>0){alert('This email is already registered. Edit the existing user instead.');return;}
+
     var staffId=null;
-    // Auto-create staff profile for non-generator roles
-    if(role!=='generator'){
+    var drvPickId=document.getElementById('nu_drv_pick')?document.getElementById('nu_drv_pick').value:'';
+    var stfPickId=document.getElementById('nu_stf_pick')?document.getElementById('nu_stf_pick').value:'';
+
+    // Use selected staff profile or auto-create one
+    if(stfPickId){
+      staffId=stfPickId;
+    }else if(role!=='generator'){
       var dtype=role==='driver'?'Driver':role==='inspector'?'Supervisor':'Admin Staff';
       var scode=await sbRpc('next_staff_code');
       var srec=await sbInsert('staff_profiles',{
@@ -2667,8 +2772,23 @@ window.saveUser=async function(){
       });
       staffId=srec[0]&&srec[0].id;
     }
-    await sbInsert('user_roles',{full_name:name,email:email,phone:gv('nu_phone')||null,role:role,pin:pin,is_active:true,staff_id:staffId});
-    closeModal();success('User created!'+(staffId?' Staff profile auto-created.':''));renderUsers();
+
+    // Create user login
+    var userRec=await sbInsert('user_roles',{full_name:name,email:email,phone:gv('nu_phone')||null,role:role,pin:pin,is_active:true,staff_id:staffId});
+    var userId=userRec[0]&&userRec[0].id;
+
+    // If driver was selected — link user_id to driver record
+    if(drvPickId&&userId){
+      await sbUpdate('drivers',{user_id:userId,staff_id:staffId||null},{id:drvPickId});
+    }
+    // Update staff record with user linkage info
+    if(staffId&&userId){
+      await sbUpdate('staff_profiles',{email:email},{id:staffId});
+    }
+
+    closeModal();
+    success('User created!'+(drvPickId?' Linked to Driver record.':stfPickId?' Linked to Staff profile.':staffId?' Staff profile auto-created.':''));
+    renderUsers();
   }catch(e){alert('Error: '+e.message);}
 };
 window.editUser=async function(id){
