@@ -432,12 +432,12 @@ function locBtn(latId,lngId,statusId,mapsId){
 // ── AUTH & ROUTING ────────────────────────────────────────
 var CURRENT_USER=null,DRIVER_LOCATION=null,DRIVER_RECORD=null,CHECKLIST_DONE_TODAY=false;
 var ROLE_ACCESS={
-  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances'],
-  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances'],
+  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster'],
+  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster'],
   inspector:['dashboard','inspection','trips','billing','bins','fillalerts','boiler'],
   driver:[],generator:['dashboard','bins','fillalerts'],
 };
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster'};
 var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
@@ -446,7 +446,7 @@ var NAV=[
   {s:'Fleet Management',items:[{id:'vehicles',l:'Vehicle Registry',i:'🚛'},{id:'checklist',l:'Pre-Trip Checklist',i:'✅'},{id:'drivers',l:'Driver Registry',i:'👤'},{id:'cleaning',l:'Vehicle Cleaning',i:'🧹'},{id:'pm',l:'Preventive Maint.',i:'🔧'},{id:'rm',l:'Reactive Maint.',i:'⚡'},{id:'schedule',l:'Maint. Schedule',i:'📅'},{id:'fuel',l:'Fuel Management',i:'⛽'},{id:'tyres',l:'Tyre Management',i:'⭕'}]},
   {s:'Infrastructure',items:[{id:'sites',l:'Processing Sites',i:'🏭'}]},
   {s:'Admin',items:[{id:'staff',l:'Staff Master',i:'👥'},{id:'roles',l:'Role Permissions',i:'🔐'},{id:'reports',l:'Reports & Export',i:'📊'},{id:'users',l:'User Management',i:'👤'}]},
-  {s:'Payroll',items:[{id:'incentive',l:'Incentive Master',i:'⚡'},{id:'payroll',l:'Payroll Management',i:'💰'},{id:'advances',l:'Staff Advances',i:'💵'}]},
+  {s:'Payroll',items:[{id:'incentive',l:'Incentive Master',i:'⚡'},{id:'payroll',l:'Payroll Management',i:'💰'},{id:'advances',l:'Staff Advances',i:'💵'},{id:'shifts',l:'Shift Master',i:'🕐'},{id:'roster',l:'Shift Roster',i:'📅'}]},
 ];
 var CUR='dashboard';
 function buildNav(){
@@ -460,7 +460,7 @@ function go(page){
   var ni=document.getElementById('ni-'+page);if(ni)ni.classList.add('on');
   var ptEl=document.getElementById('ptitle');if(ptEl)ptEl.textContent=PAGE_TITLES[page]||page;
   var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances};
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster};
   if(allPages[page])allPages[page]();
   else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>'+PAGE_TITLES[page]+'</div></div>';
   setTimeout(function(){wireButtons();setTblWrapHeights();},200);
@@ -2058,42 +2058,88 @@ window.prLoadStaff=async function(sel){
   var type=opt.getAttribute('data-type')||'';
   var salEl=document.getElementById('pr_basic');
   if(salEl)salEl.value=sal;
-  // Auto-load trips for this staff this month
   var staffId=sel.value;
-  var month=document.getElementById('pr_month').value;
-  var year=gv('pr_year');
+  var month=parseInt(document.getElementById('pr_month').value);
+  var year=parseInt(gv('pr_year'));
   if(!staffId||!month||!year)return;
-  var startDate=year+'-'+(String(month).padStart(2,'0'))+'-01';
+  var startDate=year+'-'+String(month).padStart(2,'0')+'-01';
   var endDate=new Date(year,month,0).toISOString().split('T')[0];
+
+  // Show loading state
+  var loadingFields=['pr_pdays','pr_ldays','pr_trips','pr_wtons','pr_tripinc','pr_wtinc','pr_attbonus','pr_advrec'];
+  loadingFields.forEach(function(f){var el=document.getElementById(f);if(el)el.style.opacity='0.4';});
+
   try{
-    // Count trips where this staff was driver or collector
-    var staffData=safeArr(await sbFetch('staff_profiles',{select:'id,driver_id',eq:{id:staffId}}));
-    // Count from trip_crew
+    // ── 1. AUTO-CALCULATE ATTENDANCE ──────────────────────
+    var att=await calcAttendanceForPayroll(staffId,month,year);
+    if(document.getElementById('pr_pdays'))document.getElementById('pr_pdays').value=att.present_days;
+    if(document.getElementById('pr_ldays'))document.getElementById('pr_ldays').value=att.late_count;
+    if(document.getElementById('pr_absded')){
+      // Auto-calc absent deduction
+      var basic=parseFloat(sal)||0;
+      var absDed=att.absent_days>0?Math.round((basic/26)*att.absent_days):0;
+      document.getElementById('pr_absded').value=absDed;
+    }
+    // Late deduction days → ₹
+    if(document.getElementById('pr_lateded')&&att.late_deduction_days>0){
+      var basic2=parseFloat(sal)||0;
+      document.getElementById('pr_lateded').value=Math.round((basic2/26)*att.late_deduction_days);
+    }
+
+    // ── 2. AUTO-COUNT TRIPS ───────────────────────────────
     var crewTrips=safeArr(await sbFetch('trip_crew',{select:'trip_id,trips(trip_date,total_weight_kg)',eq:{staff_id:staffId}}));
     var monthTrips=crewTrips.filter(function(c){return c.trips&&c.trips.trip_date>=startDate&&c.trips.trip_date<=endDate;});
     var tripCount=monthTrips.length;
-    var totalWt=monthTrips.reduce(function(s,c){return s+(c.trips&&c.trips.total_weight_kg||0);},0)/1000;
+    var totalWt=monthTrips.reduce(function(s,c){return s+(parseFloat(c.trips&&c.trips.total_weight_kg||0));},0)/1000;
     if(document.getElementById('pr_trips'))document.getElementById('pr_trips').value=tripCount;
     if(document.getElementById('pr_wtons'))document.getElementById('pr_wtons').value=totalWt.toFixed(2);
-    // Get active incentive rate
+
+    // ── 3. AUTO-PICK INCENTIVE RATE ───────────────────────
     var rates=safeArr(await sbFetch('incentive_master',{select:'*',eq:{status:'Active'},order:'effective_from.desc'}));
     var today=new Date().toISOString().split('T')[0];
-    var rate=rates.find(function(r){return(r.applicable_to===type||r.applicable_to==='Both')&&r.effective_from<=today&&(!r.effective_to||r.effective_to>=today);});
+    var rate=rates.find(function(r){
+      return(r.applicable_to===type||r.applicable_to==='Both')
+        &&r.effective_from<=today&&(!r.effective_to||r.effective_to>=today);
+    });
     if(rate){
-      var tripInc=(tripCount*(rate.trip_incentive_rate||0));
-      var wtInc=(totalWt*(rate.weight_incentive_rate||0));
-      var attBonus=rate.attendance_bonus||0;
+      var tripInc=tripCount*(rate.trip_incentive_rate||0);
+      var wtInc=totalWt*(rate.weight_incentive_rate||0);
+      // Attendance bonus only if no excess lates
+      var attBonus=att.late_count<=6?rate.attendance_bonus||0:0;
       if(document.getElementById('pr_tripinc'))document.getElementById('pr_tripinc').value=tripInc.toFixed(0);
       if(document.getElementById('pr_wtinc'))document.getElementById('pr_wtinc').value=wtInc.toFixed(0);
       if(document.getElementById('pr_attbonus'))document.getElementById('pr_attbonus').value=attBonus;
     }
-    // Check pending advances
+
+    // ── 4. AUTO-FILL ADVANCE RECOVERY ────────────────────
     var staffAdvances=(window._prAdvances||[]).filter(function(a){return a.staff_id===staffId;});
     if(staffAdvances.length){
       var totalBal=staffAdvances.reduce(function(s,a){return s+(a.balance||0);},0);
-      if(document.getElementById('pr_advrec'))document.getElementById('pr_advrec').value=Math.min(totalBal,parseFloat(document.getElementById('pr_basic').value||0)*0.5).toFixed(0);
+      var maxRecovery=Math.round(parseFloat(sal)*0.5);
+      if(document.getElementById('pr_advrec'))document.getElementById('pr_advrec').value=Math.min(totalBal,maxRecovery).toFixed(0);
     }
-  }catch(e){console.warn('Auto-load error:',e);}
+
+    // Show summary info
+    var infoDiv=document.getElementById('pr_attinfo');
+    if(!infoDiv){
+      var sumDiv=document.getElementById('pr_summary');
+      if(sumDiv)sumDiv.insertAdjacentHTML('beforebegin','<div id="pr_attinfo"></div>');
+      infoDiv=document.getElementById('pr_attinfo');
+    }
+    if(infoDiv)infoDiv.innerHTML='<div style="background:#0f1724;border-radius:8px;padding:10px;font-size:11.5px;color:#8ab0d0;margin-bottom:8px">'
+      +'📊 <strong style="color:#00e676">Attendance Auto-Loaded</strong> — '
+      +'Present: <strong>'+att.present_days+' days</strong> · '
+      +'Absent: <strong>'+att.absent_days+' days</strong> · '
+      +'Late: <strong>'+att.late_count+' times</strong>'
+      +(att.late_count>6?' · <span style="color:#f44336">'+( att.late_count-6)+' excess lates → -'+att.late_deduction_days+' day deduction</span>':'')
+      +' · Hours: <strong>'+att.total_hours+'h</strong>'
+      +'</div>';
+
+    loadingFields.forEach(function(f){var el=document.getElementById(f);if(el)el.style.opacity='1';});
+  }catch(e){
+    loadingFields.forEach(function(f){var el=document.getElementById(f);if(el)el.style.opacity='1';});
+    console.warn('Auto-load error:',e);
+  }
 };
 
 window.prCalc=function(){
@@ -2239,6 +2285,277 @@ window.approvePayroll=async function(id){
   }catch(e){alert('Error: '+e.message);}
 };
 
+
+// ══════════════════════════════════════════════════════════
+// SHIFT MASTER
+// ══════════════════════════════════════════════════════════
+async function renderShifts(){
+  var ct=document.getElementById('ct');
+  try{
+    var shifts=safeArr(await sbFetch('shift_master',{select:'*',order:'start_time.asc'}));
+    var rows=shifts.map(function(s){
+      return[
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+s.shift_code+'</strong>',
+        '<strong>'+s.shift_name+'</strong>',
+        s.start_time||'-',s.end_time||'-',
+        '<span style="color:#ff9800">'+s.late_after+'</span>',
+        s.min_hours+'h',
+        s.is_overnight?badge('a','Overnight'):badge('g','Same Day'),
+        badge(s.status==='Active'?'g':'gr',s.status),
+        '<button class="btn btn-sm" id="esh'+s.id+'">Edit</button>'
+      ];
+    });
+    ct.innerHTML=card('🕐 Shift Master',
+      '<button class="btn btn-g btn-sm" onclick="newShift()">+ Add Shift</button>',
+      tbl(['Code','Shift Name','Start','End','Late After','Min Hours','Type','Status',''],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="esh"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editShift(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+window.newShift=function(){
+  var body='<div class="fg">'
+    +fld('Shift Name',inp('sh_name','e.g. Morning'),true)
+    +fld('Start Time','<input id="sh_start" type="time" value="09:00">',true)
+    +fld('End Time','<input id="sh_end" type="time" value="18:15">',true)
+    +fld('Late After','<input id="sh_late" type="time" value="10:00">',true)
+    +fld('Minimum Hours',inp('sh_minhrs','6.25','number'))
+    +fld('Overnight Shift',sel('sh_overnight',['No','Yes']))
+    +'</div>';
+  modal('🕐 Add Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveShift()">Save</button>');
+};
+window.saveShift=async function(){
+  var name=gv('sh_name'),start=gv('sh_start'),end=gv('sh_end'),late=gv('sh_late');
+  if(!name||!start||!end||!late){alert('All time fields are required.');return;}
+  try{
+    var code=await sbRpc('next_shift_code');
+    await sbInsert('shift_master',{
+      shift_code:code,shift_name:name,start_time:start,end_time:end,
+      late_after:late,min_hours:parseFloat(gv('sh_minhrs'))||6.25,
+      is_overnight:gv('sh_overnight')==='Yes',status:'Active'
+    });
+    closeModal();success('Shift '+code+' created!');renderShifts();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editShift=async function(id){
+  var s=(await sbFetch('shift_master',{select:'*',eq:{id:id}}))[0];if(!s)return;
+  var body='<div class="fg">'
+    +fld('Shift Name','<input id="sh_name" value="'+s.shift_name+'">',true)
+    +fld('Start Time','<input id="sh_start" type="time" value="'+(s.start_time||'')+'">',true)
+    +fld('End Time','<input id="sh_end" type="time" value="'+(s.end_time||'')+'">',true)
+    +fld('Late After','<input id="sh_late" type="time" value="'+(s.late_after||'')+'">',true)
+    +fld('Minimum Hours','<input id="sh_minhrs" type="number" value="'+(s.min_hours||6.25)+'">')
+    +fld('Overnight',sel('sh_overnight',['No','Yes']))
+    +fld('Status',sel('sh_status',['Active','Inactive']))
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="svsh">Save</button>';
+  modal('Edit Shift — '+s.shift_name,body,foot);
+  setTimeout(function(){
+    document.getElementById('sh_overnight').value=s.is_overnight?'Yes':'No';
+    document.getElementById('sh_status').value=s.status||'Active';
+    var sv=document.getElementById('svsh');if(sv)sv.onclick=function(){updateShift(id);};
+  },50);
+};
+window.updateShift=async function(id){
+  try{
+    await sbUpdate('shift_master',{
+      shift_name:gv('sh_name'),start_time:gv('sh_start'),end_time:gv('sh_end'),
+      late_after:gv('sh_late'),min_hours:parseFloat(gv('sh_minhrs'))||6.25,
+      is_overnight:gv('sh_overnight')==='Yes',status:gv('sh_status')
+    },{id:id});
+    closeModal();success('Shift updated!');renderShifts();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// WEEKLY SHIFT ROSTER
+// ══════════════════════════════════════════════════════════
+async function renderRoster(){
+  var ct=document.getElementById('ct');
+  try{
+    var[roster_r,staff_r,shifts_r]=await Promise.all([
+      sbFetch('staff_shift_roster',{select:'*,staff_profiles(staff_code,full_name,designation_type),shift_master(shift_name,start_time,end_time)',order:'week_start.desc',limit:50}),
+      sbFetch('staff_profiles',{select:'id,staff_code,full_name,designation_type',order:'full_name.asc'}),
+      sbFetch('shift_master',{select:'*',eq:{status:'Active'},order:'start_time.asc'})
+    ]);
+    var roster=safeArr(roster_r);
+    window._rosterStaff=safeArr(staff_r);
+    window._rosterShifts=safeArr(shifts_r);
+
+    // Group by week
+    var weeks={};
+    roster.forEach(function(r){
+      var wk=r.week_start;
+      if(!weeks[wk])weeks[wk]=[];
+      weeks[wk].push(r);
+    });
+
+    var rows=roster.map(function(r){
+      var st=r.staff_profiles||{};
+      var sh=r.shift_master||{};
+      return[
+        '<div style="font-weight:600">'+(st.full_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(st.staff_code||'')+'</div>',
+        badge(st.designation_type==='Driver'?'b':st.designation_type==='Collector'?'g':'a',st.designation_type||'Staff'),
+        '<strong>'+(sh.shift_name||'-')+'</strong><div style="font-size:10px;color:#5a7a9a">'+(sh.start_time||'')+' – '+(sh.end_time||'')+'</div>',
+        r.week_start||'-',r.week_end||'-',
+        '<button class="btn btn-sm" id="erost'+r.id+'">Edit</button>'
+      ];
+    });
+    ct.innerHTML='<div class="sg">'
+      +sc('#2196f3','Staff Assigned',new Set(roster.map(function(r){return r.staff_id;})).size,'')
+      +sc('#00e676','This Week',roster.filter(function(r){return r.week_start<=new Date().toISOString().split('T')[0]&&r.week_end>=new Date().toISOString().split('T')[0];}).length,'Assignments')
+      +'</div>'
+      +card('📅 Weekly Shift Roster',
+        '<button class="btn btn-g btn-sm" onclick="newRoster()">+ Assign Shift</button>',
+        tbl(['Staff','Type','Shift','Week Start','Week End',''],rows),true);
+    setTimeout(function(){
+      document.querySelectorAll('[id^="erost"]').forEach(function(b){var id=b.id.slice(5);b.onclick=function(){editRoster(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+window.newRoster=function(){
+  var staff=window._rosterStaff||[];
+  var shifts=window._rosterShifts||[];
+  var sOpts='<option value="">— Select Staff —</option>'+staff.map(function(s){return'<option value="'+s.id+'">'+s.staff_code+' — '+s.full_name+'</option>';}).join('');
+  var shOpts='<option value="">— Select Shift —</option>'+shifts.map(function(s){return'<option value="'+s.id+'">'+s.shift_name+' ('+s.start_time+' – '+s.end_time+')</option>';}).join('');
+  // Calculate this week Mon-Sun
+  var now=new Date();
+  var day=now.getDay()||7;
+  var mon=new Date(now);mon.setDate(now.getDate()-day+1);
+  var sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  var fmt=function(d){return d.toISOString().split('T')[0];};
+  var body='<div class="fg">'
+    +'<div class="full"><div class="fl">Staff *</div><select id="rst_staff" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+sOpts+'</select></div>'
+    +'<div class="full"><div class="fl">Shift *</div><select id="rst_shift" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+shOpts+'</select></div>'
+    +fld('Week Start (Monday)','<input id="rst_wstart" type="date" value="'+fmt(mon)+'">',true)
+    +fld('Week End (Sunday)','<input id="rst_wend" type="date" value="'+fmt(sun)+'">',true)
+    +'</div>';
+  modal('📅 Assign Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveRoster()">Assign</button>');
+};
+window.saveRoster=async function(){
+  var staff=gv('rst_staff'),shift=gv('rst_shift'),wstart=gv('rst_wstart'),wend=gv('rst_wend');
+  if(!staff||!shift||!wstart||!wend){alert('All fields required.');return;}
+  try{
+    await sbInsert('staff_shift_roster',{staff_id:staff,shift_id:shift,week_start:wstart,week_end:wend});
+    closeModal();success('Shift assigned!');renderRoster();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.editRoster=async function(id){
+  var r=(await sbFetch('staff_shift_roster',{select:'*',eq:{id:id}}))[0];if(!r)return;
+  var shifts=window._rosterShifts||[];
+  var shOpts=shifts.map(function(s){return'<option value="'+s.id+'"'+(s.id===r.shift_id?' selected':'')+'>'+s.shift_name+' ('+s.start_time+' – '+s.end_time+')</option>';}).join('');
+  var body='<div class="fg">'
+    +'<div class="full"><div class="fl">Shift</div><select id="rst_shift" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">'+shOpts+'</select></div>'
+    +fld('Week Start','<input id="rst_wstart" type="date" value="'+(r.week_start||'')+'">',true)
+    +fld('Week End','<input id="rst_wend" type="date" value="'+(r.week_end||'')+'">',true)
+    +'</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="svrost">Save</button>';
+  modal('Edit Roster',body,foot);
+  setTimeout(function(){var sv=document.getElementById('svrost');if(sv)sv.onclick=function(){updateRoster(id);};},50);
+};
+window.updateRoster=async function(id){
+  try{
+    await sbUpdate('staff_shift_roster',{shift_id:gv('rst_shift'),week_start:gv('rst_wstart'),week_end:gv('rst_wend')},{id:id});
+    closeModal();success('Roster updated!');renderRoster();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// ATTENDANCE AUTO-CALCULATE FOR PAYROLL
+// ══════════════════════════════════════════════════════════
+window.calcAttendanceForPayroll=async function(staffId, month, year){
+  // Get all attendance records for this staff this month
+  var startDate=year+'-'+String(month).padStart(2,'0')+'-01';
+  var endDate=new Date(year,month,0).toISOString().split('T')[0];
+
+  var attRecs=safeArr(await sbFetch('attendance',{
+    select:'*',
+    order:'punch_time.asc'
+  })).filter(function(a){
+    if(!a.punch_time)return false;
+    var d=a.punch_time.split('T')[0];
+    // Match by staff_id or user_role_id linked to staff
+    return d>=startDate&&d<=endDate&&(a.staff_id===staffId);
+  });
+
+  // Get shift roster for this month to know late_after per day
+  var rosterRecs=safeArr(await sbFetch('staff_shift_roster',{
+    select:'*,shift_master(start_time,end_time,late_after,min_hours,is_overnight)',
+    eq:{staff_id:staffId},
+    order:'week_start.asc'
+  }));
+
+  function getShiftForDate(dateStr){
+    var rec=rosterRecs.find(function(r){return r.week_start<=dateStr&&r.week_end>=dateStr;});
+    return rec?rec.shift_master:null;
+  }
+
+  // Group by date
+  var byDate={};
+  attRecs.forEach(function(a){
+    var d=a.punch_time.split('T')[0];
+    if(!byDate[d])byDate[d]={ins:[],outs:[]};
+    if(a.punch_type==='IN')byDate[d].ins.push(a.punch_time);
+    else byDate[d].outs.push(a.punch_time);
+  });
+
+  var presentDays=0,absentDays=0,lateCount=0,earlyCount=0,totalHours=0,halfDays=0;
+  var WORKING_DAYS=26;
+
+  Object.keys(byDate).forEach(function(date){
+    var rec=byDate[date];
+    var shift=getShiftForDate(date);
+    var lateAfter=shift?shift.late_after:'10:00';
+    var minHours=shift?shift.min_hours:6.25;
+
+    if(rec.ins.length===0){absentDays++;return;}
+
+    var firstIn=rec.ins[0];
+    var lastOut=rec.outs.length>0?rec.outs[rec.outs.length-1]:null;
+
+    // Calculate hours worked
+    var hoursWorked=0;
+    if(lastOut){
+      var inT=new Date(firstIn);var outT=new Date(lastOut);
+      hoursWorked=(outT-inT)/(1000*60*60);
+      // Handle overnight shift
+      if(hoursWorked<0)hoursWorked+=24;
+    }
+    totalHours+=hoursWorked;
+
+    // Check if minimum hours met
+    var minMet=hoursWorked>=minHours;
+
+    if(minMet){
+      presentDays++;
+    }else if(hoursWorked>0){
+      halfDays++;
+      presentDays+=0.5;
+    }else{
+      absentDays++;
+    }
+
+    // Late check — compare IN time to late_after
+    var inTime=firstIn.split('T')[1].substring(0,5);
+    if(inTime>lateAfter)lateCount++;
+  });
+
+  absentDays=Math.max(0,WORKING_DAYS-Math.ceil(presentDays));
+
+  // Late deduction: beyond 6 lates, each extra = 0.5 day (only if 6:15 met)
+  var extraLates=Math.max(0,lateCount-6);
+  var lateDedDays=extraLates*0.5;
+
+  return{
+    present_days:Math.round(presentDays),
+    absent_days:absentDays,
+    half_days:halfDays,
+    late_count:lateCount,
+    late_deduction_days:lateDedDays,
+    total_hours:Math.round(totalHours*10)/10,
+    working_days:WORKING_DAYS
+  };
+};
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
@@ -2538,7 +2855,11 @@ window.driverQRPunch=async function(punchType){
   if(!loc){document.getElementById('drv-att-result').innerHTML='<div style="color:#f44336;font-size:13px;padding:8px">Invalid QR code</div>';return;}
   var lat=null,lng=null,gpsVerified=false,distance=null;
   if(DRIVER_LOCATION){lat=DRIVER_LOCATION.lat;lng=DRIVER_LOCATION.lng;if(loc.latitude&&loc.longitude){var R=6371000;var dLat=(loc.latitude-lat)*Math.PI/180;var dLon=(loc.longitude-lng)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat*Math.PI/180)*Math.cos(loc.latitude*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);distance=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));gpsVerified=distance<=(loc.radius_meters||100);}else{gpsVerified=true;}}
-  await sbInsert('attendance',{user_role_id:CURRENT_USER?CURRENT_USER.id:null,qr_location_id:loc.id,punch_type:punchType,punch_time:new Date().toISOString(),latitude:lat,longitude:lng,gps_verified:gpsVerified,distance_from_qr:distance});
+  // Get staff_id and driver_id for this user
+  var driverRec=safeArr(await sbFetch('drivers',{select:'id,staff_id',eq:{user_id:CURRENT_USER?CURRENT_USER.id:null}}));
+  var drvId=driverRec[0]?driverRec[0].id:null;
+  var stfId=driverRec[0]?driverRec[0].staff_id:(CURRENT_USER&&CURRENT_USER.staff_id?CURRENT_USER.staff_id:null);
+  await sbInsert('attendance',{user_role_id:CURRENT_USER?CURRENT_USER.id:null,staff_id:stfId,driver_id:drvId,qr_location_id:loc.id,punch_type:punchType,punch_time:new Date().toISOString(),latitude:lat,longitude:lng,gps_verified:gpsVerified,distance_from_qr:distance});
   var resEl=document.getElementById('drv-att-result');if(resEl)resEl.innerHTML='<div style="text-align:center;padding:10px"><div style="font-size:36px;margin-bottom:6px">'+(punchType==='IN'?'✅':'👋')+'</div><div style="font-size:15px;font-weight:700;color:'+(punchType==='IN'?'#00e676':'#f44336')+'">'+(punchType==='IN'?'Punched IN!':'Punched OUT!')+'</div><div style="font-size:12px;color:#8ab0d0">'+loc.location_name+'</div>'+(gpsVerified?'<div style="font-size:11px;color:#00e676;margin-top:4px">✅ GPS Verified</div>':'<div style="font-size:11px;color:#ff9800;margin-top:4px">⚠️ GPS not verified</div>')+'</div>';
   setTimeout(function(){closeModal();renderDriverHome();},2000);}catch(e){alert('Error: '+e.message);}
 };
