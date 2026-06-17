@@ -2776,14 +2776,31 @@ window.submitPublicGenForm=async function(){
 function captureDriverLocation(){return new Promise(function(resolve){if(!navigator.geolocation){resolve(null);return;}navigator.geolocation.getCurrentPosition(function(pos){DRIVER_LOCATION={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:new Date().toISOString()};resolve(DRIVER_LOCATION);},function(){resolve(null);},{enableHighAccuracy:true,timeout:8000});});}
 async function showDriverApp(){
   var user=CURRENT_USER;document.body.innerHTML='';document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
-  document.body.innerHTML='<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1);position:sticky;top:0;z-index:10"><div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop Pro</div><div style="font-size:11px;color:#8ab0d0">Driver App · '+user.full_name+'</div></div><div style="display:flex;align-items:center;gap:8px"><div id="gps-badge" style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,152,0,.15);color:#ff9800">📍 Getting GPS...</div><button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button></div></div><div id="driver-content" style="padding:16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto"></div>';
+  document.body.innerHTML='<div style="background:#0f1724;min-height:100vh;width:100%;box-sizing:border-box">'
+    +'<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1);position:sticky;top:0;z-index:10;width:100%;box-sizing:border-box">'
+    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop Pro</div>'
+    +'<div style="font-size:11px;color:#8ab0d0">Driver App · '+user.full_name+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px">'
+    +'<div id="gps-badge" style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,152,0,.15);color:#ff9800">📍 Getting GPS...</div>'
+    +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
+    +'</div></div>'
+    +'<div id="driver-content" style="padding:16px;display:flex;flex-direction:column;gap:12px;width:100%;max-width:600px;margin:0 auto;box-sizing:border-box"></div>'
+    +'</div>';
   var loc=await captureDriverLocation();var gpsBadge=document.getElementById('gps-badge');
   if(loc&&gpsBadge){gpsBadge.style.background='rgba(0,230,118,.15)';gpsBadge.style.color='#00e676';gpsBadge.textContent='📍 GPS ±'+Math.round(loc.accuracy)+'m';}
   else if(gpsBadge){gpsBadge.style.background='rgba(244,67,54,.15)';gpsBadge.style.color='#f44336';gpsBadge.textContent='📍 GPS Unavailable';}
-  var drvData=await sbFetch('drivers',{select:'*',eq:{mobile:user.phone||''}});DRIVER_RECORD=safeArr(drvData)[0]||null;
+  // Look up driver by user_id first, then by email, then by mobile
+  var drvData=safeArr(await sbFetch('drivers',{select:'*',eq:{user_id:CURRENT_USER.id}}));
+  if(!drvData.length)drvData=safeArr(await sbFetch('drivers',{select:'*',eq:{mobile:user.phone||''}}));
+  DRIVER_RECORD=drvData[0]||null;
+  console.log('Driver record found:',DRIVER_RECORD?DRIVER_RECORD.driver_code:'NOT FOUND');
   var today=new Date().toISOString().split('T')[0];
   if(localStorage.getItem('checklist_date')===today){CHECKLIST_DONE_TODAY=true;renderDriverHome();return;}
-  var todayCheck=await sbFetch('vehicle_checklist',{select:'id,vehicle_ready',eq:{check_date:today},limit:1});
+  // Check by driver_id if available, else by user_role_id
+  var todayCheckParams=DRIVER_RECORD
+    ?{select:'id,vehicle_ready',eq:{check_date:today,driver_id:DRIVER_RECORD.id},limit:1}
+    :{select:'id,vehicle_ready',eq:{check_date:today,user_role_id:CURRENT_USER.id},limit:1};
+  var todayCheck=await sbFetch('vehicle_checklist',todayCheckParams);
   CHECKLIST_DONE_TODAY=safeArr(todayCheck).some(function(c){return c.vehicle_ready;});
   if(CHECKLIST_DONE_TODAY)localStorage.setItem('checklist_date',today);
   if(!CHECKLIST_DONE_TODAY)showMandatoryChecklist();else renderDriverHome();
@@ -2792,7 +2809,13 @@ async function renderDriverHome(){
   var dc=document.getElementById('driver-content');if(!dc)return;
   var today=new Date().toISOString().split('T')[0];var timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   var driverId=DRIVER_RECORD?DRIVER_RECORD.id:null;
-  var trips=safeArr(driverId?await sbFetch('trips',{select:'*,vehicles(reg_no)',eq:{driver_id:driverId},order:'created_at.desc',limit:10}):await sbFetch('trips',{select:'*,vehicles(reg_no)',order:'created_at.desc',limit:10}));
+  // Load trips and vehicles separately to avoid FK ambiguity
+  var tripsRaw=safeArr(driverId?await sbFetch('trips',{select:'*',eq:{driver_id:driverId},order:'created_at.desc',limit:10}):await sbFetch('trips',{select:'*',order:'created_at.desc',limit:10}));
+  // Load vehicles as lookup
+  var vehIds=[...new Set(tripsRaw.map(function(t){return t.vehicle_id;}).filter(Boolean))];
+  var vehMap={};
+  if(vehIds.length){var vehList=safeArr(await sbFetch('vehicles',{select:'id,reg_no'}));vehList.forEach(function(v){vehMap[v.id]=v.reg_no;});}
+  var trips=tripsRaw.map(function(t){return Object.assign({},t,{vehicles:{reg_no:vehMap[t.vehicle_id]||t.vehicle_id||'-'}});});
   var myTrips=trips.filter(function(t){return['Planned','Dispatched','In Transit'].includes(t.status)||t.trip_date===today;});
   var completedToday=trips.filter(function(t){return t.trip_date===today&&(t.status==='Completed'||t.status==='Certified');});
   var activeTrip=myTrips.find(function(t){return t.status==='In Transit';});
@@ -2816,7 +2839,7 @@ function showMandatoryChecklist(){
   var checks=[{id:'fuel_ok',icon:'⛽',label:'Fuel Level >= 20%',critical:true},{id:'tyre_fl_ok',icon:'⭕',label:'Front Left Tyre OK',critical:true},{id:'tyre_fr_ok',icon:'⭕',label:'Front Right Tyre OK',critical:true},{id:'tyre_rlo_ok',icon:'⭕',label:'Rear Left Outer OK',critical:true},{id:'tyre_rli_ok',icon:'⭕',label:'Rear Left Inner OK',critical:false},{id:'tyre_rro_ok',icon:'⭕',label:'Rear Right Outer OK',critical:true},{id:'tyre_rri_ok',icon:'⭕',label:'Rear Right Inner OK',critical:false},{id:'oil_level_ok',icon:'🛢',label:'Engine Oil OK',critical:true},{id:'brake_ok',icon:'🛑',label:'Brakes Working OK',critical:true},{id:'lights_ok',icon:'💡',label:'All Lights Working',critical:true},{id:'adas_camera_ok',icon:'📹',label:'ADAS Camera OK',critical:true},{id:'cleaning_ok',icon:'🧹',label:'Vehicle Clean',critical:true},{id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',critical:true},{id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher Present',critical:true},{id:'ppes_available',icon:'🦺',label:'PPEs Available',critical:true}];
   window._checkState={};window._checkDefs=checks;checks.forEach(function(c){window._checkState[c.id]=false;});
   var reqCount=checks.filter(function(c){return c.critical;}).length;
-  var html='<div style="background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.3);border-radius:10px;padding:14px;text-align:center"><div style="font-size:28px;margin-bottom:6px">🚛</div><div style="font-size:15px;font-weight:700;color:#ff9800">Daily 360° Pre-Trip Checklist</div><div style="font-size:12px;color:#8ab0d0;margin-top:4px">Complete before any trips today</div></div><div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;overflow:hidden"><div style="padding:12px 14px;border-bottom:1px solid rgba(100,160,255,.1);font-size:13px;font-weight:600">360° Vehicle Inspection</div><div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">';
+  var html='<div style="background:rgba(255,152,0,.1);border:2px solid rgba(255,152,0,.4);border-radius:14px;padding:16px;text-align:center;margin-bottom:4px"><div style="font-size:36px;margin-bottom:8px">🚛</div><div style="font-size:17px;font-weight:700;color:#ff9800">Daily 360° Pre-Trip Checklist</div><div style="font-size:12px;color:#8ab0d0;margin-top:6px">Must complete before any trips today</div></div>'+'<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;overflow:hidden"><div style="padding:14px 16px;border-bottom:1px solid rgba(100,160,255,.1);font-size:14px;font-weight:700;color:#e2eeff">🔍 360° Vehicle Inspection</div><div style="padding:10px 14px;display:flex;flex-direction:column;gap:8px">';
   checks.forEach(function(c){html+='<label id="lbl-'+c.id+'" data-cid="'+c.id+'" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;border:2px solid rgba(100,160,255,.08);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="toggleCheck(this.dataset.cid)"><div id="chk-'+c.id+'" style="width:36px;height:36px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div><div><div style="font-size:13px;color:#e2eeff">'+c.icon+' '+c.label+'</div>'+(c.critical?'<div style="font-size:10px;color:#ff9800">Required</div>':'<div style="font-size:10px;color:#5a7a9a">Optional</div>')+'</div></label>';});
   html+='</div><div style="padding:12px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Fuel Level %</div><input id="fuel_pct" type="number" min="0" max="100" placeholder="Enter fuel level %" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit"></div><div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Cleaning Status</div><select id="cl_status" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit"><option>Clean</option><option>Needs Cleaning</option><option>Dirty - Cannot Proceed</option></select></div><div id="checklist-progress" style="text-align:center;font-size:12px;color:#8ab0d0;margin-bottom:10px">0 / '+reqCount+' required checks completed</div><button onclick="submitDriverChecklist()" id="submit-checklist-btn" style="width:100%;padding:13px;border-radius:10px;border:1px solid rgba(100,160,255,.15);background:#162033;color:#8ab0d0;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">Complete and Submit Checklist</button></div></div>';
   dc.innerHTML=html;
@@ -2839,9 +2862,13 @@ window.submitDriverChecklist=async function(){
   if(cleanStatus==='Dirty - Cannot Proceed'){alert('Vehicle is dirty. Please clean before proceeding.');return;}
   if(fuelPct<20){alert('Fuel below 20%. Please refuel before proceeding.');return;}
   try{var today=new Date().toISOString().split('T')[0];var code=await sbRpc('next_checklist_code');
-  var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true};if(DRIVER_RECORD)checkData.driver_id=DRIVER_RECORD.id;
+  var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true};
+  if(DRIVER_RECORD){checkData.driver_id=DRIVER_RECORD.id;}
+  if(CURRENT_USER){checkData.user_role_id=CURRENT_USER.id;}
   defs.forEach(function(c){if(c.id!=='cleaning_ok')checkData[c.id]=state[c.id]||false;});
-  await sbInsert('vehicle_checklist',checkData);CHECKLIST_DONE_TODAY=true;localStorage.setItem('checklist_date',today);
+  await sbInsert('vehicle_checklist',checkData);
+  CHECKLIST_DONE_TODAY=true;
+  localStorage.setItem('checklist_date',today);
   var dc=document.getElementById('driver-content');dc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:60px;margin-bottom:12px">✅</div><div style="font-size:18px;font-weight:700;color:#00e676;margin-bottom:6px">Vehicle Cleared!</div><div style="font-size:13px;color:#8ab0d0">Checklist '+code+' submitted</div></div>';
   setTimeout(renderDriverHome,1500);}catch(e){alert('Error: '+e.message);}
 };
