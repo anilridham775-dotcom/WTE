@@ -460,7 +460,7 @@ function go(page){
   var ni=document.getElementById('ni-'+page);if(ni)ni.classList.add('on');
   var ptEl=document.getElementById('ptitle');if(ptEl)ptEl.textContent=PAGE_TITLES[page]||page;
   var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers};
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances};
   if(allPages[page])allPages[page]();
   else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>'+PAGE_TITLES[page]+'</div></div>';
   setTimeout(function(){wireButtons();setTblWrapHeights();},200);
@@ -1024,12 +1024,22 @@ window.saveDriver=async function(){
     var userId=null;
     if(email&&pin){
       try{
-        var userRec=await sbInsert('user_roles',{
-          full_name:name,email:email,phone:mobile,
-          role:'driver',pin:pin,is_active:true,staff_id:staffId||null
-        });
-        userId=userRec[0]&&userRec[0].id;
-      }catch(ue){console.warn('Login creation failed:',ue);}
+        // Check if email already exists
+        var existing=safeArr(await sbFetch('user_roles',{select:'id,email',eq:{email:email}}));
+        if(existing.length>0){
+          // Email exists — just link to existing user record
+          userId=existing[0].id;
+          // Update staff_id on existing record
+          await sbUpdate('user_roles',{staff_id:staffId||null,full_name:name,phone:mobile},{id:userId});
+          console.log('Linked to existing login:',email);
+        }else{
+          var userRec=await sbInsert('user_roles',{
+            full_name:name,email:email,phone:mobile,
+            role:'driver',pin:pin,is_active:true,staff_id:staffId||null
+          });
+          userId=userRec[0]&&userRec[0].id;
+        }
+      }catch(ue){console.warn('Login creation failed:',ue.message||ue);}
     }
 
     // Step 3 — Create Driver Registry record (linked to staff + user)
@@ -2324,6 +2334,9 @@ window.saveUser=async function(){
   var name=gv('nu_name'),email=gv('nu_email'),pin=gv('nu_pin'),role=gv('nu_role');
   if(!name||!email||!pin||!role){alert('All fields required.');return;}
   try{
+    // Check duplicate email first
+    var existingU=safeArr(await sbFetch('user_roles',{select:'id',eq:{email:email}}));
+    if(existingU.length>0){alert('This email is already registered. Use a different email or edit the existing user.');return;}
     var staffId=null;
     // Auto-create staff profile for non-generator roles
     if(role!=='generator'){
