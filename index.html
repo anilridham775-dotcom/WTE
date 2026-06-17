@@ -978,7 +978,7 @@ async function renderDrivers(){
   var ct=document.getElementById('ct');
   try{
     var data=safeArr(await sbFetch('drivers',{select:'*',order:'created_at.desc'}));
-    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),d.staff_id?badge('g','✓ HR Linked'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','✗ No HR')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="lnkdr'+d.id+'">Link</button></div>',d.user_id?badge('g','✓ Login'):badge('r','✗ No Login'),badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
+    var rows=data.map(function(d){var dlDays=d.dl_expiry?Math.ceil((new Date(d.dl_expiry)-new Date())/864e5):null;var dlS=dlDays===null?'gr':dlDays<0?'r':dlDays<60?'a':'g';return['<strong style="font-family:Consolas,monospace;color:#00e676">'+d.driver_code+'</strong>','<div style="font-weight:600">'+d.full_name+'</div><div style="font-size:10px;color:#5a7a9a">'+d.mobile+(d.dob?' · DOB: '+d.dob:'')+'</div>',d.dl_no||'-',badge(dlS,dlDays===null?'N/A':dlDays<0?'Expired':dlDays+'d'),badge(d.police_verified?'g':'a',d.police_verified?'Verified':'Pending'),d.staff_id?badge('g','✓ HR Linked'):'<div style="display:flex;gap:4px;align-items:center">'+badge('r','✗ No HR')+'<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" id="lnkdr'+d.id+'">Link</button></div>',d.user_id?badge('g','✓ Login'):badge('r','✗ No Login'),badge(d.status==='Active'?'g':'r',d.status||'Active'),'<button class="btn btn-sm" id="ed'+d.id+'">Edit</button>'];});
     ct.innerHTML='<div class="sg">'+sc('#00e676','Drivers',data.length,'')+sc('#ff9800','DL Due',data.filter(function(d){return d.dl_expiry&&new Date(d.dl_expiry)<new Date(Date.now()+60*864e5);}).length,'60 days')+sc('#2196f3','Linked to Staff',data.filter(function(d){return d.staff_id;}).length,'HR profile linked')+sc('#00e676','Linked to Login',data.filter(function(d){return d.user_id;}).length,'Can login')+'</div>'+card('👤 Driver Registry','<button class="btn btn-g btn-sm" onclick="newDriver()">+ Register Driver</button>',tbl(['Code','Name & Mobile','DL No','DL Status','Police','HR Profile','Login','Status',''],rows),true);
     setTimeout(function(){wireButtons();document.querySelectorAll('[id^="lnkdr"]').forEach(function(b){var id=b.id.slice(5);b.onclick=function(){linkDriverToStaff(id);};});},150);
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
@@ -988,6 +988,7 @@ window.newDriver=function(){
     +'<div class="sec" style="grid-column:1/-1">👤 Personal Details</div>'
     +fld('Full Name',inp('d_name'),true)
     +fld('Mobile',inp('d_mobile','+91 XXXXXXXXXX'),true)
+    +fld('Date of Birth',inp('d_dob','','date'),true)
     +fld('Blood Group',sel('d_blood',['A+','A-','B+','B-','O+','O-','AB+','AB-']))
     +fld('Employment Type',sel('d_emp',['Permanent','Contract','Outsourced']))
     +fld('Joining Date',inp('d_join','','date'))
@@ -1033,9 +1034,11 @@ window.saveDriver=async function(){
 
     // Step 3 — Create Driver Registry record (linked to staff + user)
     var driverCode=await sbRpc('next_driver_code');
+    var dob=gv('d_dob');
+    if(!dob){alert('Date of Birth is required.');return;}
     await sbInsert('drivers',{
       driver_code:driverCode,full_name:name,mobile:mobile,
-      blood_group:gv('d_blood')||null,dl_no:dl,dl_expiry:dlexp,
+      dob:dob,blood_group:gv('d_blood')||null,dl_no:dl,dl_expiry:dlexp,
       police_verified:gv('d_police')==='Verified',
       employment_type:gv('d_emp')||'Permanent',
       joining_date:gv('d_join')||null,status:'Active',
