@@ -834,7 +834,7 @@ window.newBoilerOp=async function(){
     +fld('Operator Name',inp('bo_operator',''))
     +'<div class="full">'+fld('Notes','<textarea id="bo_notes" rows="2" placeholder="Any observations..."></textarea>')+'</div>'
     +'</div>';
-  modal('🔥 Log Boiler Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBoilerOp()">Save</button>');
+  modal('Log Boiler Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBoilerOp()">Save</button>');
 };
 window.saveBoilerOp=async function(){
   var date=gv('bo_date'),site=gv('bo_site');
@@ -908,7 +908,7 @@ window.newCrusherOp=async function(){
     +fld('Operator Name',inp('co_operator',''))
     +'<div class="full">'+fld('Notes','<textarea id="co_notes" rows="2" placeholder="Any observations..."></textarea>')+'</div>'
     +'</div>';
-  modal('⚙️ Log Crusher Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveCrusherOp()">Save</button>');
+  modal('Log Crusher Operation',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveCrusherOp()">Save</button>');
 };
 window.saveCrusherOp=async function(){
   var date=gv('co_date'),site=gv('co_site');
@@ -975,7 +975,7 @@ function locPickerRow(latId,lngId,statusId,mapsId,existLat,existLng){
 }
 window.newGen=function(){
   var body='<div class="fg"><div class="sec">Company</div>'+fld('Company Name',inp('g_name'),true)+fld('Industry',sel('g_industry',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Cement','Refinery','Power Plant','Other']),true)+fld('Contact Person',inp('g_contact'),true)+fld('Mobile',inp('g_mobile','+91 XXXXXXXXXX'),true)+fld('Email',inp('g_email','','email'))+fld('GSTIN',inp('g_gstin','22AAAAA0000A1Z5'))+'<div class="sec">PCB</div>'+fld('PCB Auth No',inp('g_pcb',''))+fld('PCB Expiry',inp('g_pcbexp','','date'))+'<div class="sec">Address</div><div class="full">'+fld('Plant Address','<textarea id="g_addr" rows="2" placeholder="Full address"></textarea>',true)+'</div>'+fld('City',inp('g_city',''))+fld('State',inp('g_state','Gujarat'))+'<div class="sec">Location — Search by address or use GPS</div>'+locPickerRow('g_lat','g_lng','gen-loc-status','gen-maps-link','','')+'<div class="sec">Waste</div>'+fld('Avg Waste/Day (kg)',inp('g_waste','','number'))+fld('Waste Category',sel('g_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']),true)+'</div>';
-  modal('🏭 Register Generator',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveGen()">Register</button>');
+  modal('Register Generator',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveGen()">Register</button>');
 };
 window.saveGen=async function(){
   var name=gv('g_name'),contact=gv('g_contact'),mobile=gv('g_mobile'),addr=gv('g_addr'),cat=gv('g_cat');
@@ -1033,7 +1033,7 @@ window.newDriver=function(){
     +fld('Email',inp('d_email','','email'),true)
     +fld('PIN',inp('d_pin','','password'),true)
     +'</div>';
-  modal('👤 Register Driver',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveDriver()">Register</button>');
+  modal('Register Driver',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveDriver()">Register</button>');
 };
 window.saveDriver=async function(){
   var name=gv('d_name'),mobile=gv('d_mobile'),dl=gv('d_dl'),dlexp=gv('d_dlexp'),email=gv('d_email'),pin=gv('d_pin');
@@ -1118,7 +1118,7 @@ window.editDriver=async function(id){
     h.push(fld('Login Status',sel('ed_active',['true','false'])));
   }else{
     h.push('<div class="sec" style="grid-column:1/-1">Login Access</div>');
-    h.push('<div class="full"><div style="padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#5a7a9a">No login created yet. <button onclick="closeModal();createDriverLogin(''+id+'')" class="btn btn-sm" style="margin-left:8px">+ Create Login</button></div></div>');
+    h.push('<div class="full"><div style="padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#5a7a9a">No login created yet. <button onclick="closeModal();createDriverLogin(\''+id+'\')" class="btn btn-sm" style="margin-left:8px">+ Create Login</button></div></div>');
   }
   if(staffRec){
     h.push('<div class="sec" style="grid-column:1/-1">HR / Payroll</div>');
@@ -1128,7 +1128,7 @@ window.editDriver=async function(id){
   h.push('</div>');
 
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sde">Save Changes</button>';
-  modal('✏️ Edit Driver — '+d.driver_code,h.join(''),foot);
+  modal('Edit Driver — '+d.driver_code,h.join(''),foot);
 
   setTimeout(function(){
     var bg=document.getElementById('ed_blood');
@@ -1212,7 +1212,7 @@ async function renderVehicles(){
 }
 window.newVeh=function(){
   var body='<div class="fg">'+fld('Registration Number',inp('v_reg','MH-12-AB-3456'),true)+fld('Make',inp('v_make','Tata'),true)+fld('Model',inp('v_model','1615'),true)+fld('Year',inp('v_year','2022','number'))+fld('Vehicle Type',sel('v_type',['Compactor Truck','Hook-lift Truck','Tipper','Tanker','Pickup']))+fld('Fuel Type',sel('v_fuel',['Diesel','CNG','Electric']))+fld('Tank Capacity (L)',inp('v_tank','200','number'))+fld('Current Fuel %',inp('v_fuelpct','75','number'))+'<div class="sec">Documents</div>'+fld('Fitness Expiry',inp('v_fit','','date'))+fld('Insurance Expiry',inp('v_ins','','date'))+fld('PUC Expiry',inp('v_puc','','date'))+'</div>';
-  modal('🚛 Add Vehicle',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveVeh()">Save</button>');
+  modal('Add Vehicle',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveVeh()">Save</button>');
 };
 window.saveVeh=async function(){
   var reg=gv('v_reg'),make=gv('v_make'),model=gv('v_model');if(!reg||!make||!model){alert('Registration, make and model required.');return;}
@@ -1260,7 +1260,7 @@ window.doUpdateFill=async function(id){
 window.newBin=async function(){
   var gens=await sbFetch('generators',{select:'id,gen_code,company_name',eq:{is_active:'true'}});
   var genOpts=safeArr(gens).map(function(g){return'<option value="'+g.id+'">'+g.gen_code+' — '+g.company_name+'</option>';}).join('');
-  modal('🗑 Deploy Bin','<div class="fg"><div class="full"><div class="fl">Generator *</div><select id="b_gen"><option value="">— Select —</option>'+genOpts+'</select></div>'+fld('Operation Type',sel('b_type',['A — Stays at generator','B — Full bin lifted','C — Loose bag lifted']),true)+fld('Container',sel('b_cont',['Wheelie Bin 240L','Wheelie Bin 660L','Skip Bin 4m³','IBC 1000L']),true)+fld('Capacity (kg)',inp('b_cap','220','number'),true)+fld('Waste Category',sel('b_wcat',['Hazardous Solid','Non-Hazardous','Chemical Waste','Industrial','Metal Scrap']),true)+fld('Zone',inp('b_zone','Zone A / Main Gate'),true)+fld('Alert Threshold %',inp('b_thresh','80','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBin()">Deploy</button>');
+  modal('Deploy Bin','<div class="fg"><div class="full"><div class="fl">Generator *</div><select id="b_gen"><option value="">— Select —</option>'+genOpts+'</select></div>'+fld('Operation Type',sel('b_type',['A — Stays at generator','B — Full bin lifted','C — Loose bag lifted']),true)+fld('Container',sel('b_cont',['Wheelie Bin 240L','Wheelie Bin 660L','Skip Bin 4m³','IBC 1000L']),true)+fld('Capacity (kg)',inp('b_cap','220','number'),true)+fld('Waste Category',sel('b_wcat',['Hazardous Solid','Non-Hazardous','Chemical Waste','Industrial','Metal Scrap']),true)+fld('Zone',inp('b_zone','Zone A / Main Gate'),true)+fld('Alert Threshold %',inp('b_thresh','80','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBin()">Deploy</button>');
 };
 window.saveBin=async function(){
   var gen=gv('b_gen'),cont=gv('b_cont'),cap=gv('b_cap'),wcat=gv('b_wcat'),zone=gv('b_zone');if(!gen||!cont||!cap||!wcat||!zone){alert('Fill all required fields.');return;}
@@ -1307,7 +1307,7 @@ window.newTrip=async function(){
   var dOpts=d.drivers.map(function(dr){return'<option value="'+dr.id+'">'+dr.driver_code+' — '+dr.full_name+'</option>';}).join('');
   var cOpts='<option value="">— None —</option>'+collectors.map(function(c){return'<option value="'+c.id+'">'+c.staff_code+' — '+c.full_name+'</option>';}).join('');
   var bOpts=d.bins.sort(function(a,b){return b.current_fill_pct-a.current_fill_pct;}).map(function(b){return'<option value="'+b.id+'">'+b.bin_code+' — '+(b.generators&&b.generators.company_name||'')+' ('+b.current_fill_pct+'%)</option>';}).join('');
-  modal('📍 Create Trip','<div class="fg">'
+  modal('Create Trip','<div class="fg">'
     +'<div class="full"><div class="fl">Vehicle *</div><select id="t_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'
     +'<div class="full"><div class="fl">Driver *</div><select id="t_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'
     +'<div class="sec" style="grid-column:1/-1">Trip Crew (Collectors)</div>'
@@ -1381,7 +1381,7 @@ async function renderBilling(){
 window.markPaid=async function(id){await sbUpdate('invoices',{payment_status:'Paid',paid_at:new Date().toISOString()},{id:id});success('Invoice marked paid!');renderBilling();};
 window.newInvoice=function(){
   var gOpts=(window._billGens||[]).map(function(g){return'<option value="'+g.id+'">'+g.gen_code+' — '+g.company_name+'</option>';}).join('');
-  modal('🧾 Generate Invoice','<div class="fg"><div class="full"><div class="fl">Generator *</div><select id="i_gen"><option value="">— Select —</option>'+gOpts+'</select></div>'+fld('Invoice Date',inp('i_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Net Weight (kg)',inp('i_wt','','number'),true)+fld('Rate (₹/kg)',inp('i_rate','2.80','number'),true)+fld('GST %',sel('i_gst',['18','12','5','0']))+'<div id="inv_calc" style="grid-column:1/-1;padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#8ab0d0">Enter weight and rate to see total</div></div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveInvoice()">Generate</button>');
+  modal('Generate Invoice','<div class="fg"><div class="full"><div class="fl">Generator *</div><select id="i_gen"><option value="">— Select —</option>'+gOpts+'</select></div>'+fld('Invoice Date',inp('i_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Net Weight (kg)',inp('i_wt','','number'),true)+fld('Rate (₹/kg)',inp('i_rate','2.80','number'),true)+fld('GST %',sel('i_gst',['18','12','5','0']))+'<div id="inv_calc" style="grid-column:1/-1;padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#8ab0d0">Enter weight and rate to see total</div></div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveInvoice()">Generate</button>');
   ['i_wt','i_rate','i_gst'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',function(){var wt=parseFloat(gv('i_wt'))||0,rate=parseFloat(gv('i_rate'))||0,gst=parseFloat(gv('i_gst'))||18;var base=wt*rate,tax=base*gst/100,total=base+tax;var calc=document.getElementById('inv_calc');if(calc)calc.innerHTML='Base: ₹'+base.toFixed(2)+' | GST '+gst+'%: ₹'+tax.toFixed(2)+' | <strong style="color:#00e676">Total: ₹'+total.toFixed(2)+'</strong>';});});
 };
 window.saveInvoice=async function(){
@@ -1400,7 +1400,7 @@ async function renderPayments(){
 }
 window.newPayment=function(){
   var iOpts=safeArr(window._payInvoices).map(function(i){return'<option value="'+i.id+'">'+i.invoice_no+' — '+(i.generators&&i.generators.company_name||'')+' — ₹'+Number(i.total_amount||0).toLocaleString('en-IN')+'</option>';}).join('');
-  modal('💳 Record Payment','<div class="fg"><div class="full"><div class="fl">Invoice *</div><select id="pay_inv"><option value="">— Select Invoice —</option>'+iOpts+'</select></div>'+fld('Payment Date',inp('pay_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Amount (₹)',inp('pay_amt','','number'),true)+fld('Payment Mode',sel('pay_mode',['NEFT/RTGS','UPI/QR','Cash','Cheque','IMPS']))+fld('Transaction Ref',inp('pay_ref',''))+fld('Bank Name',inp('pay_bank',''))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="spbtn2">Save Payment</button>');
+  modal('Record Payment','<div class="fg"><div class="full"><div class="fl">Invoice *</div><select id="pay_inv"><option value="">— Select Invoice —</option>'+iOpts+'</select></div>'+fld('Payment Date',inp('pay_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Amount (₹)',inp('pay_amt','','number'),true)+fld('Payment Mode',sel('pay_mode',['NEFT/RTGS','UPI/QR','Cash','Cheque','IMPS']))+fld('Transaction Ref',inp('pay_ref',''))+fld('Bank Name',inp('pay_bank',''))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="spbtn2">Save Payment</button>');
   setTimeout(function(){var b=document.getElementById('spbtn2');if(b)b.onclick=function(){savePayment();};},50);
 };
 window.savePayment=async function(){
@@ -1419,7 +1419,7 @@ async function renderInspection(){
 window.newInspection=async function(){
   var trips=await sbFetch('trips',{select:'id,trip_code,vehicles(reg_no)',order:'trip_date.desc',limit:20});
   var tOpts=safeArr(trips).map(function(t){return'<option value="'+t.id+'">'+t.trip_code+' — '+(t.vehicle_id||'')+'</option>';}).join('');
-  modal('🔍 Yard Inspection','<div class="fg"><div class="full"><div class="fl">Trip *</div><select id="ins_trip"><option value="">— Select —</option>'+tOpts+'</select></div>'+fld('Weight (kg)',inp('ins_wt','','number'),true)+fld('Moisture %',inp('ins_moist','','number'))+fld('Visual Check',sel('ins_visual',['Acceptable','Needs Sorting','Hazardous — Quarantine']))+'<div class="full">'+fld('Remarks','<textarea id="ins_remarks" rows="2" placeholder="Inspector notes..."></textarea>')+'</div>'+fld('Decision',sel('ins_decision',['APPROVED','CONDITIONAL','REJECTED']),true)+fld('Inspector PIN',inp('ins_pin','','password'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveInspection()">Issue Certificate</button>');
+  modal('Yard Inspection','<div class="fg"><div class="full"><div class="fl">Trip *</div><select id="ins_trip"><option value="">— Select —</option>'+tOpts+'</select></div>'+fld('Weight (kg)',inp('ins_wt','','number'),true)+fld('Moisture %',inp('ins_moist','','number'))+fld('Visual Check',sel('ins_visual',['Acceptable','Needs Sorting','Hazardous — Quarantine']))+'<div class="full">'+fld('Remarks','<textarea id="ins_remarks" rows="2" placeholder="Inspector notes..."></textarea>')+'</div>'+fld('Decision',sel('ins_decision',['APPROVED','CONDITIONAL','REJECTED']),true)+fld('Inspector PIN',inp('ins_pin','','password'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveInspection()">Issue Certificate</button>');
 };
 window.saveInspection=async function(){
   var trip=gv('ins_trip'),wt=gv('ins_wt'),decision=gv('ins_decision');if(!trip||!wt){alert('Trip and weight required.');return;}
@@ -1435,7 +1435,7 @@ async function renderCleaning(){
 }
 window.newCleaning=function(){
   var vOpts=(window._cleanVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  modal('🧹 Log Cleaning','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="cl_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('cl_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Type',sel('cl_type',['Weekly Full Wash','Interior Deep Clean','Waste Compartment Sanitize','Engine Bay Degrease']))+fld('Score (1-10)',inp('cl_score','8','number'))+fld('Supervisor PIN',inp('cl_pin','','password'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveCleaning()">Save</button>');
+  modal('Log Cleaning','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="cl_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('cl_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Type',sel('cl_type',['Weekly Full Wash','Interior Deep Clean','Waste Compartment Sanitize','Engine Bay Degrease']))+fld('Score (1-10)',inp('cl_score','8','number'))+fld('Supervisor PIN',inp('cl_pin','','password'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveCleaning()">Save</button>');
 };
 window.saveCleaning=async function(){
   var veh=gv('cl_veh'),date=gv('cl_date');if(!veh||!date){alert('Vehicle and date required.');return;}
@@ -1544,7 +1544,7 @@ window.newPM = function() {
     +'<div style="font-size:11px;color:#8ab0d0">Check each service done today. Set Service Date and optionally Next Due Date per service.</div>'
     +'</div>';
 
-  modal('🔧 Log PM Services', body,
+  modal('Log PM Services', body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-sm" onclick="selectAllPM()">Toggle All</button>'
     +'<button class="btn btn-g btn-sm" onclick="savePM()">Save All Selected</button>');
@@ -1701,7 +1701,7 @@ window.newRM = function() {
     +'<div style="font-size:11px;color:#8ab0d0">Check each fault type identified. Add parts replaced or notes in the right column.</div>'
     +'</div>';
 
-  modal('⚡ Log Breakdown', body,
+  modal('Log Breakdown', body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveRM()">Save Breakdown</button>');
   window._rmFaultTypes = faultTypes;
@@ -1750,7 +1750,7 @@ window.newFuel=function(){
   var d=window._fuelData||{vehicles:[],drivers:[]};
   var vOpts=d.vehicles.map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
   var dOpts=d.drivers.map(function(dr){return'<option value="'+dr.id+'">'+dr.full_name+'</option>';}).join('');
-  modal('⛽ Log Fuel Fill-up','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="fu_veh"><option value="">— Select —</option>'+vOpts+'</select></div><div class="full"><div class="fl">Driver *</div><select id="fu_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'+fld('Date & Time',inp('fu_dt',new Date().toISOString().slice(0,16),'datetime-local'),true)+fld('Quantity (Litres)',inp('fu_qty','','number'),true)+fld('Rate per Litre (₹)',inp('fu_rate','94.50','number'),true)+fld('Odometer (km)',inp('fu_odo','','number'))+fld('Fuel Station',inp('fu_st',''))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveFuel()">Save</button>');
+  modal('Log Fuel Fill-up','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="fu_veh"><option value="">— Select —</option>'+vOpts+'</select></div><div class="full"><div class="fl">Driver *</div><select id="fu_drv"><option value="">— Select —</option>'+dOpts+'</select></div>'+fld('Date & Time',inp('fu_dt',new Date().toISOString().slice(0,16),'datetime-local'),true)+fld('Quantity (Litres)',inp('fu_qty','','number'),true)+fld('Rate per Litre (₹)',inp('fu_rate','94.50','number'),true)+fld('Odometer (km)',inp('fu_odo','','number'))+fld('Fuel Station',inp('fu_st',''))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveFuel()">Save</button>');
 };
 window.saveFuel=async function(){
   var veh=gv('fu_veh'),qty=gv('fu_qty'),rate=gv('fu_rate');if(!veh||!qty||!rate){alert('Vehicle, quantity and rate required.');return;}
@@ -1765,7 +1765,7 @@ async function renderTyres(){
 }
 window.newTyre=function(){
   var vOpts=(window._tyreVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
-  modal('⭕ Log Tyre Check','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="ty_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('ty_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Position',sel('ty_pos',['FL','FR','RLO','RLI','RRO','RRI','SPARE']),true)+'<div class="sec">Tyre Details</div>'+fld('Tyre Make / Brand',sel('ty_make',['MRF','CEAT','Apollo','Bridgestone','Michelin','Goodyear','JK Tyre','Yokohama','Continental','Other']),true)+fld('Tyre Serial No',inp('ty_serial','e.g. MRF2024-XXXXXX'),true)+fld('Tyre Size',inp('ty_size','e.g. 295/80 R22.5'))+fld('Action',sel('ty_act',['Pressure Check','Tyre Rotation','Tyre Replacement','Puncture Repair','Balancing','New Fitment','Retreading']))+fld('Pressure Before (PSI)',inp('ty_pb','28','number'))+fld('Pressure After (PSI)',inp('ty_pa','36','number'))+fld('Tread Depth (mm)',inp('ty_td','','number'))+fld('Cost (₹)',inp('ty_cost','','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTyre()">Save</button>');
+  modal('Log Tyre Check','<div class="fg"><div class="full"><div class="fl">Vehicle *</div><select id="ty_veh"><option value="">— Select —</option>'+vOpts+'</select></div>'+fld('Date',inp('ty_date',new Date().toISOString().split('T')[0],'date'),true)+fld('Position',sel('ty_pos',['FL','FR','RLO','RLI','RRO','RRI','SPARE']),true)+'<div class="sec">Tyre Details</div>'+fld('Tyre Make / Brand',sel('ty_make',['MRF','CEAT','Apollo','Bridgestone','Michelin','Goodyear','JK Tyre','Yokohama','Continental','Other']),true)+fld('Tyre Serial No',inp('ty_serial','e.g. MRF2024-XXXXXX'),true)+fld('Tyre Size',inp('ty_size','e.g. 295/80 R22.5'))+fld('Action',sel('ty_act',['Pressure Check','Tyre Rotation','Tyre Replacement','Puncture Repair','Balancing','New Fitment','Retreading']))+fld('Pressure Before (PSI)',inp('ty_pb','28','number'))+fld('Pressure After (PSI)',inp('ty_pa','36','number'))+fld('Tread Depth (mm)',inp('ty_td','','number'))+fld('Cost (₹)',inp('ty_cost','','number'))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveTyre()">Save</button>');
 };
 window.saveTyre=async function(){
   var veh=gv('ty_veh'),pos=gv('ty_pos');if(!veh||!pos){alert('Vehicle and position required.');return;}
@@ -1784,7 +1784,7 @@ async function renderSchedule(){
 window.newSchedule=function(){
   var vOpts=(window._schedVehicles||[]).map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('');
   var services=['Weekly Cleaning','Engine Oil Change','Air Filter Change','Fuel Filter Change','Full PM Service A','Full PM Service B','Brake Inspection','Annual Fitness Test','Insurance Renewal','PUC Renewal','Battery Check'];
-  modal('📅 Schedule Services','<div style="display:flex;flex-direction:column;gap:14px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><div class="fl">Vehicle *</div><select id="sch_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option value="">— Select —</option>'+vOpts+'</select></div><div><div class="fl">Alert Channel</div><select id="sch_ch" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>WhatsApp+SMS</option><option>SMS only</option><option>Email+SMS</option></select></div></div><div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden"><div style="display:grid;grid-template-columns:2fr 1fr;background:#0f1724;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:10px;text-transform:uppercase;color:#5a7a9a">Service</div><div style="font-size:10px;text-transform:uppercase;color:#5a7a9a">Date</div></div><div style="max-height:260px;overflow-y:auto">'+services.map(function(svc,idx){return'<div style="display:grid;grid-template-columns:2fr 1fr;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.05);align-items:center;background:'+(idx%2===0?'#162033':'#0f1724')+'"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="sc_'+idx+'" value="'+svc+'" style="accent-color:#00e676;width:16px;height:16px"><span style="font-size:12.5px;color:#e2eeff">'+svc+'</span></label><input type="date" id="sd_'+idx+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit"></div>';}).join('')+'</div></div></div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBulkSchedule()">Schedule Selected</button>');
+  modal('Schedule Services','<div style="display:flex;flex-direction:column;gap:14px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><div class="fl">Vehicle *</div><select id="sch_veh" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option value="">— Select —</option>'+vOpts+'</select></div><div><div class="fl">Alert Channel</div><select id="sch_ch" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit"><option>WhatsApp+SMS</option><option>SMS only</option><option>Email+SMS</option></select></div></div><div style="border:1px solid rgba(100,160,255,.1);border-radius:10px;overflow:hidden"><div style="display:grid;grid-template-columns:2fr 1fr;background:#0f1724;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:10px;text-transform:uppercase;color:#5a7a9a">Service</div><div style="font-size:10px;text-transform:uppercase;color:#5a7a9a">Date</div></div><div style="max-height:260px;overflow-y:auto">'+services.map(function(svc,idx){return'<div style="display:grid;grid-template-columns:2fr 1fr;padding:8px 12px;border-bottom:1px solid rgba(100,160,255,.05);align-items:center;background:'+(idx%2===0?'#162033':'#0f1724')+'"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="sc_'+idx+'" value="'+svc+'" style="accent-color:#00e676;width:16px;height:16px"><span style="font-size:12.5px;color:#e2eeff">'+svc+'</span></label><input type="date" id="sd_'+idx+'" style="background:#0f1724;border:1px solid rgba(100,160,255,.12);border-radius:6px;color:#e2eeff;padding:5px 8px;font-size:12px;width:100%;font-family:inherit"></div>';}).join('')+'</div></div></div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveBulkSchedule()">Schedule Selected</button>');
   window._schServices=services;
 };
 window.saveBulkSchedule=async function(){
@@ -1813,7 +1813,7 @@ window.newStaff=async function(){
   window._sfDrivers=drivers;
   var selStyle='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
   var drvOpts='<option value="">— Not from Driver Registry —</option>'+drivers.map(function(d){return'<option value="'+d.id+'">'+d.driver_code+' — '+d.full_name+'</option>';}).join('');
-  modal('👥 Add Staff','<div class="fg">'
+  modal('Add Staff','<div class="fg">'
     +'<div class="full"><div class="fl">Link to Driver Registry <span style="color:#5a7a9a;font-size:10px">(if this staff is a driver)</span></div>'
     +'<select id="sf_drv_pick" onchange="sfDriverPick()" style="'+selStyle+'">'+drvOpts+'</select></div>'
     +fld('Full Name',inp('sf_name'),true)
@@ -2000,7 +2000,7 @@ window.newIncentiveRate=function(){
     +fld('Effective To','<input id="im_to2" type="date" placeholder="Leave blank = No expiry">')
     +'<div class="full">'+fld('Notes',inp('im_notes','Optional notes'))+'</div>'
     +'</div>';
-  modal('⚡ Add Incentive Rate',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveIncentiveRate()">Save</button>');
+  modal('Add Incentive Rate',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveIncentiveRate()">Save</button>');
 };
 window.saveIncentiveRate=async function(){
   var to=document.getElementById('im_to').value,tripR=gv('im_trip'),from=gv('im_from');
@@ -2103,7 +2103,7 @@ window.newAdvance=async function(){
     +fld('Amount ₹',inp('adv_amount','','number'),true)
     +'<div class="full">'+fld('Reason',inp('adv_reason','e.g. Medical, Personal, Festival'))+'</div>'
     +'</div>';
-  modal('💵 Give Advance',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveAdvance()">Save</button>');
+  modal('Give Advance',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveAdvance()">Save</button>');
 };
 window.saveAdvance=async function(){
   var staff=gv('adv_staff'),amt=gv('adv_amount');
@@ -2218,7 +2218,7 @@ window.newPayroll=async function(){
     +'<div class="full">'+fld('Notes',inp('pr_notes',''))+'</div>'
     +'<div class="full" id="pr_summary"></div>'
     +'</div>';
-  modal('💰 Process Payroll',body,
+  modal('Process Payroll',body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-sm" onclick="prCalc()">🧮 Calculate</button>'
     +'<button class="btn btn-g btn-sm" onclick="savePayroll()">Save Draft</button>');
@@ -2497,7 +2497,7 @@ window.newShift=function(){
     +fld('Minimum Hours',inp('sh_minhrs','6.25','number'))
     +fld('Overnight Shift',sel('sh_overnight',['No','Yes']))
     +'</div>';
-  modal('🕐 Add Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveShift()">Save</button>');
+  modal('Add Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveShift()">Save</button>');
 };
 window.saveShift=async function(){
   var name=gv('sh_name'),start=gv('sh_start'),end=gv('sh_end'),late=gv('sh_late');
@@ -2605,7 +2605,7 @@ window.newRoster=function(){
     +fld('Week Start (Monday)','<input id="rst_wstart" type="date" value="'+fmt(mon)+'">',true)
     +fld('Week End (Sunday)','<input id="rst_wend" type="date" value="'+fmt(sun)+'">',true)
     +'</div>';
-  modal('📅 Assign Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveRoster()">Assign</button>');
+  modal('Assign Shift',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveRoster()">Assign</button>');
 };
 window.saveRoster=async function(){
   var staff=gv('rst_staff'),shift=gv('rst_shift'),wstart=gv('rst_wstart'),wend=gv('rst_wend');
@@ -2992,7 +2992,7 @@ window.newUser=async function(){
     +fld('Basic Salary ₹',inp('nu_salary','','number'))
     +'</div>'
     +'</div>';
-  modal('👤 Add User',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
+  modal('Add User',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveUser()">Add User</button>');
   setTimeout(function(){nuRoleChange();},50);
 };
 
@@ -3164,7 +3164,7 @@ window.saveEditAndApprove=async function(id){
   await sbUpdate('generator_requests',{company_name:gv('er_name'),industry_type:gv('er_ind'),contact_person:gv('er_contact')||null,mobile:gv('er_mobile')||null,email:gv('er_email')||null,address:gv('er_addr')||null,city:gv('er_city')||null,state:gv('er_state')||null,waste_category:gv('er_cat'),latitude:lat,longitude:lng},{id:id});closeModal();await approveGen(id);}catch(e){alert('Error: '+e.message);}
 };
 window.newManualRequest=function(){
-  modal('📋 Manual Generator Request','<div class="fg">'+fld('Company Name',inp('gr_name'),true)+fld('Industry',sel('gr_ind',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Other']))+fld('Contact',inp('gr_contact'),true)+fld('Mobile',inp('gr_mobile'),true)+fld('Email',inp('gr_email','','email'))+fld('GSTIN',inp('gr_gstin',''))+'<div class="full">'+fld('Address','<input id="gr_addr" placeholder="Full address">',true)+'</div>'+fld('City',inp('gr_city'),true)+fld('State',inp('gr_state','Gujarat'))+fld('Avg Waste/Day (kg)',inp('gr_waste','','number'))+fld('Waste Category',sel('gr_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveManualRequest()">Submit</button>');
+  modal('Manual Generator Request','<div class="fg">'+fld('Company Name',inp('gr_name'),true)+fld('Industry',sel('gr_ind',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Other']))+fld('Contact',inp('gr_contact'),true)+fld('Mobile',inp('gr_mobile'),true)+fld('Email',inp('gr_email','','email'))+fld('GSTIN',inp('gr_gstin',''))+'<div class="full">'+fld('Address','<input id="gr_addr" placeholder="Full address">',true)+'</div>'+fld('City',inp('gr_city'),true)+fld('State',inp('gr_state','Gujarat'))+fld('Avg Waste/Day (kg)',inp('gr_waste','','number'))+fld('Waste Category',sel('gr_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveManualRequest()">Submit</button>');
 };
 window.saveManualRequest=async function(){
   var name=gv('gr_name'),contact=gv('gr_contact'),mobile=gv('gr_mobile'),addr=gv('gr_addr'),city=gv('gr_city');if(!name||!contact||!mobile||!addr||!city){alert('Fill all required fields.');return;}
@@ -3767,7 +3767,7 @@ window.drvNewIssue=function(){
     +'<div><div style="font-size:11px;color:#9ab8d4;margin-bottom:5px">Description *</div>'
     +'<textarea id="iss_desc" rows="3" placeholder="Describe the issue in detail..." style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea></div>'
     +'</div>';
-  modal('⚠️ Report Issue',body,
+  modal('Report Issue',body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveDrvIssue()">Submit</button>');
 };
@@ -3982,7 +3982,7 @@ window.submitDriverChecklist=async function(){
   }catch(e){alert('Error: '+e.message);}
 };
 window.showDriverAttendance=function(){
-  modal('📷 Attendance Punch','<div style="text-align:center;padding:10px"><div style="font-size:13px;color:#8ab0d0;margin-bottom:16px">Enter QR code from your location</div><input id="drv-qr" placeholder="e.g. QR-0001" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:12px;font-family:Consolas,monospace;font-size:16px;width:100%;text-align:center;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="dqin" style="padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch IN</button><button id="dqout" style="padding:14px;border-radius:10px;border:none;background:#f44336;color:#fff;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch OUT</button></div><div id="drv-att-result" style="margin-top:12px"></div></div>','<button class="btn btn-sm" onclick="closeModal()">Close</button>');
+  modal('Attendance Punch','<div style="text-align:center;padding:10px"><div style="font-size:13px;color:#8ab0d0;margin-bottom:16px">Enter QR code from your location</div><input id="drv-qr" placeholder="e.g. QR-0001" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:12px;font-family:Consolas,monospace;font-size:16px;width:100%;text-align:center;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="dqin" style="padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch IN</button><button id="dqout" style="padding:14px;border-radius:10px;border:none;background:#f44336;color:#fff;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch OUT</button></div><div id="drv-att-result" style="margin-top:12px"></div></div>','<button class="btn btn-sm" onclick="closeModal()">Close</button>');
   setTimeout(function(){var el=document.getElementById('drv-qr');if(el)el.focus();var di=document.getElementById('dqin');var dout=document.getElementById('dqout');if(di)di.onclick=function(){driverQRPunch('IN');};if(dout)dout.onclick=function(){driverQRPunch('OUT');};},100);
 };
 window.driverQRPunch=async function(punchType){
@@ -4049,7 +4049,7 @@ window.linkDriverToStaff=async function(driverId){
     +'<div style="text-align:center;color:#5a7a9a;font-size:11px">— OR —</div>'
     +'<div><div class="fl">Basic Salary ₹ (auto-create new staff profile)</div><input id="lnk_salary" type="number" placeholder="Enter to auto-create staff profile" style="background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 10px;font-size:12.5px;width:100%;font-family:inherit"></div>'
     +'</div>';
-  modal('🔗 Link Driver to HR Profile',body,
+  modal('Link Driver to HR Profile',body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="doLinkDriver(\''+driverId+'\')">Link</button>');
 };
@@ -4132,7 +4132,7 @@ window.createDriverLogin=async function(driverId){
     +fld('Email',inp('cdl_email',driver.mobile?'':'','email'),true)
     +fld('PIN',inp('cdl_pin','','password'),true)
     +'</div>';
-  modal('🔐 Create Login for '+driver.full_name,body,
+  modal('Create Login — '+driver.full_name,body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveDriverLogin(\''+driverId+'\')">Create</button>');
 };
@@ -4341,7 +4341,7 @@ window.showGenRegForm = function() {
     +fld('Avg Waste/Day (kg)',inp('gr_waste','','number'))
     +fld('Waste Category','<select id="gr_cat"><option>Hazardous</option><option>Non-Hazardous</option><option>Mixed</option><option>Biomedical</option></select>',true)
     +'</div>';
-  modal('📋 Add Generator Request',body,
+  modal('Add Generator Request',body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveGenRequest()">Submit Request</button>');
 };
@@ -4447,7 +4447,7 @@ window.newChecklist = function() {
     +'</div>';
   var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveChecklist()">Submit Checklist</button>';
-  modal('✅ Pre-Trip 360° Checklist',body,foot);
+  modal('Pre-Trip 360° Checklist',body,foot);
 };
 
 window.saveChecklist = async function() {
@@ -5107,7 +5107,7 @@ window.newSite = function() {
 
   var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveSite()">Save Site</button>';
-  modal('🏭 Add Processing Site', body, foot);
+  modal('Add Processing Site', body, foot);
 };
 
 window.detectSiteLocation = function() {
@@ -5517,7 +5517,7 @@ window.newQRLocation = function() {
     +'<div id="qr-maps-link" style="margin-top:4px"></div>'
     +'</div>'
     +'</div>';
-  modal('📱 Add QR Location', body,
+  modal('Add QR Location', body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveQRLocation()">Create QR Code</button>');
 };
