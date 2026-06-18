@@ -3220,7 +3220,7 @@ async function renderDriverCollect(){
           +'<div style="background:#0f1724;border-radius:8px;height:6px;margin-bottom:12px"><div style="height:6px;border-radius:8px;background:'+(b.current_fill_pct>=80?'#f44336':b.current_fill_pct>=60?'#ff9800':'#00e676')+';width:'+(b.current_fill_pct||0)+'%"></div></div>'
           +'<div style="margin-bottom:10px"><label style="font-size:11px;color:#9ab8d4;display:block;margin-bottom:4px">Weight Collected (kg) *</label>'
           +'<input id="wt_'+p.id+'" type="number" placeholder="Enter weight in kg" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:14px;width:100%;font-family:inherit;box-sizing:border-box"></div>'
-          +'<button onclick="collectBin(''+p.id+'',''+activeTrip.id+'')" class="drv-btn drv-btn-primary">✅ Mark Collected</button>'
+          +'<button data-pid="'+p.id+'" data-tid="'+activeTrip.id+'" onclick="collectBin(this.dataset.pid,this.dataset.tid)" class="drv-btn drv-btn-primary">✅ Mark Collected</button>'
           +'</div>';
       });
     }
@@ -3288,8 +3288,8 @@ async function renderDriverAttend(){
       +'<div style="font-size:13px;font-weight:600;margin-bottom:12px">Scan / Enter QR Code</div>'
       +'<input id="att_qr" type="text" placeholder="Enter QR location code" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:16px;width:100%;font-family:Consolas,monospace;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px" oninput="this.value=this.value.toUpperCase()">'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-      +'<button onclick="drvPunchAttendance('IN')" class="drv-btn drv-btn-primary">✅ Punch IN</button>'
-      +'<button onclick="drvPunchAttendance('OUT')" class="drv-btn drv-btn-ghost">👋 Punch OUT</button>'
+      +'<button onclick="drvPunchAttendance(\'IN\')" class="drv-btn drv-btn-primary">✅ Punch IN</button>'
+      +'<button onclick="drvPunchAttendance(\'OUT\')" class="drv-btn drv-btn-ghost">👋 Punch OUT</button>'
       +'</div></div>';
     // Today's records
     if(todayAtt.length>0){
