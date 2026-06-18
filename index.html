@@ -3699,109 +3699,121 @@ window.saveDrvIssue=async function(){
 function showMandatoryChecklist(){
   var dc=document.getElementById('driver-content');
   var checks=[
-    {id:'fuel_ok',       icon:'⛽', label:'Fuel Level >= 20%',         cat:'Engine',  critical:true},
-    {id:'oil_level_ok',  icon:'🛢', label:'Engine Oil OK',              cat:'Engine',  critical:true},
-    {id:'brake_ok',      icon:'🛑', label:'Brakes Working',             cat:'Safety',  critical:true},
-    {id:'lights_ok',     icon:'💡', label:'All Lights Working',         cat:'Safety',  critical:true},
-    {id:'tyre_fl_ok',    icon:'⭕', label:'Front Left Tyre',            cat:'Tyres',   critical:true},
-    {id:'tyre_fr_ok',    icon:'⭕', label:'Front Right Tyre',           cat:'Tyres',   critical:true},
-    {id:'tyre_rlo_ok',   icon:'⭕', label:'Rear Left Outer Tyre',       cat:'Tyres',   critical:true},
-    {id:'tyre_rro_ok',   icon:'⭕', label:'Rear Right Outer Tyre',      cat:'Tyres',   critical:true},
-    {id:'tyre_rli_ok',   icon:'⭕', label:'Rear Left Inner Tyre',       cat:'Tyres',   critical:false},
-    {id:'tyre_rri_ok',   icon:'⭕', label:'Rear Right Inner Tyre',      cat:'Tyres',   critical:false},
-    {id:'adas_camera_ok',icon:'📹', label:'ADAS Camera OK',             cat:'Safety',  critical:true},
-    {id:'cleaning_ok',   icon:'🧹', label:'Vehicle Clean',              cat:'Hygiene', critical:true},
-    {id:'first_aid_kit_ok',icon:'🩺','label':'First Aid Kit Present',   cat:'Safety',  critical:true},
-    {id:'fire_extinguisher_ok',icon:'🧯','label':'Fire Extinguisher',   cat:'Safety',  critical:true},
-    {id:'ppes_available',icon:'🦺', label:'PPEs Available',             cat:'Safety',  critical:true}
+    {id:'fuel_ok',       icon:'⛽', label:'Fuel Level >= 20%',       cat:'Engine',  critical:true},
+    {id:'oil_level_ok',  icon:'🛢', label:'Engine Oil OK',            cat:'Engine',  critical:true},
+    {id:'brake_ok',      icon:'🛑', label:'Brakes Working',           cat:'Safety',  critical:true},
+    {id:'lights_ok',     icon:'💡', label:'All Lights Working',       cat:'Safety',  critical:true},
+    {id:'adas_camera_ok',icon:'📹', label:'ADAS Camera OK',           cat:'Safety',  critical:true},
+    {id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',   cat:'Safety',  critical:true},
+    {id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher',   cat:'Safety',  critical:true},
+    {id:'ppes_available',icon:'🦺', label:'PPEs Available',           cat:'Safety',  critical:true},
+    {id:'tyre_fl_ok',    icon:'⭕', label:'Front Left Tyre',          cat:'Tyres',   critical:true},
+    {id:'tyre_fr_ok',    icon:'⭕', label:'Front Right Tyre',         cat:'Tyres',   critical:true},
+    {id:'tyre_rlo_ok',   icon:'⭕', label:'Rear Left Outer Tyre',     cat:'Tyres',   critical:true},
+    {id:'tyre_rro_ok',   icon:'⭕', label:'Rear Right Outer Tyre',    cat:'Tyres',   critical:true},
+    {id:'tyre_rli_ok',   icon:'⭕', label:'Rear Left Inner Tyre',     cat:'Tyres',   critical:false},
+    {id:'tyre_rri_ok',   icon:'⭕', label:'Rear Right Inner Tyre',    cat:'Tyres',   critical:false},
+    {id:'cleaning_ok',   icon:'🧹', label:'Vehicle Clean',            cat:'Hygiene', critical:true}
   ];
   window._checkState={};
   window._checkDefs=checks;
   checks.forEach(function(c){window._checkState[c.id]=false;});
   var reqCount=checks.filter(function(c){return c.critical;}).length;
+  window._cleanStatus='Clean';
+
+  // Build HTML using array join — no escaping issues
+  var h=[];
+  h.push('<div style="background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:2px solid rgba(255,152,0,.4);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">');
+  h.push('<div style="font-size:42px;margin-bottom:6px">🚛</div>');
+  h.push('<div style="font-size:18px;font-weight:800;color:#ff9800;margin-bottom:4px">Daily 360° Pre-Trip Check</div>');
+  h.push('<div style="font-size:12px;color:#8ab0d0">Tap each item to confirm. All required items must be OK.</div>');
+  h.push('<div id="checklist-progress" style="margin-top:12px;font-size:14px;font-weight:700;color:#8ab0d0">0 / '+reqCount+' required</div>');
+  h.push('<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:8px;overflow:hidden">');
+  h.push('<div id="checklist-bar" style="height:6px;background:#00e676;border-radius:3px;width:0%;transition:width .3s"></div>');
+  h.push('</div></div>');
 
   // Group by category
   var cats={};
-  checks.forEach(function(c){
-    if(!cats[c.cat])cats[c.cat]=[];
-    cats[c.cat].push(c);
-  });
+  var catOrder=['Engine','Safety','Tyres','Hygiene'];
+  checks.forEach(function(c){if(!cats[c.cat])cats[c.cat]=[];cats[c.cat].push(c);});
 
-  var html='';
-  // Header
-  html+='<div style="background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:2px solid rgba(255,152,0,.4);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">'
-    +'<div style="font-size:42px;margin-bottom:6px">🚛</div>'
-    +'<div style="font-size:18px;font-weight:800;color:#ff9800;margin-bottom:4px">Daily 360° Pre-Trip Check</div>'
-    +'<div style="font-size:12px;color:#8ab0d0">Tap each item to confirm. All required items must be OK.</div>'
-    +'<div id="checklist-progress" style="margin-top:12px;font-size:14px;font-weight:700;color:#8ab0d0">0 / '+reqCount+' required</div>'
-    +'<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:8px;overflow:hidden">'
-    +'<div id="checklist-bar" style="height:6px;background:#00e676;border-radius:3px;width:0%;transition:width .3s"></div>'
-    +'</div>'
-    +'</div>';
-
-  // Items grouped by category
-  Object.keys(cats).forEach(function(cat){
-    html+='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;margin-bottom:10px;overflow:hidden">'
-      +'<div style="padding:10px 14px;background:rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>'
-      +'<div style="padding:8px">';
+  catOrder.forEach(function(cat){
+    if(!cats[cat])return;
+    h.push('<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;margin-bottom:10px;overflow:hidden">');
+    h.push('<div style="padding:10px 14px;background:rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>');
+    h.push('<div style="padding:8px">');
     cats[cat].forEach(function(c){
-      html+='<button id="lbl-'+c.id+'" onclick="toggleCheck(''+c.id+'')" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.08);background:none;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px;transition:all .15s;-webkit-tap-highlight-color:transparent">'
-        +'<div id="chk-'+c.id+'" style="width:44px;height:44px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .15s">'+c.icon+'</div>'
-        +'<div style="flex:1">'
-        +'<div style="font-size:14px;font-weight:600">'+c.label+'</div>'
-        +'<div style="font-size:11px;margin-top:2px;color:'+(c.critical?'#ff9800':'#5a7a9a')+'">'+(c.critical?'⚡ Required':'Optional')+'</div>'
-        +'</div>'
-        +'<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a">Tap to confirm</div>'
-        +'</button>';
+      h.push('<button id="lbl-'+c.id+'" data-chk="'+c.id+'" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.08);background:none;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px;transition:all .15s;-webkit-tap-highlight-color:transparent">');
+      h.push('<div id="chk-'+c.id+'" style="width:44px;height:44px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .15s">'+c.icon+'</div>');
+      h.push('<div style="flex:1">');
+      h.push('<div style="font-size:14px;font-weight:600">'+c.label+'</div>');
+      h.push('<div style="font-size:11px;margin-top:2px;color:'+(c.critical?'#ff9800':'#5a7a9a')+'">'+(c.critical?'Required':'Optional')+'</div>');
+      h.push('</div>');
+      h.push('<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a">Tap</div>');
+      h.push('</button>');
     });
-    html+='</div></div>';
+    h.push('</div></div>');
   });
 
-  // Fuel and cleaning inputs
-  html+='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:14px;margin-bottom:10px">'
-    +'<div style="font-size:13px;font-weight:700;color:#e2eeff;margin-bottom:12px">📊 Additional Details</div>'
-    +'<div style="margin-bottom:12px">'
-    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">⛽ Current Fuel Level %</div>'
-    +'<div style="display:flex;align-items:center;gap:8px">'
-    +'<input id="fuel_pct" type="number" min="0" max="100" placeholder="0-100" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:100px;font-family:Consolas,monospace;text-align:center">'
-    +'<div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div id="fuel-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .3s"></div></div>'
-    +'</div>'
-    +'</div>'
-    +'<div>'
-    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">🧹 Cleaning Status</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
-    +'<button onclick="selectClean(\'Clean\')" id="cln-Clean" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">✅ Clean</button>'
-    +'<button onclick="selectClean(\'Needs Cleaning\')" id="cln-Needs Cleaning" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">⚠️ Needs Clean</button>'
-    +'<button onclick="selectClean(\'Dirty - Cannot Proceed\')" id="cln-Dirty - Cannot Proceed" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">❌ Dirty</button>'
-    +'</div>'
-    +'</div>'
-    +'</div>';
+  // Fuel and cleaning
+  h.push('<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:14px;margin-bottom:10px">');
+  h.push('<div style="font-size:13px;font-weight:700;color:#e2eeff;margin-bottom:12px">Additional Details</div>');
+  h.push('<div style="margin-bottom:12px">');
+  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">Current Fuel Level %</div>');
+  h.push('<div style="display:flex;align-items:center;gap:10px">');
+  h.push('<input id="fuel_pct" type="number" min="0" max="100" placeholder="0-100" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:90px;font-family:Consolas,monospace;text-align:center">');
+  h.push('<div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div id="fuel-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .3s"></div></div>');
+  h.push('</div></div>');
+  h.push('<div>');
+  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:8px">Cleaning Status</div>');
+  h.push('<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">');
+  h.push('<button id="cln-0" data-val="Clean" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Clean</button>');
+  h.push('<button id="cln-1" data-val="Needs Cleaning" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Needs Clean</button>');
+  h.push('<button id="cln-2" data-val="Dirty - Cannot Proceed" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Dirty</button>');
+  h.push('</div></div></div>');
 
   // Submit button
-  html+='<button onclick="submitDriverChecklist()" id="submit-checklist-btn" class="drv-btn" style="padding:16px;font-size:16px;background:#162033;color:#5a7a9a;border:2px solid rgba(100,160,255,.1)">✅ Submit Checklist</button>';
+  h.push('<button id="submit-checklist-btn" style="width:100%;padding:16px;border-radius:12px;border:2px solid rgba(100,160,255,.1);background:#162033;color:#5a7a9a;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">Submit Checklist</button>');
 
-  dc.innerHTML=html;
-  window._cleanStatus='Clean';
-  // Fuel bar update
+  dc.innerHTML=h.join('');
+
+  // Wire events with addEventListener — no onclick string escaping needed
+  // Checklist item buttons
+  checks.forEach(function(c){
+    var btn=document.getElementById('lbl-'+c.id);
+    if(btn)btn.addEventListener('click',function(){toggleCheck(c.id);});
+  });
+
+  // Clean buttons
+  document.getElementById('cln-0').addEventListener('click',function(){selectClean('Clean');});
+  document.getElementById('cln-1').addEventListener('click',function(){selectClean('Needs Cleaning');});
+  document.getElementById('cln-2').addEventListener('click',function(){selectClean('Dirty - Cannot Proceed');});
+
+  // Submit button
+  document.getElementById('submit-checklist-btn').addEventListener('click',submitDriverChecklist);
+
+  // Fuel bar
   var fuelEl=document.getElementById('fuel_pct');
-  if(fuelEl)fuelEl.oninput=function(){
+  if(fuelEl)fuelEl.addEventListener('input',function(){
+    var v=parseInt(this.value)||0;
     var bar=document.getElementById('fuel-bar');
-    if(bar)bar.style.width=Math.min(100,this.value||0)+'%';
-    bar.style.background=this.value<20?'#f44336':this.value<50?'#ff9800':'#00e676';
-  };
-}
+    if(bar){bar.style.width=Math.min(100,v)+'%';bar.style.background=v<20?'#f44336':v<50?'#ff9800':'#00e676';}
+  });
 
+  // Select Clean as default
+  selectClean('Clean');
+}
 window.selectClean=function(val){
   window._cleanStatus=val;
-  ['Clean','Needs Cleaning','Dirty - Cannot Proceed'].forEach(function(v){
-    var btn=document.getElementById('cln-'+v);
-    if(!btn)return;
-    if(v===val){
-      btn.style.background=v==='Clean'?'#00e676':v==='Needs Cleaning'?'#ff9800':'#f44336';
-      btn.style.color=v==='Clean'?'#000':'#fff';
+  var btns=[['cln-0','Clean'],['cln-1','Needs Cleaning'],['cln-2','Dirty - Cannot Proceed']];
+  btns.forEach(function(pair){
+    var btn=document.getElementById(pair[0]);if(!btn)return;
+    if(pair[1]===val){
+      btn.style.background=val==='Clean'?'#00e676':val==='Needs Cleaning'?'#ff9800':'#f44336';
+      btn.style.color=val==='Clean'?'#000':'#fff';
       btn.style.borderColor='transparent';
     }else{
-      btn.style.background='';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';
+      btn.style.background='none';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';
     }
   });
 };
@@ -3814,17 +3826,14 @@ window.toggleCheck=function(id){
   var statusEl=document.getElementById('status-'+id);
   var def=(window._checkDefs||[]).find(function(c){return c.id===id;});
   if(state[id]){
-    // CHECKED
     if(chkEl){chkEl.style.background='#00e676';chkEl.style.borderColor='#00e676';chkEl.innerHTML='✅';}
     if(lblEl){lblEl.style.borderColor='rgba(0,230,118,.4)';lblEl.style.background='rgba(0,230,118,.06)';}
-    if(statusEl){statusEl.textContent='✓ OK';statusEl.style.color='#00e676';statusEl.style.fontWeight='700';}
+    if(statusEl){statusEl.textContent='OK';statusEl.style.color='#00e676';statusEl.style.fontWeight='700';}
   }else{
-    // UNCHECKED
     if(chkEl){chkEl.style.background='';chkEl.style.borderColor=def&&def.critical?'#ff9800':'#5a7a9a';chkEl.innerHTML=def?def.icon:'';}
     if(lblEl){lblEl.style.borderColor='rgba(100,160,255,.08)';lblEl.style.background='none';}
-    if(statusEl){statusEl.textContent='Tap to confirm';statusEl.style.color='#5a7a9a';statusEl.style.fontWeight='400';}
+    if(statusEl){statusEl.textContent='Tap';statusEl.style.color='#5a7a9a';statusEl.style.fontWeight='400';}
   }
-  // Update progress
   var defs=window._checkDefs||[];
   var req=defs.filter(function(c){return c.critical;});
   var done=req.filter(function(c){return state[c.id];}).length;
@@ -3836,32 +3845,40 @@ window.toggleCheck=function(id){
   if(bar)bar.style.width=pct+'%';
   if(btn){
     if(done===req.length){
-      btn.style.background='#00e676';btn.style.color='#000';
-      btn.style.border='2px solid #00e676';btn.textContent='✅ Submit Checklist — All Clear!';
+      btn.style.background='#00e676';btn.style.color='#000';btn.style.borderColor='#00e676';
+      btn.textContent='All Clear — Submit Checklist';
     }else{
-      btn.style.background='#162033';btn.style.color='#5a7a9a';
-      btn.style.border='2px solid rgba(100,160,255,.1)';btn.textContent='✅ Submit Checklist';
+      btn.style.background='#162033';btn.style.color='#5a7a9a';btn.style.borderColor='rgba(100,160,255,.1)';
+      btn.textContent='Submit Checklist';
     }
   }
 };
 window.submitDriverChecklist=async function(){
   var state=window._checkState||{},defs=window._checkDefs||[];
-  var req=defs.filter(function(c){return c.critical;});var allReq=req.every(function(c){return state[c.id];});
-  if(!allReq){var missing=req.filter(function(c){return !state[c.id];}).map(function(c){return c.label;});alert('Please complete all required checks:\n\n'+missing.join('\n'));return;}
-  var fuelPct=parseInt(gv('fuel_pct'))||0;var cleanStatus=window._cleanStatus||'Clean';
+  var req=defs.filter(function(c){return c.critical;});
+  var allReq=req.every(function(c){return state[c.id];});
+  if(!allReq){
+    var missing=req.filter(function(c){return !state[c.id];}).map(function(c){return c.label;});
+    alert('Please complete all required checks:\n\n'+missing.join('\n'));return;
+  }
+  var fuelPct=parseInt(document.getElementById('fuel_pct').value)||0;
+  var cleanStatus=window._cleanStatus||'Clean';
   if(cleanStatus==='Dirty - Cannot Proceed'){alert('Vehicle is dirty. Please clean before proceeding.');return;}
-  if(fuelPct<20){alert('Fuel below 20%. Please refuel before proceeding.');return;}
-  try{var today=new Date().toISOString().split('T')[0];var code=await sbRpc('next_checklist_code');
-  var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true};
-  if(DRIVER_RECORD){checkData.driver_id=DRIVER_RECORD.id;}
-  if(CURRENT_USER){checkData.user_role_id=CURRENT_USER.id;}
-  defs.forEach(function(c){if(c.id!=='cleaning_ok')checkData[c.id]=state[c.id]||false;});
-  await sbInsert('vehicle_checklist',checkData);
-  CHECKLIST_DONE_TODAY=true;
-  localStorage.setItem('checklist_date',today);
-  setTimeout(function(){drvGo('home');},500);
-  var dc=document.getElementById('driver-content');dc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:60px;margin-bottom:12px">✅</div><div style="font-size:18px;font-weight:700;color:#00e676;margin-bottom:6px">Vehicle Cleared!</div><div style="font-size:13px;color:#8ab0d0">Checklist '+code+' submitted</div></div>';
-  setTimeout(renderDriverHome,1500);}catch(e){alert('Error: '+e.message);}
+  if(fuelPct<20){alert('Fuel level is below 20%. Please refuel before proceeding.');return;}
+  try{
+    var today=new Date().toISOString().split('T')[0];
+    var code=await sbRpc('next_checklist_code');
+    var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true};
+    if(DRIVER_RECORD){checkData.driver_id=DRIVER_RECORD.id;}
+    if(CURRENT_USER){checkData.user_role_id=CURRENT_USER.id;}
+    defs.forEach(function(c){if(c.id!=='cleaning_ok')checkData[c.id]=state[c.id]||false;});
+    await sbInsert('vehicle_checklist',checkData);
+    CHECKLIST_DONE_TODAY=true;
+    localStorage.setItem('checklist_date',today);
+    var dc=document.getElementById('driver-content');
+    if(dc){dc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:60px;margin-bottom:12px">✅</div><div style="font-size:18px;font-weight:700;color:#00e676;margin-bottom:6px">Vehicle Cleared!</div><div style="font-size:13px;color:#8ab0d0">Checklist '+code+' submitted</div></div>';}
+    setTimeout(function(){drvGo('home');},1500);
+  }catch(e){alert('Error: '+e.message);}
 };
 window.showDriverAttendance=function(){
   modal('📷 Attendance Punch','<div style="text-align:center;padding:10px"><div style="font-size:13px;color:#8ab0d0;margin-bottom:16px">Enter QR code from your location</div><input id="drv-qr" placeholder="e.g. QR-0001" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:12px;font-family:Consolas,monospace;font-size:16px;width:100%;text-align:center;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="dqin" style="padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch IN</button><button id="dqout" style="padding:14px;border-radius:10px;border:none;background:#f44336;color:#fff;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit">Punch OUT</button></div><div id="drv-att-result" style="margin-top:12px"></div></div>','<button class="btn btn-sm" onclick="closeModal()">Close</button>');
