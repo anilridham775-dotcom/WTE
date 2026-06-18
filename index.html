@@ -1182,7 +1182,20 @@ async function renderTrips(){
 window.updateTripStatus=async function(id,status){await sbUpdate('trips',{status:status},{id:id});success('Trip → '+status);renderTrips();};
 window.completeTrip=async function(id){
   if(!confirm('Mark trip as Complete?'))return;
-  try{await sbUpdate('trips',{status:'Completed',actual_end_time:new Date().toISOString()},{id:id});success('Trip completed!');var dc=document.getElementById('driver-content');if(dc){dc.innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:50px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:#00e676">Trip Completed!</div></div>';setTimeout(function(){drvGo(\'home\');},1500);}else{setTimeout(renderTrips,500);}}catch(e){alert('Error: '+e.message);}
+  try{
+    await sbUpdate('trips',{status:'Completed',actual_end_time:new Date().toISOString()},{id:id});
+    success('Trip completed!');
+    var dc=document.getElementById('driver-content');
+    if(dc){
+      dc.innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:50px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:#00e676">Trip Completed!</div></div>';
+      setTimeout(function(){
+        if(typeof drvGo!=='undefined'){drvGo('home');}
+        else{renderTrips();}
+      },1500);
+    }else{
+      setTimeout(renderTrips,500);
+    }
+  }catch(e){alert('Error: '+e.message);}
 };
 window.newTrip=async function(){
   var d=window._tripData||{vehicles:[],drivers:[],bins:[]};
