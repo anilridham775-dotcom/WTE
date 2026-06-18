@@ -3306,7 +3306,7 @@ async function renderDriverAttend(){
       +'</div></div>';
     // Today's records
     if(todayAtt.length>0){
-      h+='<div style="font-size:12px;font-weight:600;color:#9ab8d4;margin-bottom:8px">Today's Records</div>';
+      h+='<div style="font-size:12px;font-weight:600;color:#9ab8d4;margin-bottom:8px">Today&#39;s Records</div>';
       todayAtt.forEach(function(a){
         h+='<div style="background:#162033;border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
           +'<div><span style="font-weight:700;color:'+(a.punch_type==='IN'?'#00e676':'#f44336')+'">'+a.punch_type+'</span>'
