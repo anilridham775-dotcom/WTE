@@ -79,6 +79,7 @@ input:focus,select:focus,textarea:focus{border-color:#00e676}
 .drv-trip-active{background:rgba(255,152,0,.08);border:2px solid #ff9800;border-radius:14px;padding:16px}
 .drv-check-item{display:flex;align-items:center;gap:14px;padding:14px;border-radius:12px;border:2px solid rgba(100,160,255,.08);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
 .drv-check-item.checked{border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.05)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(0,230,118,.5)!important}
 .drv-check-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .2s}
 @media(min-width:600px){.drv-content{padding:20px;padding-bottom:80px}.drv-nav-btn{font-size:11px;padding:12px 8px}.drv-nav-btn .ic{font-size:22px}}.login-input{background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;font-family:inherit;outline:none;transition:border-color .2s}.login-input:focus{border-color:rgba(0,230,118,.5)}
 .tbl-wrap table{width:100%;min-width:600px;border-collapse:collapse;font-size:12.5px}
@@ -3423,7 +3424,7 @@ async function renderDriverCollect(){
           +'</div>'
           +'<div style="background:#0f1724;border-radius:8px;height:6px;margin-bottom:12px"><div style="height:6px;border-radius:8px;background:'+(b.current_fill_pct>=80?'#f44336':b.current_fill_pct>=60?'#ff9800':'#00e676')+';width:'+(b.current_fill_pct||0)+'%"></div></div>'
           +'<div style="margin-bottom:12px"><label style="font-size:12px;color:#9ab8d4;display:block;margin-bottom:6px;font-weight:600">Weight Collected (kg) *</label>'
-          +'<input id="wt_'+p.id+'" type="number" inputmode="decimal" placeholder="e.g. 250" style="background:#0f1724;border:2px solid rgba(100,160,255,.25);border-radius:10px;color:#e2eeff;padding:12px 14px;font-size:20px;width:100%;font-family:Consolas,monospace;box-sizing:border-box;-webkit-appearance:none;appearance:none" onfocus="this.style.borderColor='rgba(0,230,118,.6)'" onblur="this.style.borderColor='rgba(100,160,255,.25)'"></div>'
+          +'<input id="wt_'+p.id+'" type="number" inputmode="decimal" placeholder="e.g. 250" style="background:#0f1724;border:2px solid rgba(100,160,255,.25);border-radius:10px;color:#e2eeff;padding:12px 14px;font-size:20px;width:100%;font-family:Consolas,monospace;box-sizing:border-box;-webkit-appearance:none;appearance:none"  ></div>'
           +'<button data-pid="'+p.id+'" data-tid="'+activeTrip.id+'" onclick="collectBin(this.dataset.pid,this.dataset.tid)" class="drv-btn drv-btn-primary">✅ Mark Collected</button>'
           +'</div>';
       });
