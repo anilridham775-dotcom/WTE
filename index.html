@@ -3545,9 +3545,8 @@ window.startQRCamera=function(){
       _qrStream=stream;video.srcObject=stream;video.play();
       _qrScanInterval=setInterval(scanQRFrame,250);
     })
-    .catch(function(err){
-      alert('Camera access denied. Enter QR code manually.
-'+err.message);
+      alert('Camera access denied. Enter QR code manually. ' + err.message);
+      if(area)area.style.display='none';
       if(area)area.style.display='none';
     });
 };
@@ -3771,9 +3770,9 @@ function showMandatoryChecklist(){
     +'<div>'
     +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">🧹 Cleaning Status</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
-    +'<button onclick="selectClean('Clean')" id="cln-Clean" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">✅ Clean</button>'
-    +'<button onclick="selectClean('Needs Cleaning')" id="cln-Needs Cleaning" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">⚠️ Needs Clean</button>'
-    +'<button onclick="selectClean('Dirty - Cannot Proceed')" id="cln-Dirty - Cannot Proceed" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">❌ Dirty</button>'
+    +'<button onclick="selectClean(\'Clean\')" id="cln-Clean" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">✅ Clean</button>'
+    +'<button onclick="selectClean(\'Needs Cleaning\')" id="cln-Needs Cleaning" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">⚠️ Needs Clean</button>'
+    +'<button onclick="selectClean(\'Dirty - Cannot Proceed\')" id="cln-Dirty - Cannot Proceed" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">❌ Dirty</button>'
     +'</div>'
     +'</div>'
     +'</div>';
