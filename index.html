@@ -3305,10 +3305,10 @@ async function showDriverApp(){
     +'</div></div>'
     +'<div class="drv-content" id="driver-content"></div>'
     +'<nav class="drv-nav" id="drv-nav">'
-    +'<button class="drv-nav-btn on" id="dnb-home" onclick="drvGo(\'home\')"><span class="ic">🏠</span>Home</button>'
+    +'<button class="drv-nav-btn" id="dnb-home" onclick="drvGo(\'home\')"><span class="ic">🏠</span>Home</button>'
     +'<button class="drv-nav-btn" id="dnb-trips" onclick="drvGo(\'trips\')"><span class="ic">🚛</span>Trips</button>'
     +'<button class="drv-nav-btn" id="dnb-collect" onclick="drvGo(\'collect\')"><span class="ic">🗑️</span>Collect</button>'
-    +'<button class="drv-nav-btn" id="dnb-attend" onclick="drvGo(\'attend\')"><span class="ic">📷</span>Attendance</button>'
+    +'<button class="drv-nav-btn" id="dnb-attend" onclick="drvGo(\'attend\')"><span class="ic">📷</span>Attend</button>'
     +'<button class="drv-nav-btn" id="dnb-issues" onclick="drvGo(\'issues\')"><span class="ic">⚠️</span>Issues</button>'
     +'</nav>'
     +'</div>';
@@ -3339,8 +3339,13 @@ async function showDriverApp(){
 }
 
 function drvGo(page){
+  // Block ALL navigation until checklist is done
+  if(!CHECKLIST_DONE_TODAY && page!=='checklist'){
+    showMandatoryChecklist();
+    return;
+  }
   DRV.page=page;
-  // Update nav
+  // Update nav highlight
   document.querySelectorAll('.drv-nav-btn').forEach(function(b){b.classList.remove('on');});
   var nb=document.getElementById('dnb-'+page);if(nb)nb.classList.add('on');
   // Render page
@@ -3799,6 +3804,10 @@ window.saveDrvIssue=async function(){
 
 function showMandatoryChecklist(){
   var dc=document.getElementById('driver-content');
+  // If checklist already rendered and state exists, just restore it
+  if(window._checkState && Object.keys(window._checkState).length > 0 && document.getElementById('checklist-progress')){
+    return; // Already showing, don't re-render
+  }
   var checks=[
     {id:'fuel_ok',       icon:'⛽', label:'Fuel Level >= 20%',       cat:'Engine',  critical:true},
     {id:'oil_level_ok',  icon:'🛢', label:'Engine Oil OK',            cat:'Engine',  critical:true},
@@ -3888,6 +3897,10 @@ function showMandatoryChecklist(){
   checks.forEach(function(c){
     var btn=document.getElementById('lbl-'+c.id);
     if(btn)btn.addEventListener('click',function(){toggleCheck(c.id);});
+    // Restore previously ticked state
+    if(window._checkState&&window._checkState[c.id]){
+      toggleCheck(c.id);
+    }
   });
 
   // Clean buttons
@@ -3981,9 +3994,16 @@ window.submitDriverChecklist=async function(){
     await sbInsert('vehicle_checklist',checkData);
     CHECKLIST_DONE_TODAY=true;
     localStorage.setItem('checklist_date',today);
+    // Clear checklist state so it doesn't re-render
+    window._checkState={};
+    window._checkDefs=[];
+    CHECKLIST_DONE_TODAY=true;
     var dc=document.getElementById('driver-content');
-    if(dc){dc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:60px;margin-bottom:12px">✅</div><div style="font-size:18px;font-weight:700;color:#00e676;margin-bottom:6px">Vehicle Cleared!</div><div style="font-size:13px;color:#8ab0d0">Checklist '+code+' submitted</div></div>';}
-    setTimeout(function(){drvGo('home');},1500);
+    if(dc){dc.innerHTML='<div style="text-align:center;padding:60px 20px"><div style="font-size:70px;margin-bottom:16px">✅</div><div style="font-size:20px;font-weight:800;color:#00e676;margin-bottom:8px">Vehicle Cleared!</div><div style="font-size:14px;color:#8ab0d0">Checklist '+code+' submitted successfully</div></div>';}
+    // Update nav to show home active
+    document.querySelectorAll('.drv-nav-btn').forEach(function(b){b.classList.remove('on');});
+    var hn=document.getElementById('dnb-home');if(hn)hn.classList.add('on');
+    setTimeout(function(){renderDriverHome();},2000);
   }catch(e){alert('Error: '+e.message);}
 };
 window.showDriverAttendance=function(){
