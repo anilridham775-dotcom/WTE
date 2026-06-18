@@ -3824,7 +3824,7 @@ function showMandatoryChecklist(){
 
   // Build HTML using array join — no escaping issues
   var h=[];
-  h.push('<div style="background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:2px solid rgba(255,152,0,.4);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">');
+  h.push('<div style="background:#1e2d1a;border:2px solid rgba(255,152,0,.6);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">');
   h.push('<div style="font-size:42px;margin-bottom:6px">🚛</div>');
   h.push('<div style="font-size:18px;font-weight:800;color:#ff9800;margin-bottom:4px">Daily 360° Pre-Trip Check</div>');
   h.push('<div style="font-size:12px;color:#8ab0d0">Tap each item to confirm. All required items must be OK.</div>');
@@ -3840,17 +3840,17 @@ function showMandatoryChecklist(){
 
   catOrder.forEach(function(cat){
     if(!cats[cat])return;
-    h.push('<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;margin-bottom:10px;overflow:hidden">');
-    h.push('<div style="padding:10px 14px;background:rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>');
-    h.push('<div style="padding:8px">');
+    h.push('<div style="background:#1a2840;border:1px solid rgba(100,160,255,.2);border-radius:14px;margin-bottom:12px;overflow:hidden">');
+    h.push('<div style="padding:10px 14px;background:rgba(0,230,118,.08);border-bottom:1px solid rgba(100,160,255,.1);font-size:11px;font-weight:700;color:#00e676;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>');
+    h.push('<div style="padding:8px 8px 2px 8px">');
     cats[cat].forEach(function(c){
-      h.push('<button id="lbl-'+c.id+'" data-chk="'+c.id+'" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.08);background:none;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px;transition:all .15s;-webkit-tap-highlight-color:transparent">');
-      h.push('<div id="chk-'+c.id+'" style="width:44px;height:44px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .15s">'+c.icon+'</div>');
+      h.push('<button id="lbl-'+c.id+'" data-chk="'+c.id+'" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.12);background:#1a2a3a;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px;-webkit-tap-highlight-color:transparent;box-sizing:border-box">');
+      h.push('<div id="chk-'+c.id+'" style="min-width:48px;width:48px;height:48px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';background:'+(c.critical?'rgba(255,152,0,.1)':'rgba(90,122,154,.1)')+';display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">'+c.icon+'</div>');
       h.push('<div style="flex:1">');
-      h.push('<div style="font-size:14px;font-weight:600">'+c.label+'</div>');
-      h.push('<div style="font-size:11px;margin-top:2px;color:'+(c.critical?'#ff9800':'#5a7a9a')+'">'+(c.critical?'Required':'Optional')+'</div>');
+      h.push('<div style="font-size:15px;font-weight:600;color:#e2eeff">'+c.label+'</div>');
+      h.push('<div style="font-size:11px;margin-top:3px;color:'+(c.critical?'#ff9800':'#8ab0d0')+'">'+(c.critical?'Required':'Optional')+'</div>');
       h.push('</div>');
-      h.push('<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a">Tap</div>');
+      h.push('<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a;white-space:nowrap;padding-left:4px">Tap to<br>confirm</div>');
       h.push('</button>');
     });
     h.push('</div></div>');
@@ -3864,6 +3864,11 @@ function showMandatoryChecklist(){
   h.push('<div style="display:flex;align-items:center;gap:10px">');
   h.push('<input id="fuel_pct" type="number" min="0" max="100" placeholder="0-100" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:90px;font-family:Consolas,monospace;text-align:center">');
   h.push('<div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div id="fuel-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .3s"></div></div>');
+  h.push('</div>');
+  h.push('<div style="margin-top:10px">');
+  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">Fuel Quantity in Tank (Litres)</div>');
+  h.push('<input id="fuel_litres" type="number" min="0" placeholder="e.g. 80" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:90px;font-family:Consolas,monospace;text-align:center">');
+  h.push('<span style="font-size:13px;color:#8ab0d0;margin-left:10px">litres</span>');
   h.push('</div></div>');
   h.push('<div>');
   h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:8px">Cleaning Status</div>');
@@ -3969,7 +3974,7 @@ window.submitDriverChecklist=async function(){
   try{
     var today=new Date().toISOString().split('T')[0];
     var code=await sbRpc('next_checklist_code');
-    var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,cleaning_status:cleanStatus,vehicle_ready:true};
+    var fuelLitres=parseInt(document.getElementById('fuel_litres')?document.getElementById('fuel_litres').value:0)||null;var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,fuel_litres:fuelLitres,cleaning_status:cleanStatus,vehicle_ready:true};
     if(DRIVER_RECORD){checkData.driver_id=DRIVER_RECORD.id;}
     if(CURRENT_USER){checkData.user_role_id=CURRENT_USER.id;}
     defs.forEach(function(c){if(c.id!=='cleaning_ok')checkData[c.id]=state[c.id]||false;});
