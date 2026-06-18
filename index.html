@@ -1092,13 +1092,113 @@ window.saveDriver=async function(){
 };
 window.editDriver=async function(id){
   var d=(await sbFetch('drivers',{select:'*',eq:{id:id}}))[0];if(!d)return;
-  var body='<div class="fg">'+fld('Full Name','<input id="d_name" value="'+d.full_name.replace(/"/g,'&quot;')+'">',true)+fld('Mobile','<input id="d_mobile" value="'+(d.mobile||'')+'">',true)+fld('DL Number','<input id="d_dl" value="'+(d.dl_no||'')+'">',true)+fld('DL Expiry','<input id="d_dlexp" type="date" value="'+(d.dl_expiry||'')+'">',true)+fld('Police Verified',sel('d_police',['Pending','Verified']))+fld('Status',sel('d_status',['Active','On Leave','Suspended']))+'</div>';
-  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sde">Save</button>';
-  modal('Edit Driver — '+d.driver_code,body,foot);
-  setTimeout(function(){document.getElementById('d_police').value=d.police_verified?'Verified':'Pending';document.getElementById('d_status').value=d.status||'Active';var sb=document.getElementById('sde');if(sb){var did=id;sb.onclick=function(){saveDriverEdit(did);};}},50);
+  // Also load linked user_roles for email/PIN
+  var userRec=d.user_id?safeArr(await sbFetch('user_roles',{select:'id,email,pin,is_active',eq:{id:d.user_id}}))[0]:null;
+  // Also load linked staff profile
+  var staffRec=d.staff_id?safeArr(await sbFetch('staff_profiles',{select:'id,basic_salary,department,designation',eq:{id:d.staff_id}}))[0]:null;
+
+  var h=[];
+  h.push('<div class="fg">');
+  h.push('<div class="sec" style="grid-column:1/-1">Personal Details</div>');
+  h.push(fld('Full Name','<input id="ed_name" value="'+d.full_name.replace(/"/g,'&quot;')+'">',true));
+  h.push(fld('Mobile','<input id="ed_mobile" value="'+(d.mobile||'').replace(/"/g,'&quot;')+'">',true));
+  h.push(fld('Date of Birth','<input id="ed_dob" type="date" value="'+(d.dob||'')+'">'));
+  h.push(fld('Blood Group',sel('ed_blood',['A+','A-','B+','B-','O+','O-','AB+','AB-'])));
+  h.push(fld('Employment Type',sel('ed_emp',['Permanent','Contract','Outsourced'])));
+  h.push(fld('Joining Date','<input id="ed_join" type="date" value="'+(d.joining_date||'')+'">'));
+  h.push('<div class="sec" style="grid-column:1/-1">Licence & Compliance</div>');
+  h.push(fld('DL Number','<input id="ed_dl" value="'+(d.dl_no||'').replace(/"/g,'&quot;')+'">',true));
+  h.push(fld('DL Expiry','<input id="ed_dlexp" type="date" value="'+(d.dl_expiry||'')+'">',true));
+  h.push(fld('Police Verified',sel('ed_police',['Pending','Verified'])));
+  h.push(fld('Status',sel('ed_status',['Active','On Leave','Suspended'])));
+  if(userRec){
+    h.push('<div class="sec" style="grid-column:1/-1">Login Access</div>');
+    h.push(fld('Email','<input id="ed_email" type="email" value="'+(userRec.email||'').replace(/"/g,'&quot;')+'">',true));
+    h.push(fld('New PIN <span style="font-weight:400;color:#5a7a9a">(leave blank to keep)</span>','<input id="ed_pin" type="password" placeholder="Enter new PIN to change">'));
+    h.push(fld('Login Status',sel('ed_active',['true','false'])));
+  }else{
+    h.push('<div class="sec" style="grid-column:1/-1">Login Access</div>');
+    h.push('<div class="full"><div style="padding:10px;background:#0f1724;border-radius:8px;font-size:12px;color:#5a7a9a">No login created yet. <button onclick="closeModal();createDriverLogin(''+id+'')" class="btn btn-sm" style="margin-left:8px">+ Create Login</button></div></div>');
+  }
+  if(staffRec){
+    h.push('<div class="sec" style="grid-column:1/-1">HR / Payroll</div>');
+    h.push(fld('Basic Salary','<input id="ed_salary" type="number" value="'+(staffRec.basic_salary||0)+'">'));
+    h.push(fld('Department',sel('ed_dept',['Operations','Fleet','Finance','HR','Compliance','Admin'])));
+  }
+  h.push('</div>');
+
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sde">Save Changes</button>';
+  modal('✏️ Edit Driver — '+d.driver_code,h.join(''),foot);
+
+  setTimeout(function(){
+    var bg=document.getElementById('ed_blood');
+    var eg=document.getElementById('ed_emp');
+    var ep=document.getElementById('ed_police');
+    var es=document.getElementById('ed_status');
+    if(bg)bg.value=d.blood_group||'A+';
+    if(eg)eg.value=d.employment_type||'Permanent';
+    if(ep)ep.value=d.police_verified?'Verified':'Pending';
+    if(es)es.value=d.status||'Active';
+    if(userRec){
+      var ea=document.getElementById('ed_active');
+      if(ea)ea.value=String(userRec.is_active!==false);
+    }
+    if(staffRec){
+      var ed=document.getElementById('ed_dept');
+      if(ed)ed.value=staffRec.department||'Fleet';
+    }
+    var sb=document.getElementById('sde');
+    if(sb){
+      sb.onclick=function(){saveDriverEdit(id,d.user_id,d.staff_id);};
+    }
+  },80);
 };
-window.saveDriverEdit=async function(id){
-  try{await sbUpdate('drivers',{full_name:gv('d_name'),mobile:gv('d_mobile'),dl_no:gv('d_dl'),dl_expiry:gv('d_dlexp'),police_verified:gv('d_police')==='Verified',status:gv('d_status')},{id:id});closeModal();success('Driver updated!');renderDrivers();}catch(e){alert('Error: '+e.message);}
+
+window.saveDriverEdit=async function(id,userId,staffId){
+  try{
+    // Update driver record
+    var driverUpdate={
+      full_name:gv('ed_name'),
+      mobile:gv('ed_mobile'),
+      dl_no:gv('ed_dl'),
+      dl_expiry:gv('ed_dlexp')||null,
+      dob:gv('ed_dob')||null,
+      blood_group:document.getElementById('ed_blood')?document.getElementById('ed_blood').value:null,
+      employment_type:document.getElementById('ed_emp')?document.getElementById('ed_emp').value:null,
+      joining_date:gv('ed_join')||null,
+      police_verified:document.getElementById('ed_police')?document.getElementById('ed_police').value==='Verified':false,
+      status:document.getElementById('ed_status')?document.getElementById('ed_status').value:'Active'
+    };
+    await sbUpdate('drivers',driverUpdate,{id:id});
+
+    // Update login if exists
+    if(userId){
+      var emailEl=document.getElementById('ed_email');
+      var pinEl=document.getElementById('ed_pin');
+      var activeEl=document.getElementById('ed_active');
+      var userUpdate={};
+      if(emailEl&&emailEl.value)userUpdate.email=emailEl.value.trim();
+      if(pinEl&&pinEl.value)userUpdate.pin=pinEl.value.trim();
+      if(activeEl)userUpdate.is_active=activeEl.value==='true';
+      userUpdate.full_name=gv('ed_name');
+      userUpdate.phone=gv('ed_mobile');
+      if(Object.keys(userUpdate).length)await sbUpdate('user_roles',userUpdate,{id:userId});
+    }
+
+    // Update staff profile if exists
+    if(staffId){
+      var salEl=document.getElementById('ed_salary');
+      var deptEl=document.getElementById('ed_dept');
+      var staffUpdate={full_name:gv('ed_name'),mobile:gv('ed_mobile')};
+      if(salEl)staffUpdate.basic_salary=parseFloat(salEl.value)||0;
+      if(deptEl)staffUpdate.department=deptEl.value;
+      await sbUpdate('staff_profiles',staffUpdate,{id:staffId});
+    }
+
+    closeModal();
+    success('Driver '+gv('ed_name')+' updated successfully!');
+    renderDrivers();
+  }catch(e){alert('Error: '+e.message);}
 };
 // ── VEHICLES ──────────────────────────────────────────────
 async function renderVehicles(){
