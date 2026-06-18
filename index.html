@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>EcoLoop Pro — Waste-to-Energy ERP</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f1724;color:#e2eeff;height:100vh;width:100vw;display:flex;overflow:hidden;margin:0;padding:0}
@@ -456,12 +457,12 @@ function locBtn(latId,lngId,statusId,mapsId){
 // ── AUTH & ROUTING ────────────────────────────────────────
 var CURRENT_USER=null,DRIVER_LOCATION=null,DRIVER_RECORD=null,CHECKLIST_DONE_TODAY=false;
 var ROLE_ACCESS={
-  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues'],
-  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues'],
+  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues','tracking'],
+  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues','tracking'],
   inspector:['dashboard','inspection','trips','billing','bins','fillalerts','boiler','issues'],
   driver:[],generator:['dashboard','bins','fillalerts'],
 };
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues',tracking:'Live Vehicle Tracking'};
 var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
@@ -484,7 +485,7 @@ function go(page){
   var ni=document.getElementById('ni-'+page);if(ni)ni.classList.add('on');
   var ptEl=document.getElementById('ptitle');if(ptEl)ptEl.textContent=PAGE_TITLES[page]||page;
   var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues};
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking};
   if(allPages[page])allPages[page]();
   else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>'+PAGE_TITLES[page]+'</div></div>';
   setTimeout(function(){wireButtons();setTblWrapHeights();},200);
@@ -1184,6 +1185,7 @@ window.completeTrip=async function(id){
   if(!confirm('Mark trip as Complete?'))return;
   try{
     await sbUpdate('trips',{status:'Completed',actual_end_time:new Date().toISOString()},{id:id});
+    stopGPSTracking();
     success('Trip completed!');
     var dc=document.getElementById('driver-content');
     if(dc){
@@ -1239,7 +1241,11 @@ window.saveTrip=async function(){
 };
 window.startTrip=async function(id){
   var upd={status:'In Transit',actual_start_time:new Date().toISOString()};if(DRIVER_LOCATION){upd.driver_lat=DRIVER_LOCATION.lat;upd.driver_lng=DRIVER_LOCATION.lng;}
-  await sbUpdate('trips',upd,{id:id});if(document.getElementById('driver-content')){drvGo('trips');}else{renderTrips();}
+  await sbUpdate('trips',upd,{id:id});
+  if(document.getElementById('driver-content')){
+    startGPSTracking(id);
+    drvGo('trips');
+  }else{renderTrips();}
 };
 window.openTripCollect=async function(tripId,tripCode){
   var dc=document.getElementById('driver-content');
@@ -2690,6 +2696,87 @@ window.resolveIssue=async function(id){
     };
   },50);
 };
+
+// ══════════════════════════════════════════════════════════
+// LIVE VEHICLE TRACKING — Admin Dashboard
+// ══════════════════════════════════════════════════════════
+var _trackingRefresh=null;
+async function renderTracking(){
+  var ct=document.getElementById('ct');
+  if(_trackingRefresh)clearInterval(_trackingRefresh);
+  await loadTrackingData();
+  // Auto-refresh every 2 minutes
+  _trackingRefresh=setInterval(loadTrackingData,120000);
+}
+
+async function loadTrackingData(){
+  var ct=document.getElementById('ct');
+  try{
+    // Get latest GPS ping per vehicle in last 30 minutes
+    var cutoff=new Date(Date.now()-30*60000).toISOString();
+    var pings=safeArr(await sbFetch('vehicle_tracking',{
+      select:'*,drivers(full_name,driver_code),vehicles(reg_no),trips(trip_code,status)',
+      order:'recorded_at.desc',
+      limit:200
+    }));
+
+    // Get latest ping per vehicle
+    var latestByVehicle={};
+    pings.forEach(function(p){
+      var key=p.vehicle_id||p.driver_id||p.id;
+      if(!latestByVehicle[key]||p.recorded_at>latestByVehicle[key].recorded_at){
+        latestByVehicle[key]=p;
+      }
+    });
+    var latest=Object.values(latestByVehicle);
+    var active=latest.filter(function(p){return p.recorded_at>=cutoff;});
+    var rows=latest.map(function(p){
+      var drv=p.drivers||{};var veh=p.vehicles||{};var trp=p.trips||{};
+      var age=Math.round((Date.now()-new Date(p.recorded_at).getTime())/60000);
+      var isActive=p.recorded_at>=cutoff;
+      return[
+        '<div style="font-weight:600">'+(drv.full_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(drv.driver_code||'')+'</div>',
+        '<strong style="font-family:Consolas,monospace">'+(veh.reg_no||'-')+'</strong>',
+        trp.trip_code?'<span style="font-family:Consolas,monospace;font-size:11px">'+trp.trip_code+'</span>':'-',
+        p.latitude?p.latitude.toFixed(5):'-',
+        p.longitude?p.longitude.toFixed(5):'-',
+        p.speed_kmh!==null&&p.speed_kmh!==undefined?p.speed_kmh+' km/h':'-',
+        '<span style="color:'+(isActive?'#00e676':'#5a7a9a')+'">'+(age<1?'Just now':age+' min ago')+'</span>',
+        badge(isActive?'g':'gr',isActive?'Active':'Offline'),
+        p.latitude?'<a href="https://www.google.com/maps?q='+p.latitude+','+p.longitude+'" target="_blank" style="color:#00e676;font-size:11px;text-decoration:none">📍 Maps</a>':'-'
+      ];
+    });
+
+    ct.innerHTML='<div class="sg">'
+      +sc('#00e676','Active Vehicles',active.length,'Last 30 min')
+      +sc('#2196f3','Total Tracked',latest.length,'All vehicles')
+      +sc('#ff9800','Offline',latest.length-active.length,'No recent ping')
+      +'</div>'
+      +'<div style="background:#162033;border:1px solid rgba(100,160,255,.12);border-radius:12px;padding:12px;margin-bottom:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<span style="font-size:13px;font-weight:700;color:#e2eeff">🗺️ Live Vehicle Tracking</span>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span style="font-size:11px;color:#5a7a9a">Auto-refreshes every 2 min</span>'
+      +'<button onclick="loadTrackingData()" class="btn btn-sm">🔄 Refresh Now</button>'
+      +'</div></div>'
+      +'<div style="background:#0f1724;border-radius:10px;padding:12px;margin-bottom:10px">'
+      +'<div style="font-size:12px;color:#5a7a9a;margin-bottom:8px">📍 Active Vehicles on Map</div>'
+      +active.map(function(p){
+        var drv=p.drivers||{};var veh=p.vehicles||{};
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#162033;border-radius:8px;margin-bottom:6px">'
+          +'<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#00e676;box-shadow:0 0 6px #00e676"></div>'
+          +'<div><div style="font-weight:600;font-size:12px">'+(veh.reg_no||'-')+'</div>'
+          +'<div style="font-size:10px;color:#5a7a9a">'+(drv.full_name||'-')+'</div></div></div>'
+          +(p.latitude?'<a href="https://www.google.com/maps?q='+p.latitude+','+p.longitude+'" target="_blank" class="btn btn-sm" style="font-size:10px">📍 Track</a>':'')
+          +'</div>';
+      }).join('')
+      +(active.length===0?'<div style="text-align:center;color:#5a7a9a;padding:16px;font-size:12px">No active vehicles right now</div>':'')
+      +'</div>'
+      +'</div>'
+      +ct.querySelector?'':''
+      +card('📊 All Vehicle Pings','',tbl(['Driver','Vehicle','Trip','Latitude','Longitude','Speed','Last Seen','Status',''],rows),true);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
@@ -2995,6 +3082,105 @@ window.submitPublicGenForm=async function(){
   document.getElementById('pub-form').innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:60px;margin-bottom:16px">✅</div><div style="font-size:20px;font-weight:700;color:#00e676">Registration Submitted!</div><div style="font-size:13px;color:#8ab0d0;margin-top:8px">Request ID: '+code+'</div></div>';}catch(e){alert('Error: '+e.message);}
 };
 
+
+// ══════════════════════════════════════════════════════════
+// LIVE GPS TRACKER — updates every 2 minutes during active trip
+// ══════════════════════════════════════════════════════════
+var _gpsTrackInterval=null;
+var _gpsTrackTripId=null;
+
+function startGPSTracking(tripId){
+  if(_gpsTrackInterval)clearInterval(_gpsTrackInterval);
+  _gpsTrackTripId=tripId;
+  // Immediate first ping
+  sendGPSPing(tripId);
+  // Then every 2 minutes
+  _gpsTrackInterval=setInterval(function(){sendGPSPing(tripId);},120000);
+  console.log('GPS tracking started for trip',tripId);
+}
+
+function stopGPSTracking(){
+  if(_gpsTrackInterval){clearInterval(_gpsTrackInterval);_gpsTrackInterval=null;}
+  _gpsTrackTripId=null;
+  console.log('GPS tracking stopped');
+}
+
+async function sendGPSPing(tripId){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    var lat=pos.coords.latitude;
+    var lng=pos.coords.longitude;
+    var acc=pos.coords.accuracy;
+    var speed=pos.coords.speed||0;
+    // Update global DRIVER_LOCATION
+    DRIVER_LOCATION={lat:lat,lng:lng,accuracy:acc,timestamp:new Date().toISOString()};
+    // Update GPS badge
+    var gpsBadge=document.getElementById('gps-badge');
+    if(gpsBadge){gpsBadge.style.background='rgba(0,230,118,.15)';gpsBadge.style.color='#00e676';gpsBadge.textContent='📍 ±'+Math.round(acc)+'m';}
+    try{
+      // Save to vehicle_tracking table
+      var driverId=DRIVER_RECORD?DRIVER_RECORD.id:null;
+      var vehicleId=null;
+      // Get vehicle from trip
+      if(tripId){
+        var tripRec=safeArr(await sbFetch('trips',{select:'vehicle_id',eq:{id:tripId}}));
+        vehicleId=tripRec[0]?tripRec[0].vehicle_id:null;
+      }
+      await sbInsert('vehicle_tracking',{
+        trip_id:tripId||null,
+        driver_id:driverId,
+        vehicle_id:vehicleId,
+        latitude:lat,longitude:lng,
+        accuracy_m:Math.round(acc),
+        speed_kmh:speed?Math.round(speed*3.6):null,
+        recorded_at:new Date().toISOString()
+      });
+      // Auto-detect stage based on GPS proximity to known locations
+      await autoDetectTripStage(tripId,lat,lng);
+    }catch(e){console.warn('GPS ping error:',e.message);}
+  },function(err){
+    console.warn('GPS error:',err.message);
+  },{enableHighAccuracy:true,timeout:10000,maximumAge:30000});
+}
+
+async function autoDetectTripStage(tripId,lat,lng){
+  if(!tripId||!lat||!lng)return;
+  try{
+    // Get trip details with pickups
+    var trip=safeArr(await sbFetch('trips',{select:'*',eq:{id:tripId}}))[0];
+    if(!trip||trip.status==='Completed')return;
+    // Get all pending pickups with generator locations
+    var pickups=safeArr(await sbFetch('trip_pickups',{
+      select:'*,bins(bin_code,generator_id,generators(latitude,longitude,company_name))',
+      eq:{trip_id:tripId,status:'Pending'}
+    }));
+    // Check distance to each generator location
+    pickups.forEach(async function(p){
+      var gen=p.bins&&p.bins.generators;
+      if(!gen||!gen.latitude||!gen.longitude)return;
+      var dist=calcDistance(lat,lng,gen.latitude,gen.longitude);
+      // Within 100 meters of generator — mark arrived
+      if(dist<=100){
+        await sbUpdate('trip_pickups',{
+          status:'Arrived',
+          arrived_at:new Date().toISOString()
+        },{id:p.id});
+        console.log('Auto-marked arrived at',gen.company_name,'dist:',dist+'m');
+      }
+    });
+  }catch(e){console.warn('Stage detect error:',e.message);}
+}
+
+function calcDistance(lat1,lng1,lat2,lng2){
+  var R=6371000;
+  var dLat=(lat2-lat1)*Math.PI/180;
+  var dLon=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+    Math.sin(dLon/2)*Math.sin(dLon/2);
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
 // ── DRIVER APP ────────────────────────────────────────────
 function captureDriverLocation(){return new Promise(function(resolve){if(!navigator.geolocation){resolve(null);return;}navigator.geolocation.getCurrentPosition(function(pos){DRIVER_LOCATION={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:new Date().toISOString()};resolve(DRIVER_LOCATION);},function(){resolve(null);},{enableHighAccuracy:true,timeout:8000});});}
 
@@ -3069,7 +3255,12 @@ async function renderDriverHome(){
   var timeStr=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   var driverId=DRIVER_RECORD?DRIVER_RECORD.id:null;
   try{
-    var[tripsRaw_r,att_r,issues_r]=await Promise.all([
+    // Resume GPS tracking if active trip exists
+  if(!_gpsTrackInterval&&driverId){
+    var activeTripCheck=safeArr(await sbFetch('trips',{select:'id',eq:{driver_id:driverId,status:'In Transit'}}));
+    if(activeTripCheck[0])startGPSTracking(activeTripCheck[0].id);
+  }
+  var[tripsRaw_r,att_r,issues_r]=await Promise.all([
       driverId?sbFetch('trips',{select:'*',order:'created_at.desc',limit:20,eq:{driver_id:driverId}}):Promise.resolve([]),
       sbFetch('attendance',{select:'*',eq:{user_role_id:CURRENT_USER.id},order:'punch_time.desc',limit:4}),
       sbFetch('operational_issues',{select:'id,status',eq:{reported_by:CURRENT_USER.id}})
@@ -3290,35 +3481,103 @@ async function renderDriverAttend(){
     var todayAtt=att.filter(function(a){return a.punch_time&&a.punch_time.startsWith(today);});
     var lastPunch=todayAtt[0];var isPunchedIn=lastPunch&&lastPunch.punch_type==='IN';
     var h='<div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#e2eeff">📷 Attendance</div>';
-    // Status
-    h+='<div class="drv-card" style="text-align:center;margin-bottom:12px">'
-      +'<div style="font-size:36px;margin-bottom:8px">'+(isPunchedIn?'✅':'⚠️')+'</div>'
-      +'<div style="font-size:16px;font-weight:700;color:'+(isPunchedIn?'#00e676':'#ff9800')+';margin-bottom:4px">'+(isPunchedIn?'Punched IN':'Not Punched In')+'</div>'
-      +(lastPunch?'<div style="font-size:12px;color:#8ab0d0">Last: '+new Date(lastPunch.punch_time).toLocaleTimeString('en-IN')+' @ '+((lastPunch.qr_locations&&lastPunch.qr_locations.location_name)||'-')+'</div>':'')
+    h+='<div class="drv-card" style="text-align:center;margin-bottom:12px;padding:20px">'
+      +'<div style="font-size:48px;margin-bottom:8px">'+(isPunchedIn?'✅':'⚠️')+'</div>'
+      +'<div style="font-size:18px;font-weight:700;color:'+(isPunchedIn?'#00e676':'#ff9800')+';margin-bottom:4px">'+(isPunchedIn?'Punched IN':'Not Punched In')+'</div>'
+      +(lastPunch?'<div style="font-size:12px;color:#8ab0d0">Last: '+new Date(lastPunch.punch_time).toLocaleTimeString('en-IN')+' @ '+((lastPunch.qr_locations&&lastPunch.qr_locations.location_name)||'Unknown')+'</div>':'<div style="font-size:12px;color:#5a7a9a">No punch today</div>')
       +'</div>';
-    // QR entry
     h+='<div class="drv-card" style="margin-bottom:12px">'
-      +'<div style="font-size:13px;font-weight:600;margin-bottom:12px">Scan / Enter QR Code</div>'
-      +'<input id="att_qr" type="text" placeholder="Enter QR location code" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:16px;width:100%;font-family:Consolas,monospace;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px" oninput="this.value=this.value.toUpperCase()">'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-      +'<button onclick="drvPunchAttendance(\'IN\')" class="drv-btn drv-btn-primary">✅ Punch IN</button>'
-      +'<button onclick="drvPunchAttendance(\'OUT\')" class="drv-btn drv-btn-ghost">👋 Punch OUT</button>'
+      +'<div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#e2eeff">📍 Punch Attendance</div>'
+      +'<button onclick="startQRCamera()" class="drv-btn drv-btn-info" style="margin-bottom:10px;font-size:15px">📷 Scan QR with Camera</button>'
+      +'<div id="qr-camera-area" style="display:none;margin-bottom:10px">'
+      +'<div style="position:relative;border-radius:12px;overflow:hidden;background:#000">'
+      +'<video id="qr-video" style="width:100%;max-height:260px;object-fit:cover" playsinline></video>'
+      +'<canvas id="qr-canvas" style="display:none"></canvas>'
+      +'<div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center">'
+      +'<div style="width:170px;height:170px;border:2px solid rgba(0,230,118,.7);border-radius:10px;position:relative">'
+      +'<div style="position:absolute;top:-3px;left:-3px;width:22px;height:22px;border-top:4px solid #00e676;border-left:4px solid #00e676;border-radius:2px"></div>'
+      +'<div style="position:absolute;top:-3px;right:-3px;width:22px;height:22px;border-top:4px solid #00e676;border-right:4px solid #00e676;border-radius:2px"></div>'
+      +'<div style="position:absolute;bottom:-3px;left:-3px;width:22px;height:22px;border-bottom:4px solid #00e676;border-left:4px solid #00e676;border-radius:2px"></div>'
+      +'<div style="position:absolute;bottom:-3px;right:-3px;width:22px;height:22px;border-bottom:4px solid #00e676;border-right:4px solid #00e676;border-radius:2px"></div>'
+      +'</div></div></div>'
+      +'<div style="text-align:center;font-size:12px;color:#8ab0d0;padding:8px">Point camera at QR code — auto-detects</div>'
+      +'<button onclick="stopQRCamera()" class="drv-btn drv-btn-ghost" style="font-size:12px;margin-bottom:10px">✕ Cancel</button>'
+      +'</div>'
+      +'<div id="qr-detected" style="display:none;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.3);border-radius:10px;padding:10px;text-align:center;margin-bottom:10px">'
+      +'<div style="font-size:11px;color:#00e676;margin-bottom:4px">✅ QR Code Detected</div>'
+      +'<div id="qr-detected-code" style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#e2eeff"></div>'
+      +'</div>'
+      +'<div style="font-size:11px;color:#5a7a9a;text-align:center;margin-bottom:8px">— or enter QR code manually —</div>'
+      +'<input id="att_qr" type="text" placeholder="e.g. QR-0001" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:16px;width:100%;font-family:Consolas,monospace;letter-spacing:2px;box-sizing:border-box;margin-bottom:12px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<button onclick="drvPunchAttendance('IN')" class="drv-btn drv-btn-primary" style="font-size:15px;padding:16px">✅ Punch IN</button>'
+      +'<button onclick="drvPunchAttendance('OUT')" class="drv-btn" style="font-size:15px;padding:16px;background:#f44336;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:inherit">👋 Punch OUT</button>'
       +'</div></div>';
-    // Today's records
     if(todayAtt.length>0){
-      h+='<div style="font-size:12px;font-weight:600;color:#9ab8d4;margin-bottom:8px">Today&#39;s Records</div>';
+      h+='<div class="drv-card"><div style="font-size:12px;font-weight:700;color:#9ab8d4;margin-bottom:10px">Today&#39;s Records</div>';
       todayAtt.forEach(function(a){
-        h+='<div style="background:#162033;border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
-          +'<div><span style="font-weight:700;color:'+(a.punch_type==='IN'?'#00e676':'#f44336')+'">'+a.punch_type+'</span>'
-          +' <span style="font-size:11px;color:#8ab0d0">@ '+((a.qr_locations&&a.qr_locations.location_name)||'-')+'</span></div>'
-          +'<div style="font-size:12px;color:#9ab8d4">'+new Date(a.punch_time).toLocaleTimeString('en-IN')+'</div>'
-          +(a.gps_verified?'<span style="font-size:10px;color:#00e676">📍✓</span>':'<span style="font-size:10px;color:#ff9800">📍?</span>')
-          +'</div>';
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:#0f1724;margin-bottom:6px">'
+          +'<div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">'+(a.punch_type==='IN'?'✅':'👋')+'</span>'
+          +'<div><div style="font-weight:700;color:'+(a.punch_type==='IN'?'#00e676':'#f44336')+'">'+a.punch_type+'</div>'
+          +'<div style="font-size:11px;color:#5a7a9a">'+((a.qr_locations&&a.qr_locations.location_name)||'Unknown')+'</div></div></div>'
+          +'<div style="text-align:right"><div style="font-size:13px;font-weight:600">'+new Date(a.punch_time).toLocaleTimeString('en-IN')+'</div>'
+          +'<div style="font-size:10px;color:'+(a.gps_verified?'#00e676':'#ff9800')+'">'+(a.gps_verified?'📍 Verified':'📍 Unverified')+'</div></div></div>';
       });
+      h+='</div>';
     }
     dc.innerHTML=h;
   }catch(e){dc.innerHTML='<div style="padding:20px;color:#f44336">Error: '+e.message+'</div>';}
 }
+
+// ── QR CAMERA SCANNER ─────────────────────────────────────
+var _qrStream=null,_qrScanInterval=null;
+window.startQRCamera=function(){
+  var area=document.getElementById('qr-camera-area');
+  if(area)area.style.display='block';
+  var video=document.getElementById('qr-video');
+  if(!video)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    alert('Camera not available. Please enter QR code manually.');
+    if(area)area.style.display='none';return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
+    .then(function(stream){
+      _qrStream=stream;video.srcObject=stream;video.play();
+      _qrScanInterval=setInterval(scanQRFrame,250);
+    })
+    .catch(function(err){
+      alert('Camera access denied. Enter QR code manually.
+'+err.message);
+      if(area)area.style.display='none';
+    });
+};
+window.stopQRCamera=function(){
+  if(_qrStream){_qrStream.getTracks().forEach(function(t){t.stop();});_qrStream=null;}
+  if(_qrScanInterval){clearInterval(_qrScanInterval);_qrScanInterval=null;}
+  var area=document.getElementById('qr-camera-area');if(area)area.style.display='none';
+};
+function scanQRFrame(){
+  var video=document.getElementById('qr-video');
+  var canvas=document.getElementById('qr-canvas');
+  if(!video||!canvas||video.readyState!==4)return;
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  var ctx=canvas.getContext('2d');
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  var imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+  try{
+    if(typeof jsQR==='undefined')return;
+    var code=jsQR(imgData.data,imgData.width,imgData.height,{inversionAttempts:'dontInvert'});
+    if(code&&code.data){
+      stopQRCamera();
+      var qrVal=code.data.trim().toUpperCase();
+      var qrEl=document.getElementById('att_qr');if(qrEl)qrEl.value=qrVal;
+      var det=document.getElementById('qr-detected');if(det)det.style.display='block';
+      var detCode=document.getElementById('qr-detected-code');if(detCode)detCode.textContent=qrVal;
+      if(navigator.vibrate)navigator.vibrate([100,50,100]);
+    }
+  }catch(e){}
+}
+
 
 window.drvPunchAttendance=async function(punchType){
   var qr=(document.getElementById('att_qr').value||'').trim().toUpperCase();
@@ -3440,29 +3699,157 @@ window.saveDrvIssue=async function(){
 
 function showMandatoryChecklist(){
   var dc=document.getElementById('driver-content');
-  var checks=[{id:'fuel_ok',icon:'⛽',label:'Fuel Level >= 20%',critical:true},{id:'tyre_fl_ok',icon:'⭕',label:'Front Left Tyre OK',critical:true},{id:'tyre_fr_ok',icon:'⭕',label:'Front Right Tyre OK',critical:true},{id:'tyre_rlo_ok',icon:'⭕',label:'Rear Left Outer OK',critical:true},{id:'tyre_rli_ok',icon:'⭕',label:'Rear Left Inner OK',critical:false},{id:'tyre_rro_ok',icon:'⭕',label:'Rear Right Outer OK',critical:true},{id:'tyre_rri_ok',icon:'⭕',label:'Rear Right Inner OK',critical:false},{id:'oil_level_ok',icon:'🛢',label:'Engine Oil OK',critical:true},{id:'brake_ok',icon:'🛑',label:'Brakes Working OK',critical:true},{id:'lights_ok',icon:'💡',label:'All Lights Working',critical:true},{id:'adas_camera_ok',icon:'📹',label:'ADAS Camera OK',critical:true},{id:'cleaning_ok',icon:'🧹',label:'Vehicle Clean',critical:true},{id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',critical:true},{id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher Present',critical:true},{id:'ppes_available',icon:'🦺',label:'PPEs Available',critical:true}];
-  window._checkState={};window._checkDefs=checks;checks.forEach(function(c){window._checkState[c.id]=false;});
+  var checks=[
+    {id:'fuel_ok',       icon:'⛽', label:'Fuel Level >= 20%',         cat:'Engine',  critical:true},
+    {id:'oil_level_ok',  icon:'🛢', label:'Engine Oil OK',              cat:'Engine',  critical:true},
+    {id:'brake_ok',      icon:'🛑', label:'Brakes Working',             cat:'Safety',  critical:true},
+    {id:'lights_ok',     icon:'💡', label:'All Lights Working',         cat:'Safety',  critical:true},
+    {id:'tyre_fl_ok',    icon:'⭕', label:'Front Left Tyre',            cat:'Tyres',   critical:true},
+    {id:'tyre_fr_ok',    icon:'⭕', label:'Front Right Tyre',           cat:'Tyres',   critical:true},
+    {id:'tyre_rlo_ok',   icon:'⭕', label:'Rear Left Outer Tyre',       cat:'Tyres',   critical:true},
+    {id:'tyre_rro_ok',   icon:'⭕', label:'Rear Right Outer Tyre',      cat:'Tyres',   critical:true},
+    {id:'tyre_rli_ok',   icon:'⭕', label:'Rear Left Inner Tyre',       cat:'Tyres',   critical:false},
+    {id:'tyre_rri_ok',   icon:'⭕', label:'Rear Right Inner Tyre',      cat:'Tyres',   critical:false},
+    {id:'adas_camera_ok',icon:'📹', label:'ADAS Camera OK',             cat:'Safety',  critical:true},
+    {id:'cleaning_ok',   icon:'🧹', label:'Vehicle Clean',              cat:'Hygiene', critical:true},
+    {id:'first_aid_kit_ok',icon:'🩺','label':'First Aid Kit Present',   cat:'Safety',  critical:true},
+    {id:'fire_extinguisher_ok',icon:'🧯','label':'Fire Extinguisher',   cat:'Safety',  critical:true},
+    {id:'ppes_available',icon:'🦺', label:'PPEs Available',             cat:'Safety',  critical:true}
+  ];
+  window._checkState={};
+  window._checkDefs=checks;
+  checks.forEach(function(c){window._checkState[c.id]=false;});
   var reqCount=checks.filter(function(c){return c.critical;}).length;
-  var html='<div style="background:rgba(255,152,0,.1);border:2px solid rgba(255,152,0,.4);border-radius:14px;padding:16px;text-align:center;margin-bottom:4px"><div style="font-size:36px;margin-bottom:8px">🚛</div><div style="font-size:17px;font-weight:700;color:#ff9800">Daily 360° Pre-Trip Checklist</div><div style="font-size:12px;color:#8ab0d0;margin-top:6px">Must complete before any trips today</div></div>'+'<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;overflow:hidden"><div style="padding:14px 16px;border-bottom:1px solid rgba(100,160,255,.1);font-size:14px;font-weight:700;color:#e2eeff">🔍 360° Vehicle Inspection</div><div style="padding:10px 14px;display:flex;flex-direction:column;gap:8px">';
-  checks.forEach(function(c){html+='<label id="lbl-'+c.id+'" data-cid="'+c.id+'" style="display:flex;align-items:center;gap:14px;padding:14px;border-radius:10px;border:2px solid rgba(100,160,255,.08);cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="toggleCheck(this.dataset.cid)"><div id="chk-'+c.id+'" style="width:36px;height:36px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div><div><div style="font-size:13px;color:#e2eeff">'+c.icon+' '+c.label+'</div>'+(c.critical?'<div style="font-size:10px;color:#ff9800">Required</div>':'<div style="font-size:10px;color:#5a7a9a">Optional</div>')+'</div></label>';});
-  html+='</div><div style="padding:12px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Fuel Level %</div><input id="fuel_pct" type="number" min="0" max="100" placeholder="Enter fuel level %" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit"></div><div style="margin-bottom:10px"><div style="font-size:11px;color:#9ab8d4;margin-bottom:4px">Cleaning Status</div><select id="cl_status" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px 12px;font-size:13px;width:100%;font-family:inherit"><option>Clean</option><option>Needs Cleaning</option><option>Dirty - Cannot Proceed</option></select></div><div id="checklist-progress" style="text-align:center;font-size:12px;color:#8ab0d0;margin-bottom:10px">0 / '+reqCount+' required checks completed</div><button onclick="submitDriverChecklist()" id="submit-checklist-btn" style="width:100%;padding:13px;border-radius:10px;border:1px solid rgba(100,160,255,.15);background:#162033;color:#8ab0d0;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit">Complete and Submit Checklist</button></div></div>';
+
+  // Group by category
+  var cats={};
+  checks.forEach(function(c){
+    if(!cats[c.cat])cats[c.cat]=[];
+    cats[c.cat].push(c);
+  });
+
+  var html='';
+  // Header
+  html+='<div style="background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:2px solid rgba(255,152,0,.4);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">'
+    +'<div style="font-size:42px;margin-bottom:6px">🚛</div>'
+    +'<div style="font-size:18px;font-weight:800;color:#ff9800;margin-bottom:4px">Daily 360° Pre-Trip Check</div>'
+    +'<div style="font-size:12px;color:#8ab0d0">Tap each item to confirm. All required items must be OK.</div>'
+    +'<div id="checklist-progress" style="margin-top:12px;font-size:14px;font-weight:700;color:#8ab0d0">0 / '+reqCount+' required</div>'
+    +'<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:8px;overflow:hidden">'
+    +'<div id="checklist-bar" style="height:6px;background:#00e676;border-radius:3px;width:0%;transition:width .3s"></div>'
+    +'</div>'
+    +'</div>';
+
+  // Items grouped by category
+  Object.keys(cats).forEach(function(cat){
+    html+='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;margin-bottom:10px;overflow:hidden">'
+      +'<div style="padding:10px 14px;background:rgba(0,0,0,.2);font-size:11px;font-weight:700;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>'
+      +'<div style="padding:8px">';
+    cats[cat].forEach(function(c){
+      html+='<button id="lbl-'+c.id+'" onclick="toggleCheck(''+c.id+'')" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.08);background:none;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:6px;transition:all .15s;-webkit-tap-highlight-color:transparent">'
+        +'<div id="chk-'+c.id+'" style="width:44px;height:44px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .15s">'+c.icon+'</div>'
+        +'<div style="flex:1">'
+        +'<div style="font-size:14px;font-weight:600">'+c.label+'</div>'
+        +'<div style="font-size:11px;margin-top:2px;color:'+(c.critical?'#ff9800':'#5a7a9a')+'">'+(c.critical?'⚡ Required':'Optional')+'</div>'
+        +'</div>'
+        +'<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a">Tap to confirm</div>'
+        +'</button>';
+    });
+    html+='</div></div>';
+  });
+
+  // Fuel and cleaning inputs
+  html+='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:14px;margin-bottom:10px">'
+    +'<div style="font-size:13px;font-weight:700;color:#e2eeff;margin-bottom:12px">📊 Additional Details</div>'
+    +'<div style="margin-bottom:12px">'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">⛽ Current Fuel Level %</div>'
+    +'<div style="display:flex;align-items:center;gap:8px">'
+    +'<input id="fuel_pct" type="number" min="0" max="100" placeholder="0-100" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:100px;font-family:Consolas,monospace;text-align:center">'
+    +'<div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div id="fuel-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .3s"></div></div>'
+    +'</div>'
+    +'</div>'
+    +'<div>'
+    +'<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">🧹 Cleaning Status</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
+    +'<button onclick="selectClean('Clean')" id="cln-Clean" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">✅ Clean</button>'
+    +'<button onclick="selectClean('Needs Cleaning')" id="cln-Needs Cleaning" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">⚠️ Needs Clean</button>'
+    +'<button onclick="selectClean('Dirty - Cannot Proceed')" id="cln-Dirty - Cannot Proceed" class="drv-btn drv-btn-ghost" style="padding:10px;font-size:12px">❌ Dirty</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
+
+  // Submit button
+  html+='<button onclick="submitDriverChecklist()" id="submit-checklist-btn" class="drv-btn" style="padding:16px;font-size:16px;background:#162033;color:#5a7a9a;border:2px solid rgba(100,160,255,.1)">✅ Submit Checklist</button>';
+
   dc.innerHTML=html;
+  window._cleanStatus='Clean';
+  // Fuel bar update
+  var fuelEl=document.getElementById('fuel_pct');
+  if(fuelEl)fuelEl.oninput=function(){
+    var bar=document.getElementById('fuel-bar');
+    if(bar)bar.style.width=Math.min(100,this.value||0)+'%';
+    bar.style.background=this.value<20?'#f44336':this.value<50?'#ff9800':'#00e676';
+  };
 }
+
+window.selectClean=function(val){
+  window._cleanStatus=val;
+  ['Clean','Needs Cleaning','Dirty - Cannot Proceed'].forEach(function(v){
+    var btn=document.getElementById('cln-'+v);
+    if(!btn)return;
+    if(v===val){
+      btn.style.background=v==='Clean'?'#00e676':v==='Needs Cleaning'?'#ff9800':'#f44336';
+      btn.style.color=v==='Clean'?'#000':'#fff';
+      btn.style.borderColor='transparent';
+    }else{
+      btn.style.background='';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';
+    }
+  });
+};
 window.toggleCheck=function(id){
-  var state=window._checkState||{};state[id]=!state[id];window._checkState=state;
-  var chkEl=document.getElementById('chk-'+id),lblEl=document.getElementById('lbl-'+id),def=(window._checkDefs||[]).find(function(c){return c.id===id;});
-  if(state[id]){chkEl.style.background='#00e676';chkEl.style.borderColor='#00e676';chkEl.innerHTML='✓';lblEl.style.background='rgba(0,230,118,.08)';lblEl.style.borderColor='rgba(0,230,118,.3)';}
-  else{chkEl.style.background='';chkEl.style.borderColor=def&&def.critical?'#ff9800':'#5a7a9a';chkEl.innerHTML='';lblEl.style.background='';lblEl.style.borderColor='rgba(100,160,255,.08)';}
-  var defs=window._checkDefs||[];var req=defs.filter(function(c){return c.critical;});var done=req.filter(function(c){return state[c.id];}).length;
-  var prog=document.getElementById('checklist-progress');var btn=document.getElementById('submit-checklist-btn');
-  if(prog)prog.textContent=done+' / '+req.length+' required checks completed';
-  if(btn){if(done===req.length){btn.style.background='#00e676';btn.style.color='#000';btn.style.borderColor='#00e676';}else{btn.style.background='#162033';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';}}
+  var state=window._checkState||{};
+  state[id]=!state[id];
+  window._checkState=state;
+  var chkEl=document.getElementById('chk-'+id);
+  var lblEl=document.getElementById('lbl-'+id);
+  var statusEl=document.getElementById('status-'+id);
+  var def=(window._checkDefs||[]).find(function(c){return c.id===id;});
+  if(state[id]){
+    // CHECKED
+    if(chkEl){chkEl.style.background='#00e676';chkEl.style.borderColor='#00e676';chkEl.innerHTML='✅';}
+    if(lblEl){lblEl.style.borderColor='rgba(0,230,118,.4)';lblEl.style.background='rgba(0,230,118,.06)';}
+    if(statusEl){statusEl.textContent='✓ OK';statusEl.style.color='#00e676';statusEl.style.fontWeight='700';}
+  }else{
+    // UNCHECKED
+    if(chkEl){chkEl.style.background='';chkEl.style.borderColor=def&&def.critical?'#ff9800':'#5a7a9a';chkEl.innerHTML=def?def.icon:'';}
+    if(lblEl){lblEl.style.borderColor='rgba(100,160,255,.08)';lblEl.style.background='none';}
+    if(statusEl){statusEl.textContent='Tap to confirm';statusEl.style.color='#5a7a9a';statusEl.style.fontWeight='400';}
+  }
+  // Update progress
+  var defs=window._checkDefs||[];
+  var req=defs.filter(function(c){return c.critical;});
+  var done=req.filter(function(c){return state[c.id];}).length;
+  var pct=Math.round((done/req.length)*100);
+  var prog=document.getElementById('checklist-progress');
+  var bar=document.getElementById('checklist-bar');
+  var btn=document.getElementById('submit-checklist-btn');
+  if(prog)prog.textContent=done+' / '+req.length+' required ('+pct+'%)';
+  if(bar)bar.style.width=pct+'%';
+  if(btn){
+    if(done===req.length){
+      btn.style.background='#00e676';btn.style.color='#000';
+      btn.style.border='2px solid #00e676';btn.textContent='✅ Submit Checklist — All Clear!';
+    }else{
+      btn.style.background='#162033';btn.style.color='#5a7a9a';
+      btn.style.border='2px solid rgba(100,160,255,.1)';btn.textContent='✅ Submit Checklist';
+    }
+  }
 };
 window.submitDriverChecklist=async function(){
   var state=window._checkState||{},defs=window._checkDefs||[];
   var req=defs.filter(function(c){return c.critical;});var allReq=req.every(function(c){return state[c.id];});
   if(!allReq){var missing=req.filter(function(c){return !state[c.id];}).map(function(c){return c.label;});alert('Please complete all required checks:\n\n'+missing.join('\n'));return;}
-  var fuelPct=parseInt(gv('fuel_pct'))||0;var cleanStatus=gv('cl_status');
+  var fuelPct=parseInt(gv('fuel_pct'))||0;var cleanStatus=window._cleanStatus||'Clean';
   if(cleanStatus==='Dirty - Cannot Proceed'){alert('Vehicle is dirty. Please clean before proceeding.');return;}
   if(fuelPct<20){alert('Fuel below 20%. Please refuel before proceeding.');return;}
   try{var today=new Date().toISOString().split('T')[0];var code=await sbRpc('next_checklist_code');
