@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>EcoLoop Pro — Waste-to-Energy ERP</title>
+<title>WTESHL Pro — Waste-to-Energy ERP</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <style>
@@ -100,7 +100,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(0,230,118
 <div id="sb">
   <div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)">
     <div style="font-size:22px;margin-bottom:4px">♻️</div>
-    <div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">EcoLoop Pro</div>
+    <div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">WTESHL Pro</div>
     <div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div>
   </div>
   <div style="flex:1;padding:6px 0" id="nav"></div>
@@ -112,7 +112,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(0,230,118
   <div id="tb">
     <div>
       <div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div>
-      <div style="font-size:11px;color:#5a7a9a">EcoLoop Waste-to-Energy ERP · Live</div>
+      <div style="font-size:11px;color:#5a7a9a">WTESHL Waste-to-Energy ERP · Live</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#1e3048;border-radius:20px">🟢 All Systems Online</div>
@@ -535,7 +535,7 @@ async function otpSend(user, otp){
     otp_code:     otp,
     valid_until:  'midnight tonight — same OTP valid all day',
     login_url:    window.location.origin,
-    company_name: 'EcoLoop Pro'
+    company_name: 'WTESHL Pro'
   });
   if(!result||result.status!==200) throw new Error('EmailJS status: '+(result?result.status:'no response'));
 }
@@ -547,7 +547,7 @@ function loginCardWrap(inner){
   document.body.innerHTML='<div style="width:400px;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:32px;box-shadow:0 8px 40px rgba(0,0,0,.4)">'
     +'<div style="text-align:center;margin-bottom:24px">'
     +'<div style="font-size:40px;margin-bottom:8px">♻️</div>'
-    +'<div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
+    +'<div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">WTESHL Pro</div>'
     +'<div style="font-size:11px;color:#5a7a9a;margin-top:4px;text-transform:uppercase;letter-spacing:1px">Waste-to-Energy ERP v3.0</div>'
     +'</div>'
     +inner
@@ -567,14 +567,14 @@ function showLogin(){
     '<div id="login-err"></div>'
     +'<div style="display:flex;flex-direction:column;gap:14px">'
     +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:5px">Email</div>'
-    +'<input id="l_email" type="email" placeholder="you@ecoloop.com" class="login-input" style="padding:10px 12px;font-size:13px;width:100%">'
+    +'<input id="l_email" type="email" placeholder="you@wteshl.com" class="login-input" style="padding:10px 12px;font-size:13px;width:100%">'
     +'<div><div style="font-size:11.5px;color:#9ab8d4;margin-bottom:5px">PIN</div>'
     +'<input id="l_pin" type="password" placeholder="PIN" maxlength="6" class="login-input" style="padding:10px 12px;font-size:13px;width:100%;letter-spacing:4px">'
     +'<button id="login-btn" onclick="doLogin()" style="padding:12px;border-radius:8px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit;transition:opacity .2s">Sign In</button>'
     +'</div>'
     +'<div style="margin-top:18px;padding:10px 12px;background:#0f1724;border-radius:8px;font-size:10.5px;color:#3a5a7a;line-height:1.6">'
-    +'Admin: admin@ecoloop.com / 1234 &nbsp;·&nbsp; Manager: manager@ecoloop.com / 2345<br>'
-    +'Driver: driver1@ecoloop.com / 3456 &nbsp;·&nbsp; Inspector: inspector@ecoloop.com / 4567'
+    +'Admin: admin@wteshl.com / 1234 &nbsp;·&nbsp; Manager: manager@wteshl.com / 2345<br>'
+    +'Driver: driver1@wteshl.com / 3456 &nbsp;·&nbsp; Inspector: inspector@wteshl.com / 4567'
     +'</div>'
   );
   var pinEl=document.getElementById('l_pin');
@@ -645,7 +645,7 @@ async function doLogin(){
       // EmailJS not set up — skip OTP, warn admin
       console.warn('EmailJS not configured — OTP skipped');
       CURRENT_USER=user;
-      localStorage.setItem('ecoloop_user',JSON.stringify(user));
+      localStorage.setItem('wteshl_user',JSON.stringify(user));
       if(user.role==='driver')showDriverApp();
       else if(user.role==='generator')showGeneratorPortal();
       else initERP();
@@ -685,7 +685,7 @@ window.doVerifyOTP=function(){
   window._pendingLoginUser=null;
 
   CURRENT_USER=user;
-  localStorage.setItem('ecoloop_user',JSON.stringify(user));
+  localStorage.setItem('wteshl_user',JSON.stringify(user));
   if(user.role==='driver')showDriverApp();
   else if(user.role==='generator')showGeneratorPortal();
   else initERP();
@@ -717,14 +717,14 @@ window.doResendOTP=async function(){
 function doLogout(){
   var email=CURRENT_USER?CURRENT_USER.email:null;
   CURRENT_USER=null;
-  localStorage.removeItem('ecoloop_user');
+  localStorage.removeItem('wteshl_user');
   localStorage.removeItem('checklist_date');
   // OTP stays valid for the day — user must re-enter it on next login
   showLogin();
 }
 function initERP(){
   document.body.innerHTML='';document.body.style.cssText='';document.body.style.margin='0';
-  document.body.innerHTML='<div id="app" style="display:flex;height:100vh;width:100%;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px"><div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0"><div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:22px;margin-bottom:4px">♻️</div><div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">EcoLoop Pro</div><div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div></div><div style="flex:1;padding:6px 0" id="nav"></div><div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'+(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div><button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#1e3048;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button></div></div><div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0"><div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div><div style="font-size:11px;color:#5a7a9a">EcoLoop Waste-to-Energy ERP · Live</div></div><div style="display:flex;align-items:center;gap:10px"><div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#0f1724;border-radius:20px">🟢 All Systems Online</div><button class="btn btn-g btn-sm" onclick="go(\'trips\')">+ New Trip</button></div></div><div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div></div></div><div id="modal-container"></div>';
+  document.body.innerHTML='<div id="app" style="display:flex;height:100vh;width:100%;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px"><div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0"><div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:22px;margin-bottom:4px">♻️</div><div style="font-family:Consolas,monospace;font-size:13px;font-weight:700;color:#00e676">WTESHL Pro</div><div style="font-size:9px;color:#5a7a9a;text-transform:uppercase;letter-spacing:.5px">Waste-to-Energy ERP v3.0</div></div><div style="flex:1;padding:6px 0" id="nav"></div><div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'+(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div><button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#1e3048;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button></div></div><div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0"><div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div><div style="font-size:11px;color:#5a7a9a">WTESHL Waste-to-Energy ERP · Live</div></div><div style="display:flex;align-items:center;gap:10px"><div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#0f1724;border-radius:20px">🟢 All Systems Online</div><button class="btn btn-g btn-sm" onclick="go(\'trips\')">+ New Trip</button></div></div><div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div></div></div><div id="modal-container"></div>';
   buildNav();go('dashboard');window.addEventListener('resize',setTblWrapHeights);
 }
 
@@ -1895,7 +1895,7 @@ async function exportReport(key){
   try{
     var btn=document.getElementById('rpbtn-'+key);
     if(btn){btn.textContent='⏳ Fetching...';btn.disabled=true;}
-    var rows=[],filename='ecoloop-'+key+'-'+new Date().toISOString().split('T')[0]+'.csv';
+    var rows=[],filename='wteshl-'+key+'-'+new Date().toISOString().split('T')[0]+'.csv';
     if(key==='trips'){
       var data=safeArr(await sbFetch('trips',{select:'*',order:'created_at.desc'}));
       rows=[['Trip Code','Date','Driver','Mobile','Vehicle','Status','Total Weight kg','Created At']];
@@ -2404,7 +2404,7 @@ window.viewPayslip=async function(id){
   var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
   var html='<div id="payslip-print" style="background:#fff;color:#000;padding:24px;border-radius:8px;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #00a651;padding-bottom:12px;margin-bottom:16px">'
-    +'<div><div style="font-size:20px;font-weight:800;color:#00a651">♻️ EcoLoop Pro</div><div style="font-size:11px;color:#666">Waste-to-Energy ERP</div></div>'
+    +'<div><div style="font-size:20px;font-weight:800;color:#00a651">♻️ WTESHL Pro</div><div style="font-size:11px;color:#666">Waste-to-Energy ERP</div></div>'
     +'<div style="text-align:right"><div style="font-size:14px;font-weight:700">PAYSLIP</div><div style="font-size:12px;color:#666">'+MONTHS[p.month]+' '+p.year+'</div><div style="font-size:11px;color:#999">'+p.payroll_code+'</div></div>'
     +'</div>'
     +'<div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
@@ -2437,7 +2437,7 @@ window.viewPayslip=async function(id){
     +'<tfoot><tr style="background:#00a651;color:#fff"><td style="padding:12px;font-size:15px;font-weight:800">NET PAYABLE</td><td style="padding:12px;text-align:right;font-size:18px;font-weight:800">₹'+Number(p.net_pay||0).toLocaleString('en-IN')+'</td></tr></tfoot>'
     +'</table>'
     +(p.paid_on?'<div style="text-align:center;font-size:11px;color:#666;margin-bottom:12px">Paid on: '+p.paid_on+' via '+(p.payment_mode||'-')+'</div>':'')
-    +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — EcoLoop Pro ERP</div>'
+    +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — WTESHL Pro ERP</div>'
     +'</div>';
   modal('💰 Payslip — '+(st.full_name||''),html,
     '<button class="btn btn-sm" onclick="closeModal()">Close</button>'
@@ -3174,7 +3174,7 @@ window.saveManualRequest=async function(){
 function checkPublicRegistration(){if(window.location.search.includes('register=generator')){showPublicGenForm();return true;}return false;}
 function showPublicGenForm(){
   document.body.innerHTML='';document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;min-height:100vh;margin:0;padding:16px;box-sizing:border-box';
-  document.body.innerHTML='<div style="max-width:580px;margin:0 auto"><div style="text-align:center;padding:24px 0 20px"><div style="font-size:40px;margin-bottom:8px">♻️</div><div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">EcoLoop Pro</div><div style="font-size:12px;color:#8ab0d0;margin-top:4px">Generator Registration Form</div></div><div id="pub-form" style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:20px"><div class="fg"><div class="sec">Company Information</div>'+fld('Company Name',inp('pg_name'),true)+fld('Industry',sel('pg_ind',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Other']),true)+fld('Contact Person',inp('pg_contact'),true)+fld('Mobile',inp('pg_mobile','+91 XXXXXXXXXX'),true)+fld('Email',inp('pg_email','','email'))+fld('GSTIN',inp('pg_gstin',''))+'<div class="sec">Address</div><div class="full">'+fld('Plant Address','<textarea id="pg_addr" rows="2" placeholder="Full address"></textarea>',true)+'</div>'+fld('City',inp('pg_city'),true)+fld('State',inp('pg_state','Gujarat'))+'<div class="sec">Location — Search your plant address to auto-fill GPS</div>'+locPickerRow('pg_lat','pg_lng','loc-status','maps-link','','')+'<div class="sec">Waste Details</div>'+fld('Avg Waste/Day (kg)',inp('pg_waste','','number'))+fld('Waste Category',sel('pg_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']),true)+'</div><button onclick="submitPublicGenForm()" style="width:100%;margin-top:20px;padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">Submit Registration Request</button><div style="font-size:11px;color:#5a7a9a;margin-top:12px;text-align:center">Our team will review and contact you within 24 hours.</div></div></div>';
+  document.body.innerHTML='<div style="max-width:580px;margin:0 auto"><div style="text-align:center;padding:24px 0 20px"><div style="font-size:40px;margin-bottom:8px">♻️</div><div style="font-family:Consolas,monospace;font-size:20px;font-weight:700;color:#00e676">WTESHL Pro</div><div style="font-size:12px;color:#8ab0d0;margin-top:4px">Generator Registration Form</div></div><div id="pub-form" style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:20px"><div class="fg"><div class="sec">Company Information</div>'+fld('Company Name',inp('pg_name'),true)+fld('Industry',sel('pg_ind',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Other']),true)+fld('Contact Person',inp('pg_contact'),true)+fld('Mobile',inp('pg_mobile','+91 XXXXXXXXXX'),true)+fld('Email',inp('pg_email','','email'))+fld('GSTIN',inp('pg_gstin',''))+'<div class="sec">Address</div><div class="full">'+fld('Plant Address','<textarea id="pg_addr" rows="2" placeholder="Full address"></textarea>',true)+'</div>'+fld('City',inp('pg_city'),true)+fld('State',inp('pg_state','Gujarat'))+'<div class="sec">Location — Search your plant address to auto-fill GPS</div>'+locPickerRow('pg_lat','pg_lng','loc-status','maps-link','','')+'<div class="sec">Waste Details</div>'+fld('Avg Waste/Day (kg)',inp('pg_waste','','number'))+fld('Waste Category',sel('pg_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']),true)+'</div><button onclick="submitPublicGenForm()" style="width:100%;margin-top:20px;padding:14px;border-radius:10px;border:none;background:#00e676;color:#000;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">Submit Registration Request</button><div style="font-size:11px;color:#5a7a9a;margin-top:12px;text-align:center">Our team will review and contact you within 24 hours.</div></div></div>';
 }
 window.submitPublicGenForm=async function(){
   var name=gv('pg_name'),contact=gv('pg_contact'),mobile=gv('pg_mobile'),addr=gv('pg_addr'),city=gv('pg_city'),cat=gv('pg_cat');if(!name||!contact||!mobile||!addr||!city||!cat){alert('Please fill all required fields.');return;}
@@ -3297,7 +3297,7 @@ async function showDriverApp(){
   document.body.innerHTML=
     '<div class="drv-app" style="height:100vh;display:flex;flex-direction:column;overflow:hidden">'
     +'<div class="drv-header">'
-    +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">♻️ EcoLoop Pro</div>'
+    +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">♻️ WTESHL Pro</div>'
     +'<div style="font-size:11px;color:#8ab0d0" id="drv-subtitle">'+user.full_name+'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px">'
     +'<div id="gps-badge" style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,152,0,.15);color:#ff9800">📍 GPS...</div>'
@@ -3804,206 +3804,269 @@ window.saveDrvIssue=async function(){
 
 function showMandatoryChecklist(){
   var dc=document.getElementById('driver-content');
-  // If checklist already rendered and state exists, just restore it
-  if(window._checkState && Object.keys(window._checkState).length > 0 && document.getElementById('checklist-progress')){
-    return; // Already showing, don't re-render
+  if(!dc)return;
+
+  // If already rendered with items, don't re-render
+  if(window._checkDefs&&window._checkDefs.length>0&&document.getElementById('chk-fuel_ok')){
+    return;
   }
+
   var checks=[
-    {id:'fuel_ok',       icon:'⛽', label:'Fuel Level >= 20%',       cat:'Engine',  critical:true},
-    {id:'oil_level_ok',  icon:'🛢', label:'Engine Oil OK',            cat:'Engine',  critical:true},
-    {id:'brake_ok',      icon:'🛑', label:'Brakes Working',           cat:'Safety',  critical:true},
-    {id:'lights_ok',     icon:'💡', label:'All Lights Working',       cat:'Safety',  critical:true},
-    {id:'adas_camera_ok',icon:'📹', label:'ADAS Camera OK',           cat:'Safety',  critical:true},
-    {id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',   cat:'Safety',  critical:true},
-    {id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher',   cat:'Safety',  critical:true},
-    {id:'ppes_available',icon:'🦺', label:'PPEs Available',           cat:'Safety',  critical:true},
-    {id:'tyre_fl_ok',    icon:'⭕', label:'Front Left Tyre',          cat:'Tyres',   critical:true},
-    {id:'tyre_fr_ok',    icon:'⭕', label:'Front Right Tyre',         cat:'Tyres',   critical:true},
-    {id:'tyre_rlo_ok',   icon:'⭕', label:'Rear Left Outer Tyre',     cat:'Tyres',   critical:true},
-    {id:'tyre_rro_ok',   icon:'⭕', label:'Rear Right Outer Tyre',    cat:'Tyres',   critical:true},
-    {id:'tyre_rli_ok',   icon:'⭕', label:'Rear Left Inner Tyre',     cat:'Tyres',   critical:false},
-    {id:'tyre_rri_ok',   icon:'⭕', label:'Rear Right Inner Tyre',    cat:'Tyres',   critical:false},
-    {id:'cleaning_ok',   icon:'🧹', label:'Vehicle Clean',            cat:'Hygiene', critical:true}
+    {id:'fuel_ok',        icon:'⛽', label:'Fuel Level OK (>=20%)',    critical:true},
+    {id:'oil_level_ok',   icon:'🛢', label:'Engine Oil OK',             critical:true},
+    {id:'brake_ok',       icon:'🛑', label:'Brakes Working',            critical:true},
+    {id:'lights_ok',      icon:'💡', label:'All Lights Working',        critical:true},
+    {id:'adas_camera_ok', icon:'📹', label:'ADAS Camera OK',            critical:true},
+    {id:'first_aid_kit_ok',icon:'🩺',label:'First Aid Kit Present',     critical:true},
+    {id:'fire_extinguisher_ok',icon:'🧯',label:'Fire Extinguisher OK',  critical:true},
+    {id:'ppes_available', icon:'🦺', label:'PPEs Available',            critical:true},
+    {id:'tyre_fl_ok',     icon:'⭕', label:'Front Left Tyre OK',        critical:true},
+    {id:'tyre_fr_ok',     icon:'⭕', label:'Front Right Tyre OK',       critical:true},
+    {id:'tyre_rlo_ok',    icon:'⭕', label:'Rear Left Outer Tyre OK',   critical:true},
+    {id:'tyre_rro_ok',    icon:'⭕', label:'Rear Right Outer Tyre OK',  critical:true},
+    {id:'tyre_rli_ok',    icon:'⭕', label:'Rear Left Inner Tyre OK',   critical:false},
+    {id:'tyre_rri_ok',    icon:'⭕', label:'Rear Right Inner Tyre OK',  critical:false},
+    {id:'cleaning_ok',    icon:'🧹', label:'Vehicle Clean',             critical:true}
   ];
+
   window._checkState={};
   window._checkDefs=checks;
-  checks.forEach(function(c){window._checkState[c.id]=false;});
-  var reqCount=checks.filter(function(c){return c.critical;}).length;
   window._cleanStatus='Clean';
+  checks.forEach(function(c){window._checkState[c.id]=false;});
 
-  // Build HTML using array join — no escaping issues
-  var h=[];
-  h.push('<div style="background:#1e2d1a;border:2px solid rgba(255,152,0,.6);border-radius:16px;padding:18px;text-align:center;margin-bottom:14px">');
-  h.push('<div style="font-size:42px;margin-bottom:6px">🚛</div>');
-  h.push('<div style="font-size:18px;font-weight:800;color:#ff9800;margin-bottom:4px">Daily 360° Pre-Trip Check</div>');
-  h.push('<div style="font-size:12px;color:#8ab0d0">Tap each item to confirm. All required items must be OK.</div>');
-  h.push('<div id="checklist-progress" style="margin-top:12px;font-size:14px;font-weight:700;color:#8ab0d0">0 / '+reqCount+' required</div>');
-  h.push('<div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:8px;overflow:hidden">');
-  h.push('<div id="checklist-bar" style="height:6px;background:#00e676;border-radius:3px;width:0%;transition:width .3s"></div>');
-  h.push('</div></div>');
+  var reqCount=checks.filter(function(c){return c.critical;}).length;
 
-  // Group by category
-  var cats={};
-  var catOrder=['Engine','Safety','Tyres','Hygiene'];
-  checks.forEach(function(c){if(!cats[c.cat])cats[c.cat]=[];cats[c.cat].push(c);});
-
-  catOrder.forEach(function(cat){
-    if(!cats[cat])return;
-    h.push('<div style="background:#1a2840;border:1px solid rgba(100,160,255,.2);border-radius:14px;margin-bottom:12px;overflow:hidden">');
-    h.push('<div style="padding:10px 14px;background:rgba(0,230,118,.08);border-bottom:1px solid rgba(100,160,255,.1);font-size:11px;font-weight:700;color:#00e676;text-transform:uppercase;letter-spacing:1px">'+cat+'</div>');
-    h.push('<div style="padding:8px 8px 2px 8px">');
-    cats[cat].forEach(function(c){
-      h.push('<button id="lbl-'+c.id+'" data-chk="'+c.id+'" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:10px;border:2px solid rgba(100,160,255,.12);background:#1a2a3a;color:#e2eeff;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px;-webkit-tap-highlight-color:transparent;box-sizing:border-box">');
-      h.push('<div id="chk-'+c.id+'" style="min-width:48px;width:48px;height:48px;border-radius:50%;border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';background:'+(c.critical?'rgba(255,152,0,.1)':'rgba(90,122,154,.1)')+';display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">'+c.icon+'</div>');
-      h.push('<div style="flex:1">');
-      h.push('<div style="font-size:15px;font-weight:600;color:#e2eeff">'+c.label+'</div>');
-      h.push('<div style="font-size:11px;margin-top:3px;color:'+(c.critical?'#ff9800':'#8ab0d0')+'">'+(c.critical?'Required':'Optional')+'</div>');
-      h.push('</div>');
-      h.push('<div id="status-'+c.id+'" style="font-size:11px;color:#5a7a9a;white-space:nowrap;padding-left:4px">Tap to<br>confirm</div>');
-      h.push('</button>');
-    });
-    h.push('</div></div>');
-  });
-
-  // Fuel and cleaning
-  h.push('<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:14px;padding:14px;margin-bottom:10px">');
-  h.push('<div style="font-size:13px;font-weight:700;color:#e2eeff;margin-bottom:12px">Additional Details</div>');
-  h.push('<div style="margin-bottom:12px">');
-  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">Current Fuel Level %</div>');
-  h.push('<div style="display:flex;align-items:center;gap:10px">');
-  h.push('<input id="fuel_pct" type="number" min="0" max="100" placeholder="0-100" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:90px;font-family:Consolas,monospace;text-align:center">');
-  h.push('<div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div id="fuel-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .3s"></div></div>');
-  h.push('</div>');
-  h.push('<div style="margin-top:10px">');
-  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:6px">Fuel Quantity in Tank (Litres)</div>');
-  h.push('<input id="fuel_litres" type="number" min="0" placeholder="e.g. 80" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:10px 14px;font-size:18px;width:90px;font-family:Consolas,monospace;text-align:center">');
-  h.push('<span style="font-size:13px;color:#8ab0d0;margin-left:10px">litres</span>');
-  h.push('</div></div>');
-  h.push('<div>');
-  h.push('<div style="font-size:12px;color:#9ab8d4;margin-bottom:8px">Cleaning Status</div>');
-  h.push('<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">');
-  h.push('<button id="cln-0" data-val="Clean" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Clean</button>');
-  h.push('<button id="cln-1" data-val="Needs Cleaning" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Needs Clean</button>');
-  h.push('<button id="cln-2" data-val="Dirty - Cannot Proceed" style="padding:10px;border-radius:8px;border:1px solid rgba(100,160,255,.15);background:none;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:12px">Dirty</button>');
-  h.push('</div></div></div>');
-
-  // Submit button
-  h.push('<button id="submit-checklist-btn" style="width:100%;padding:16px;border-radius:12px;border:2px solid rgba(100,160,255,.1);background:#162033;color:#5a7a9a;font-weight:700;cursor:pointer;font-size:16px;font-family:inherit">Submit Checklist</button>');
-
-  dc.innerHTML=h.join('');
-
-  // Wire events with addEventListener — no onclick string escaping needed
-  // Checklist item buttons
+  // Build HTML - simple, clean, big tap targets
+  var rows='';
   checks.forEach(function(c){
-    var btn=document.getElementById('lbl-'+c.id);
-    if(btn)btn.addEventListener('click',function(){toggleCheck(c.id);});
-    // Restore previously ticked state
-    if(window._checkState&&window._checkState[c.id]){
-      toggleCheck(c.id);
-    }
+    rows+=
+      '<div id="row-'+c.id+'" data-cid="'+c.id+'" onclick="toggleCheck(this.dataset.cid)" style="'+
+        'display:flex;align-items:center;gap:12px;'+
+        'padding:16px 14px;margin-bottom:8px;'+
+        'background:#1a2840;'+
+        'border:2px solid '+(c.critical?'rgba(255,152,0,.3)':'rgba(90,122,154,.2)')+';'+
+        'border-radius:14px;cursor:pointer;'+
+        '-webkit-tap-highlight-color:transparent;'+
+        'user-select:none;'+
+      '">' +
+        '<div id="chk-'+c.id+'" style="'+
+          'width:52px;height:52px;border-radius:50%;flex-shrink:0;'+
+          'display:flex;align-items:center;justify-content:center;'+
+          'font-size:24px;'+
+          'background:'+(c.critical?'rgba(255,152,0,.15)':'rgba(90,122,154,.1)')+';'+
+          'border:2px solid '+(c.critical?'#ff9800':'#5a7a9a')+';'+
+        '">'+c.icon+'</div>'+
+        '<div style="flex:1;min-width:0;">'+
+          '<div style="font-size:15px;font-weight:700;color:#ffffff;line-height:1.3;">'+c.label+'</div>'+
+          '<div style="font-size:12px;margin-top:3px;color:'+(c.critical?'#ff9800':'#8ab0d0')+'">'+
+            (c.critical?'Required':'Optional')+
+          '</div>'+
+        '</div>'+
+        '<div id="tick-'+c.id+'" style="'+
+          'width:36px;height:36px;border-radius:50%;flex-shrink:0;'+
+          'display:flex;align-items:center;justify-content:center;'+
+          'font-size:20px;'+
+          'background:rgba(90,122,154,.15);'+
+          'border:2px solid rgba(90,122,154,.3);'+
+        '">○</div>'+
+      '</div>';
   });
 
-  // Clean buttons
-  document.getElementById('cln-0').addEventListener('click',function(){selectClean('Clean');});
-  document.getElementById('cln-1').addEventListener('click',function(){selectClean('Needs Cleaning');});
-  document.getElementById('cln-2').addEventListener('click',function(){selectClean('Dirty - Cannot Proceed');});
+  dc.innerHTML=
+    // Header
+    '<div style="background:#1e2d1a;border:3px solid #ff9800;border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">'+
+      '<div style="font-size:48px;margin-bottom:8px">🚛</div>'+
+      '<div style="font-size:20px;font-weight:800;color:#ff9800;margin-bottom:6px">Daily 360° Pre-Trip Check</div>'+
+      '<div style="font-size:13px;color:#c0d0e0;margin-bottom:12px">Tap each item below to confirm it is OK</div>'+
+      '<div id="checklist-progress" style="font-size:16px;font-weight:700;color:#ffffff">0 / '+reqCount+' required</div>'+
+      '<div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin-top:10px;overflow:hidden;">'+
+        '<div id="checklist-bar" style="height:8px;background:#00e676;border-radius:4px;width:0%;transition:width .4s;"></div>'+
+      '</div>'+
+    '</div>'+
 
-  // Submit button
-  document.getElementById('submit-checklist-btn').addEventListener('click',submitDriverChecklist);
+    // Checklist items
+    rows+
 
-  // Fuel bar
-  var fuelEl=document.getElementById('fuel_pct');
-  if(fuelEl)fuelEl.addEventListener('input',function(){
-    var v=parseInt(this.value)||0;
-    var bar=document.getElementById('fuel-bar');
-    if(bar){bar.style.width=Math.min(100,v)+'%';bar.style.background=v<20?'#f44336':v<50?'#ff9800':'#00e676';}
-  });
+    // Additional details
+    '<div style="background:#1a2840;border:1px solid rgba(100,160,255,.2);border-radius:14px;padding:16px;margin-top:4px;margin-bottom:12px;">'+
+      '<div style="font-size:14px;font-weight:700;color:#ffffff;margin-bottom:14px;">Additional Details</div>'+
+      '<div style="margin-bottom:14px;">'+
+        '<div style="font-size:13px;color:#9ab8d4;margin-bottom:8px;">Fuel Level %</div>'+
+        '<div style="display:flex;align-items:center;gap:12px;">'+
+          '<input id="fuel_pct" type="number" inputmode="numeric" min="0" max="100" placeholder="0-100" '+
+            'style="background:#0f1724;border:2px solid rgba(100,160,255,.3);border-radius:10px;'+
+            'color:#ffffff;padding:12px;font-size:22px;width:90px;font-family:Consolas,monospace;'+
+            'text-align:center;box-sizing:border-box;">'+
+          '<div style="flex:1;height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;">'+
+            '<div id="fuel-bar" style="height:10px;background:#00e676;border-radius:5px;width:0%;transition:width .3s;"></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="margin-bottom:14px;">'+
+        '<div style="font-size:13px;color:#9ab8d4;margin-bottom:8px;">Fuel in Tank (Litres)</div>'+
+        '<div style="display:flex;align-items:center;gap:10px;">'+
+          '<input id="fuel_litres" type="number" inputmode="numeric" min="0" placeholder="e.g. 80" '+
+            'style="background:#0f1724;border:2px solid rgba(100,160,255,.3);border-radius:10px;'+
+            'color:#ffffff;padding:12px;font-size:22px;width:90px;font-family:Consolas,monospace;'+
+            'text-align:center;box-sizing:border-box;">'+
+          '<span style="font-size:14px;color:#8ab0d0;">litres</span>'+
+        '</div>'+
+      '</div>'+
+      '<div>'+
+        '<div style="font-size:13px;color:#9ab8d4;margin-bottom:8px;">Cleaning Status</div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">'+
+          '<button id="cln-0" onclick="selectClean(this.dataset.v)" data-v="Clean" style="padding:12px 6px;border-radius:10px;border:2px solid rgba(100,160,255,.2);background:#0f1724;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">Clean</button>'+
+          '<button id="cln-1" onclick="selectClean(this.dataset.v)" data-v="Needs Cleaning" style="padding:12px 6px;border-radius:10px;border:2px solid rgba(100,160,255,.2);background:#0f1724;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">Needs Clean</button>'+
+          '<button id="cln-2" onclick="selectClean(this.dataset.v)" data-v="Dirty - Cannot Proceed" style="padding:12px 6px;border-radius:10px;border:2px solid rgba(100,160,255,.2);background:#0f1724;color:#8ab0d0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">Dirty</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
 
-  // Select Clean as default
+    // Submit
+    '<button id="submit-checklist-btn" onclick="submitDriverChecklist()" style="'+
+      'width:100%;padding:18px;border-radius:14px;border:none;'+
+      'background:#2a3a4a;color:#5a7a9a;font-weight:700;cursor:pointer;'+
+      'font-size:17px;font-family:inherit;margin-bottom:20px;'+
+    '">Submit Checklist</button>';
+
+  // Wire fuel bar update
+  var fp=document.getElementById('fuel_pct');
+  if(fp){
+    fp.addEventListener('input',function(){
+      var v=Math.min(100,Math.max(0,parseInt(this.value)||0));
+      var bar=document.getElementById('fuel-bar');
+      if(bar){bar.style.width=v+'%';bar.style.background=v<20?'#f44336':v<50?'#ff9800':'#00e676';}
+    });
+  }
+
+  // Set Clean as default
   selectClean('Clean');
 }
+
 window.selectClean=function(val){
   window._cleanStatus=val;
-  var btns=[['cln-0','Clean'],['cln-1','Needs Cleaning'],['cln-2','Dirty - Cannot Proceed']];
-  btns.forEach(function(pair){
-    var btn=document.getElementById(pair[0]);if(!btn)return;
+  var opts=[['cln-0','Clean'],['cln-1','Needs Cleaning'],['cln-2','Dirty - Cannot Proceed']];
+  opts.forEach(function(pair){
+    var btn=document.getElementById(pair[0]);
+    if(!btn)return;
     if(pair[1]===val){
-      btn.style.background=val==='Clean'?'#00e676':val==='Needs Cleaning'?'#ff9800':'#f44336';
+      var col=val==='Clean'?'#00e676':val==='Needs Cleaning'?'#ff9800':'#f44336';
+      btn.style.background=col;
       btn.style.color=val==='Clean'?'#000':'#fff';
-      btn.style.borderColor='transparent';
+      btn.style.borderColor=col;
     }else{
-      btn.style.background='none';btn.style.color='#8ab0d0';btn.style.borderColor='rgba(100,160,255,.15)';
+      btn.style.background='#0f1724';
+      btn.style.color='#8ab0d0';
+      btn.style.borderColor='rgba(100,160,255,.2)';
     }
   });
 };
+
 window.toggleCheck=function(id){
   var state=window._checkState||{};
   state[id]=!state[id];
   window._checkState=state;
-  var chkEl=document.getElementById('chk-'+id);
-  var lblEl=document.getElementById('lbl-'+id);
-  var statusEl=document.getElementById('status-'+id);
+
+  var row=document.getElementById('row-'+id);
+  var chk=document.getElementById('chk-'+id);
+  var tick=document.getElementById('tick-'+id);
   var def=(window._checkDefs||[]).find(function(c){return c.id===id;});
+
   if(state[id]){
-    if(chkEl){chkEl.style.background='#00e676';chkEl.style.borderColor='#00e676';chkEl.innerHTML='✅';}
-    if(lblEl){lblEl.style.borderColor='rgba(0,230,118,.4)';lblEl.style.background='rgba(0,230,118,.06)';}
-    if(statusEl){statusEl.textContent='OK';statusEl.style.color='#00e676';statusEl.style.fontWeight='700';}
+    if(row){row.style.background='#0d2b1a';row.style.borderColor='rgba(0,230,118,.5)';}
+    if(chk){chk.style.background='rgba(0,230,118,.2)';chk.style.borderColor='#00e676';}
+    if(tick){
+      tick.innerHTML='✅';
+      tick.style.background='#00e676';
+      tick.style.borderColor='#00e676';
+    }
   }else{
-    if(chkEl){chkEl.style.background='';chkEl.style.borderColor=def&&def.critical?'#ff9800':'#5a7a9a';chkEl.innerHTML=def?def.icon:'';}
-    if(lblEl){lblEl.style.borderColor='rgba(100,160,255,.08)';lblEl.style.background='none';}
-    if(statusEl){statusEl.textContent='Tap';statusEl.style.color='#5a7a9a';statusEl.style.fontWeight='400';}
+    var isCrit=def&&def.critical;
+    if(row){row.style.background='#1a2840';row.style.borderColor=isCrit?'rgba(255,152,0,.3)':'rgba(90,122,154,.2)';}
+    if(chk){chk.style.background=isCrit?'rgba(255,152,0,.15)':'rgba(90,122,154,.1)';chk.style.borderColor=isCrit?'#ff9800':'#5a7a9a';}
+    if(tick){tick.innerHTML='○';tick.style.background='rgba(90,122,154,.15)';tick.style.borderColor='rgba(90,122,154,.3)';}
   }
+
+  // Update progress
   var defs=window._checkDefs||[];
   var req=defs.filter(function(c){return c.critical;});
   var done=req.filter(function(c){return state[c.id];}).length;
-  var pct=Math.round((done/req.length)*100);
+  var pct=Math.round(done/req.length*100);
+
   var prog=document.getElementById('checklist-progress');
   var bar=document.getElementById('checklist-bar');
   var btn=document.getElementById('submit-checklist-btn');
+
   if(prog)prog.textContent=done+' / '+req.length+' required ('+pct+'%)';
   if(bar)bar.style.width=pct+'%';
   if(btn){
     if(done===req.length){
-      btn.style.background='#00e676';btn.style.color='#000';btn.style.borderColor='#00e676';
-      btn.textContent='All Clear — Submit Checklist';
+      btn.style.background='#00e676';
+      btn.style.color='#000000';
+      btn.textContent='All Clear — Submit Checklist!';
     }else{
-      btn.style.background='#162033';btn.style.color='#5a7a9a';btn.style.borderColor='rgba(100,160,255,.1)';
-      btn.textContent='Submit Checklist';
+      btn.style.background='#2a3a4a';
+      btn.style.color='#5a7a9a';
+      btn.textContent='Submit Checklist ('+done+'/'+req.length+' done)';
     }
   }
 };
+
 window.submitDriverChecklist=async function(){
-  var state=window._checkState||{},defs=window._checkDefs||[];
+  var state=window._checkState||{};
+  var defs=window._checkDefs||[];
   var req=defs.filter(function(c){return c.critical;});
   var allReq=req.every(function(c){return state[c.id];});
+
   if(!allReq){
     var missing=req.filter(function(c){return !state[c.id];}).map(function(c){return c.label;});
-    alert('Please complete all required checks:\n\n'+missing.join('\n'));return;
+    alert('Please complete all required checks:\n\n'+missing.join('\n'));
+
+    return;
   }
-  var fuelPct=parseInt(document.getElementById('fuel_pct').value)||0;
+
+  var fuelEl=document.getElementById('fuel_pct');
+  var fuelPct=parseInt(fuelEl?fuelEl.value:0)||0;
+  if(fuelPct<20){alert('Fuel is below 20%. Please refuel before proceeding.');return;}
+
   var cleanStatus=window._cleanStatus||'Clean';
   if(cleanStatus==='Dirty - Cannot Proceed'){alert('Vehicle is dirty. Please clean before proceeding.');return;}
-  if(fuelPct<20){alert('Fuel level is below 20%. Please refuel before proceeding.');return;}
+
   try{
     var today=new Date().toISOString().split('T')[0];
     var code=await sbRpc('next_checklist_code');
-    var fuelLitres=parseInt(document.getElementById('fuel_litres')?document.getElementById('fuel_litres').value:0)||null;var checkData={checklist_code:code,check_date:today,fuel_level_pct:fuelPct,fuel_litres:fuelLitres,cleaning_status:cleanStatus,vehicle_ready:true};
-    if(DRIVER_RECORD){checkData.driver_id=DRIVER_RECORD.id;}
-    if(CURRENT_USER){checkData.user_role_id=CURRENT_USER.id;}
+    var fuelLitresEl=document.getElementById('fuel_litres');
+    var fuelLitres=parseInt(fuelLitresEl?fuelLitresEl.value:0)||null;
+
+    var checkData={
+      checklist_code:code,check_date:today,
+      fuel_level_pct:fuelPct,fuel_litres:fuelLitres,
+      cleaning_status:cleanStatus,vehicle_ready:true
+    };
+    if(DRIVER_RECORD)checkData.driver_id=DRIVER_RECORD.id;
+    if(CURRENT_USER)checkData.user_role_id=CURRENT_USER.id;
     defs.forEach(function(c){if(c.id!=='cleaning_ok')checkData[c.id]=state[c.id]||false;});
+
     await sbInsert('vehicle_checklist',checkData);
+
     CHECKLIST_DONE_TODAY=true;
     localStorage.setItem('checklist_date',today);
-    // Clear checklist state so it doesn't re-render
     window._checkState={};
     window._checkDefs=[];
-    CHECKLIST_DONE_TODAY=true;
+
     var dc=document.getElementById('driver-content');
-    if(dc){dc.innerHTML='<div style="text-align:center;padding:60px 20px"><div style="font-size:70px;margin-bottom:16px">✅</div><div style="font-size:20px;font-weight:800;color:#00e676;margin-bottom:8px">Vehicle Cleared!</div><div style="font-size:14px;color:#8ab0d0">Checklist '+code+' submitted successfully</div></div>';}
-    // Update nav to show home active
+    if(dc){
+      dc.innerHTML=
+        '<div style="text-align:center;padding:60px 20px;">'+
+          '<div style="font-size:80px;margin-bottom:16px;">✅</div>'+
+          '<div style="font-size:22px;font-weight:800;color:#00e676;margin-bottom:8px;">Vehicle Cleared!</div>'+
+          '<div style="font-size:14px;color:#8ab0d0;">Checklist '+code+' submitted</div>'+
+        '</div>';
+    }
     document.querySelectorAll('.drv-nav-btn').forEach(function(b){b.classList.remove('on');});
     var hn=document.getElementById('dnb-home');if(hn)hn.classList.add('on');
     setTimeout(function(){renderDriverHome();},2000);
+
   }catch(e){alert('Error: '+e.message);}
 };
 window.showDriverAttendance=function(){
@@ -4027,14 +4090,14 @@ window.driverQRPunch=async function(punchType){
 // ── GENERATOR PORTAL ──────────────────────────────────────
 function showGeneratorPortal(){
   var user=CURRENT_USER;document.body.innerHTML='';document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
-  document.body.innerHTML='<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)"><div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop</div><div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div><button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button></div><div id="gen-portal-content" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px"></div>';
+  document.body.innerHTML='<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)"><div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ WTESHL</div><div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div><button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button></div><div id="gen-portal-content" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px"></div>';
   renderGeneratorPortal();
 }
 async function renderGeneratorPortal(){
   var gpc=document.getElementById('gen-portal-content');if(!gpc)return;
   gpc.innerHTML='<div style="text-align:center;padding:20px;color:#8ab0d0">Loading...</div>';
   try{var user=CURRENT_USER;var gens=await sbFetch('generators',{select:'*',eq:{email:user.email}});var gen=safeArr(gens)[0];
-  if(!gen){gpc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">🏭</div><div style="font-size:15px;font-weight:600">No Generator Found</div><div style="font-size:12px;color:#8ab0d0;margin-top:8px">Contact EcoLoop support.</div></div>';return;}
+  if(!gen){gpc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">🏭</div><div style="font-size:15px;font-weight:600">No Generator Found</div><div style="font-size:12px;color:#8ab0d0;margin-top:8px">Contact WTESHL support.</div></div>';return;}
   var bins=safeArr(await sbFetch('bins',{select:'*',eq:{generator_id:gen.id},order:'bin_code'}));
   var html='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px"><div style="font-size:16px;font-weight:700;color:#e2eeff;margin-bottom:4px">🏭 '+gen.company_name+'</div><div style="font-size:12px;color:#8ab0d0">'+gen.gen_code+' · '+gen.industry_type+'</div>'+(gen.city?'<div style="font-size:12px;color:#8ab0d0">📍 '+gen.city+'</div>':'')+(gen.latitude&&gen.longitude?'<div style="margin-top:6px"><a href="https://www.google.com/maps?q='+gen.latitude+','+gen.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 View on Google Maps →</a></div>':'')+'</div>';
   if(bins.length===0){html+='<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet.</div>';}
@@ -4195,7 +4258,7 @@ function wireButtons(){
 // ── STARTUP ───────────────────────────────────────────────
 (function(){
   if(checkPublicRegistration())return;
-  var savedUser=null;try{savedUser=JSON.parse(localStorage.getItem('ecoloop_user'));}catch(e){}
+  var savedUser=null;try{savedUser=JSON.parse(localStorage.getItem('wteshl_user'));}catch(e){}
   if(savedUser){CURRENT_USER=savedUser;if(savedUser.role==='driver')showDriverApp();else if(savedUser.role==='generator')showGeneratorPortal();else initERP();}
   else{showLogin();}
 })();
@@ -4592,7 +4655,7 @@ function showPublicGenForm() {
   document.body.innerHTML = '<div style="width:560px;max-width:100%;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:28px">'
     +'<div style="text-align:center;margin-bottom:24px">'
     +'<div style="font-size:36px;margin-bottom:8px">♻️</div>'
-    +'<div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#00e676">EcoLoop Pro</div>'
+    +'<div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#00e676">WTESHL Pro</div>'
     +'<div style="font-size:13px;color:#8ab0d0;margin-top:4px">Waste Generator Registration</div>'
     +'</div>'
     +'<div id="pub-msg"></div>'
@@ -4870,7 +4933,7 @@ function showGeneratorPortal() {
   document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
   document.body.innerHTML =
     '<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)">'
-    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ EcoLoop</div>'
+    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ WTESHL</div>'
     +'<div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div>'
     +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
     +'</div>'
@@ -4893,7 +4956,7 @@ async function renderGeneratorPortal() {
       gpc.innerHTML = '<div style="text-align:center;padding:40px">'
         +'<div style="font-size:48px;margin-bottom:12px">🏭</div>'
         +'<div style="font-size:15px;font-weight:600;color:#e2eeff">No Generator Found</div>'
-        +'<div style="font-size:12px;color:#8ab0d0;margin-top:8px">Your account is not linked to a generator profile. Please contact EcoLoop support.</div>'
+        +'<div style="font-size:12px;color:#8ab0d0;margin-top:8px">Your account is not linked to a generator profile. Please contact WTESHL support.</div>'
         +'</div>';
       return;
     }
@@ -4917,7 +4980,7 @@ async function renderGeneratorPortal() {
     html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">Your Bins</div>';
 
     if(bins.length === 0) {
-      html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet. Contact EcoLoop.</div>';
+      html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet. Contact WTESHL.</div>';
     } else {
       bins.forEach(function(b) {
         var fillColor = b.current_fill_pct >= 95 ? '#f44336' : b.current_fill_pct >= 80 ? '#ff9800' : b.current_fill_pct >= 60 ? '#2196f3' : '#00e676';
@@ -5636,7 +5699,7 @@ window.printQR = function(code, name) {
     +'@media print{body{-webkit-print-color-adjust:exact}}'
     +'</style></head><body>'
     +'<div class="card">'
-    +'<div class="brand">♻️ EcoLoop Pro</div>'
+    +'<div class="brand">♻️ WTESHL Pro</div>'
     +'<div class="sub">Attendance QR Code</div>'
     +svg
     +'<div class="code">'+code+'</div>'
