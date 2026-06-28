@@ -458,12 +458,12 @@ function locBtn(latId,lngId,statusId,mapsId){
 // ── AUTH & ROUTING ────────────────────────────────────────
 var CURRENT_USER=null,DRIVER_LOCATION=null,DRIVER_RECORD=null,CHECKLIST_DONE_TODAY=false;
 var ROLE_ACCESS={
-  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues','tracking'],
-  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues','tracking'],
+  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking'],
+  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking'],
   inspector:['dashboard','inspection','trips','billing','bins','fillalerts','boiler','issues'],
   driver:[],generator:['dashboard','bins','fillalerts'],
 };
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues',tracking:'Live Vehicle Tracking'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues',tracking:'Live Vehicle Tracking',onboarding:'Generator Onboarding',contracts:'Generator Contracts',weighbridge:'Weighbridge',paytracking:'Payment Tracking'};
 var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
@@ -486,7 +486,7 @@ function go(page){
   var ni=document.getElementById('ni-'+page);if(ni)ni.classList.add('on');
   var ptEl=document.getElementById('ptitle');if(ptEl)ptEl.textContent=PAGE_TITLES[page]||page;
   var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking};
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking,onboarding:renderOnboarding,contracts:renderContracts,weighbridge:renderWeighbridge,paytracking:renderPayTracking};
   if(allPages[page])allPages[page]();
   else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>'+PAGE_TITLES[page]+'</div></div>';
   setTimeout(function(){wireButtons();setTblWrapHeights();},200);
@@ -2878,6 +2878,644 @@ async function loadTrackingData(){
       +card('📊 All Vehicle Pings','',tbl(['Driver','Vehicle','Trip','Latitude','Longitude','Speed','Last Seen','Status',''],rows),true);
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
+
+// ══════════════════════════════════════════════════════════
+// BATCH 1 — GENERATOR ONBOARDING
+// ══════════════════════════════════════════════════════════
+async function renderOnboarding(){
+  var ct=document.getElementById('ct');
+  try{
+    var records=safeArr(await sbFetch('gen_onboarding',{select:'*,generators(gen_code,company_name,city)',order:'created_at.desc'}));
+    var stages=['Lead','Site Visit Scheduled','Site Visit Done','Contract Draft','Contract Signed','Active','Rejected'];
+    var stageColors={Lead:'a','Site Visit Scheduled':'b','Site Visit Done':'a','Contract Draft':'a','Contract Signed':'g',Active:'g',Rejected:'r'};
+    var byStage={};
+    stages.forEach(function(s){byStage[s]=records.filter(function(r){return r.stage===s;}).length;});
+
+    var rows=records.map(function(r){
+      var gen=r.generators||{};
+      return[
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+r.onboard_code+'</strong>',
+        '<div style="font-weight:600">'+(gen.company_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(gen.gen_code||'')+'</div>',
+        r.assigned_bd||'<span style="color:#f44336">Unassigned</span>',
+        r.visit_date||'-',
+        badge(r.visit_done?'g':'r',r.visit_done?'Done':'Pending'),
+        r.spoc_name||'-',
+        badge(stageColors[r.stage]||'gr',r.stage||'Lead'),
+        '<div style="display:flex;gap:4px">'+
+          '<button class="btn btn-sm" id="vob'+r.id+'">View</button>'+
+          '<button class="btn btn-sm" id="eob'+r.id+'">Edit</button>'+
+        '</div>'
+      ];
+    });
+
+    var stageSummary=stages.slice(0,6).map(function(s){
+      return '<div style="background:#0f1724;border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<span style="font-size:12px;color:#9ab8d4">'+s+'</span>'+
+        '<span style="font-size:14px;font-weight:700;color:#e2eeff">'+( byStage[s]||0)+'</span>'+
+        '</div>';
+    }).join('');
+
+    ct.innerHTML='<div style="display:grid;grid-template-columns:1fr 3fr;gap:14px">'+
+      '<div class="card"><div class="ch"><span class="ct2">Pipeline</span></div><div style="padding:12px">'+stageSummary+'</div></div>'+
+      '<div>'+card('Onboarding Pipeline',
+        '<button class="btn btn-g btn-sm" onclick="newOnboarding()">+ Start Onboarding</button>',
+        tbl(['Code','Generator','BD Assigned','Visit Date','Visit','SPOC','Stage',''],rows),true)+
+      '</div></div>';
+
+    setTimeout(function(){
+      document.querySelectorAll('[id^="vob"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){viewOnboarding(id);};});
+      document.querySelectorAll('[id^="eob"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editOnboarding(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+
+window.newOnboarding=async function(){
+  var gens=safeArr(await sbFetch('generators',{select:'id,gen_code,company_name',order:'company_name.asc'}));
+  var gOpts='<option value="">Select Generator</option>'+gens.map(function(g){return'<option value="'+g.id+'">'+g.gen_code+' — '+g.company_name+'</option>';}).join('');
+  var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'+
+    '<div class="full"><div class="fl">Generator *</div><select id="ob_gen" style="'+selS+'">'+gOpts+'</select></div>'+
+    '<div class="sec" style="grid-column:1/-1">BD Assignment</div>'+
+    fld('Assigned BD / Sales Person',inp('ob_bd',''),true)+
+    fld('Site Visit Date','<input id="ob_vdate" type="date">',true)+
+    '<div class="sec" style="grid-column:1/-1">Stage</div>'+
+    '<div class="full"><div class="fl">Current Stage</div><select id="ob_stage" style="'+selS+'">'+
+    ['Lead','Site Visit Scheduled','Site Visit Done','Contract Draft','Contract Signed','Active'].map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join('')+
+    '</select></div>'+
+    '</div>';
+  modal('Start Onboarding',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveOnboarding()">Save</button>');
+};
+
+window.saveOnboarding=async function(){
+  var gen=document.getElementById('ob_gen').value;
+  var bd=gv('ob_bd');
+  if(!gen){alert('Select a generator.');return;}
+  try{
+    var code=await sbRpc('next_onboard_code');
+    await sbInsert('gen_onboarding',{onboard_code:code,generator_id:gen,assigned_bd:bd||null,visit_date:gv('ob_vdate')||null,stage:document.getElementById('ob_stage').value||'Lead'});
+    await sbUpdate('generators',{bd_assigned:bd||null,onboarding_stage:document.getElementById('ob_stage').value||'Lead'},{id:gen});
+    closeModal();success('Onboarding '+code+' started!');renderOnboarding();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.editOnboarding=async function(id){
+  var r=safeArr(await sbFetch('gen_onboarding',{select:'*,generators(gen_code,company_name)',eq:{id:id}}))[0];
+  if(!r)return;
+  var gen=r.generators||{};
+  var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'+
+    '<div class="full"><div style="padding:10px;background:#0f1724;border-radius:8px;font-size:13px;font-weight:700">'+gen.company_name+' ('+gen.gen_code+')</div></div>'+
+    '<div class="sec" style="grid-column:1/-1">Stage & Assignment</div>'+
+    '<div class="full"><div class="fl">Stage</div><select id="ob_stage" style="'+selS+'">'+
+    ['Lead','Site Visit Scheduled','Site Visit Done','Contract Draft','Contract Signed','Active','Rejected'].map(function(s){return'<option value="'+s+'"'+(s===r.stage?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    fld('Assigned BD',inp('ob_bd',r.assigned_bd||''))+
+    fld('Site Visit Date','<input id="ob_vdate" type="date" value="'+(r.visit_date||'')+'">') +
+    fld('Visit Done',sel('ob_vdone',['false','true']))+
+    '<div class="sec" style="grid-column:1/-1">SPOC Details</div>'+
+    fld('SPOC Name',inp('ob_spoc',r.spoc_name||''),true)+
+    fld('SPOC Mobile',inp('ob_smob',r.spoc_mobile||''),true)+
+    fld('SPOC Designation',inp('ob_sdesig',r.spoc_designation||''))+
+    '<div class="sec" style="grid-column:1/-1">Loading Details</div>'+
+    '<div class="full"><div class="fl">Loading Responsibility</div><select id="ob_loading" style="'+selS+'">'+
+    ['Generator Staff','Our Collector','Shared','Generator + Supervisor'].map(function(s){return'<option value="'+s+'"'+(s===r.loading_responsibility?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="full">'+fld('Loading/Delay Notes','<textarea id="ob_dnotes" rows="2">'+(r.loading_delay_notes||'')+'</textarea>')+'</div>'+
+    '<div class="sec" style="grid-column:1/-1">Bin Recommendation</div>'+
+    '<div class="full"><div class="fl">Recommended Bin Type</div><select id="ob_bintype" style="'+selS+'">'+
+    ['Wheelie Bin 120L','Wheelie Bin 240L','Skip 5T','Skip 10T','Drum 200L','Container 20T','Custom'].map(function(s){return'<option value="'+s+'"'+(s===r.bin_recommended?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    fld('Bin Quantity',inp('ob_binqty',r.bin_qty||1,'number'))+
+    fld('Bin Placement Zone',inp('ob_binzone',r.bin_placement_zone||''))+
+    '<div class="full"><div class="fl">Collection Frequency</div><select id="ob_freq" style="'+selS+'">'+
+    ['Daily','Alternate Days','Twice a Week','Weekly','As Required','On Call'].map(function(s){return'<option value="'+s+'"'+(s===r.collection_frequency?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="full">'+fld('Site Notes','<textarea id="ob_snotes" rows="2">'+(r.site_notes||'')+'</textarea>')+'</div>'+
+    '</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn btn-sm" onclick="viewOnboarding(\''+id+'\')">Photos</button>'+
+    '<button class="btn btn-g btn-sm" id="sob">Save</button>';
+  modal('Edit Onboarding — '+r.onboard_code,body,foot);
+  setTimeout(function(){
+    document.getElementById('ob_vdone').value=r.visit_done?'true':'false';
+    var sb=document.getElementById('sob');
+    if(sb)sb.onclick=function(){updateOnboarding(id,r.generator_id);};
+  },80);
+};
+
+window.updateOnboarding=async function(id,genId){
+  try{
+    var visitDone=document.getElementById('ob_vdone').value==='true';
+    var stage=document.getElementById('ob_stage').value;
+    await sbUpdate('gen_onboarding',{
+      stage:stage,
+      assigned_bd:gv('ob_bd')||null,
+      visit_date:gv('ob_vdate')||null,
+      visit_done:visitDone,
+      visit_done_at:visitDone?new Date().toISOString():null,
+      spoc_name:gv('ob_spoc')||null,
+      spoc_mobile:gv('ob_smob')||null,
+      spoc_designation:gv('ob_sdesig')||null,
+      loading_responsibility:document.getElementById('ob_loading').value,
+      loading_delay_notes:gv('ob_dnotes')||null,
+      bin_recommended:document.getElementById('ob_bintype').value,
+      bin_qty:parseInt(gv('ob_binqty'))||1,
+      bin_placement_zone:gv('ob_binzone')||null,
+      collection_frequency:document.getElementById('ob_freq').value,
+      site_notes:gv('ob_snotes')||null
+    },{id:id});
+    // Update generator record with SPOC info
+    await sbUpdate('generators',{
+      spoc_name:gv('ob_spoc')||null,
+      spoc_mobile:gv('ob_smob')||null,
+      spoc_designation:gv('ob_sdesig')||null,
+      loading_responsibility:document.getElementById('ob_loading').value,
+      onboarding_stage:stage
+    },{id:genId});
+    closeModal();success('Onboarding updated!');renderOnboarding();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.viewOnboarding=async function(id){
+  var r=safeArr(await sbFetch('gen_onboarding',{select:'*,generators(gen_code,company_name,city,contact_person,mobile)',eq:{id:id}}))[0];
+  if(!r)return;
+  var gen=r.generators||{};
+  var photos=safeArr(await sbFetch('gen_site_photos',{select:'*',eq:{onboarding_id:id},order:'uploaded_at.desc'}));
+  var photoHtml=photos.length>0
+    ?photos.map(function(p){return'<div style="background:#0f1724;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;color:#5a7a9a;margin-bottom:4px">'+p.photo_type+': '+(p.caption||'')+'</div><a href="'+p.photo_url+'" target="_blank" style="color:#00e676;font-size:12px">View Photo</a></div>';}).join('')
+    :'<div style="color:#5a7a9a;font-size:12px;padding:10px">No photos uploaded yet</div>';
+
+  var body='<div style="display:flex;flex-direction:column;gap:14px">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+    '<div style="background:#0f1724;border-radius:10px;padding:12px">'+
+    '<div style="font-size:10px;color:#5a7a9a;text-transform:uppercase;margin-bottom:8px">Generator</div>'+
+    '<div style="font-weight:700">'+gen.company_name+'</div>'+
+    '<div style="font-size:11px;color:#8ab0d0">'+gen.gen_code+' · '+(gen.city||'-')+'</div>'+
+    '<div style="font-size:11px;color:#8ab0d0;margin-top:4px">'+gen.contact_person+' · '+gen.mobile+'</div>'+
+    '</div>'+
+    '<div style="background:#0f1724;border-radius:10px;padding:12px">'+
+    '<div style="font-size:10px;color:#5a7a9a;text-transform:uppercase;margin-bottom:8px">SPOC at Site</div>'+
+    '<div style="font-weight:700">'+(r.spoc_name||'Not assigned')+'</div>'+
+    '<div style="font-size:11px;color:#8ab0d0">'+(r.spoc_designation||'')+'</div>'+
+    '<div style="font-size:11px;color:#00e676">'+(r.spoc_mobile||'')+'</div>'+
+    '</div></div>'+
+    '<div style="background:#0f1724;border-radius:10px;padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'+
+    '<div><div style="font-size:10px;color:#5a7a9a">Loading By</div><div style="font-size:12px;font-weight:600">'+(r.loading_responsibility||'-')+'</div></div>'+
+    '<div><div style="font-size:10px;color:#5a7a9a">Bin Type</div><div style="font-size:12px;font-weight:600">'+(r.bin_recommended||'-')+'</div></div>'+
+    '<div><div style="font-size:10px;color:#5a7a9a">Frequency</div><div style="font-size:12px;font-weight:600">'+(r.collection_frequency||'-')+'</div></div>'+
+    '</div>'+
+    '<div><div style="font-size:12px;font-weight:700;color:#e2eeff;margin-bottom:8px">Site Photos</div>'+
+    photoHtml+
+    '<div style="margin-top:8px">'+
+    '<input id="photo_url" placeholder="Photo URL (paste from storage/drive)" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px;font-size:12px;width:100%;box-sizing:border-box;margin-bottom:6px">'+
+    '<input id="photo_caption" placeholder="Caption e.g. Main Gate, Waste Area" style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:8px;font-size:12px;width:100%;box-sizing:border-box;margin-bottom:6px">'+
+    '<button onclick="addSitePhoto(\''+id+'\',\''+r.generator_id+'\')" class="btn btn-g btn-sm">+ Add Photo</button>'+
+    '</div></div>'+
+    '</div>';
+  modal('Site Visit — '+r.onboard_code,body,
+    '<button class="btn btn-sm" onclick="closeModal()">Close</button>'+
+    '<button class="btn btn-g btn-sm" onclick="closeModal();generateContract(\''+id+'\',\''+r.generator_id+'\')">Generate Contract</button>');
+};
+
+window.addSitePhoto=async function(onboardingId,generatorId){
+  var url=document.getElementById('photo_url').value.trim();
+  var caption=document.getElementById('photo_caption').value.trim();
+  if(!url){alert('Enter a photo URL.');return;}
+  try{
+    await sbInsert('gen_site_photos',{generator_id:generatorId,onboarding_id:onboardingId,photo_url:url,caption:caption,photo_type:'Site Visit'});
+    success('Photo added!');viewOnboarding(onboardingId);
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// BATCH 1B — GENERATOR CONTRACTS
+// ══════════════════════════════════════════════════════════
+async function renderContracts(){
+  var ct=document.getElementById('ct');
+  try{
+    var contracts=safeArr(await sbFetch('gen_contracts',{select:'*,generators(gen_code,company_name)',order:'created_at.desc'}));
+    var today=new Date().toISOString().split('T')[0];
+    var active=contracts.filter(function(c){return c.status==='Signed'&&c.valid_till>=today;});
+    var expiring=active.filter(function(c){return new Date(c.valid_till)<new Date(Date.now()+30*864e5);});
+    var expired=contracts.filter(function(c){return c.valid_till&&c.valid_till<today;});
+
+    var rows=contracts.map(function(c){
+      var gen=c.generators||{};
+      var daysLeft=c.valid_till?Math.ceil((new Date(c.valid_till)-new Date())/864e5):null;
+      var statusColor=c.status==='Signed'&&daysLeft>30?'g':c.status==='Signed'&&daysLeft<=30?'a':c.status==='Draft'?'gr':'r';
+      return[
+        '<strong style="font-family:Consolas,monospace;color:#00e676">'+c.contract_no+'</strong>',
+        '<div style="font-weight:600">'+(gen.company_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(gen.gen_code||'')+'</div>',
+        c.contract_date||'-',
+        c.valid_from||'-',
+        '<span style="color:'+(daysLeft!==null&&daysLeft<=30?'#ff9800':'#e2eeff')+'">'+(c.valid_till||'-')+'</span>',
+        c.rate_per_kg?'&#8377;'+c.rate_per_kg+'/kg':'-',
+        c.payment_terms||'-',
+        badge(statusColor,c.status||'Draft'),
+        daysLeft!==null?'<span style="color:'+(daysLeft<=0?'#f44336':daysLeft<=30?'#ff9800':'#00e676')+'">'+( daysLeft<=0?'Expired':daysLeft+'d left')+'</span>':'-',
+        '<div style="display:flex;gap:4px">'+
+          '<button class="btn btn-sm" id="pct'+c.id+'">Print</button>'+
+          '<button class="btn btn-sm" id="ect'+c.id+'">Edit</button>'+
+        '</div>'
+      ];
+    });
+
+    ct.innerHTML='<div class="sg">'+
+      sc('#00e676','Active Contracts',active.length,'')+
+      sc('#ff9800','Expiring Soon',expiring.length,'Within 30 days')+
+      sc('#f44336','Expired',expired.length,'')+
+      sc('#5a7a9a','Draft',contracts.filter(function(c){return c.status==='Draft';}).length,'')+
+      '</div>'+
+      card('Generator Contracts',
+        '<button class="btn btn-g btn-sm" onclick="newContract()">+ New Contract</button>',
+        tbl(['Contract No','Generator','Date','Valid From','Valid Till','Rate/kg','Payment Terms','Status','Days',''],rows),true);
+
+    setTimeout(function(){
+      document.querySelectorAll('[id^="pct"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){printContract(id);};});
+      document.querySelectorAll('[id^="ect"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){editContract(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+
+window.generateContract=async function(onboardingId,generatorId){
+  var r=safeArr(await sbFetch('gen_onboarding',{select:'*',eq:{id:onboardingId}}))[0];
+  var gen=safeArr(await sbFetch('generators',{select:'*',eq:{id:generatorId}}))[0];
+  if(!r||!gen)return;
+  // Pre-fill contract with onboarding data
+  window._contractPrefill={onboardingId:onboardingId,generatorId:generatorId,
+    collection_frequency:r.collection_frequency,gen:gen};
+  newContract();
+};
+
+window.newContract=async function(){
+  var gens=safeArr(await sbFetch('generators',{select:'id,gen_code,company_name',order:'company_name.asc'}));
+  var pf=window._contractPrefill||{};
+  var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var gOpts='<option value="">Select Generator</option>'+gens.map(function(g){return'<option value="'+g.id+'"'+(g.id===pf.generatorId?' selected':'')+'>'+g.gen_code+' — '+g.company_name+'</option>';}).join('');
+  var today=new Date().toISOString().split('T')[0];
+  var nextYear=new Date(Date.now()+365*864e5).toISOString().split('T')[0];
+  var body='<div class="fg">'+
+    '<div class="full"><div class="fl">Generator *</div><select id="ct_gen" style="'+selS+'">'+gOpts+'</select></div>'+
+    '<div class="sec" style="grid-column:1/-1">Contract Period</div>'+
+    fld('Contract Date','<input id="ct_date" type="date" value="'+today+'">',true)+
+    fld('Valid From','<input id="ct_from" type="date" value="'+today+'">',true)+
+    fld('Valid Till','<input id="ct_till" type="date" value="'+nextYear+'">',true)+
+    '<div class="sec" style="grid-column:1/-1">Rates & Terms</div>'+
+    fld('Rate per KG (Rs)',inp('ct_ratekg','','number'),true)+
+    fld('Rate per Trip (Rs)',inp('ct_ratetrip','','number'))+
+    fld('Min Guaranteed (kg/month)',inp('ct_minguarantee','','number'))+
+    '<div class="full"><div class="fl">Collection Frequency</div><select id="ct_freq" style="'+selS+'">'+
+    ['Daily','Alternate Days','Twice a Week','Weekly','As Required','On Call'].map(function(s){return'<option value="'+s+'"'+(s===(pf.collection_frequency||'As Required')?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="full"><div class="fl">Payment Terms</div><select id="ct_pterms" style="'+selS+'">'+
+    ['Net 7','Net 15','Net 30','Net 45','Net 60','Advance','On Collection'].map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="sec" style="grid-column:1/-1">Signatories</div>'+
+    fld('Signed By (Generator)',inp('ct_siggen',''))+
+    fld('Signed By (Our Company)',inp('ct_sigco',''))+
+    fld('Company Designation',inp('ct_sigdesig','Authorized Signatory'))+
+    '<div class="full">'+fld('Penalty Clause','<textarea id="ct_penalty" rows="2" placeholder="e.g. Rs 500 per day delay beyond 48 hours..."></textarea>')+'</div>'+
+    '<div class="full">'+fld('Special Conditions','<textarea id="ct_special" rows="2" placeholder="Any special terms..."></textarea>')+'</div>'+
+    '</div>';
+  modal('New Contract',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn btn-g btn-sm" onclick="saveContract()">Save Draft</button>');
+  window._contractPrefill=null;
+};
+
+window.saveContract=async function(){
+  var gen=document.getElementById('ct_gen').value;
+  if(!gen){alert('Select a generator.');return;}
+  try{
+    var no=await sbRpc('next_contract_no');
+    await sbInsert('gen_contracts',{
+      contract_no:no,generator_id:gen,
+      contract_date:gv('ct_date')||null,
+      valid_from:gv('ct_from')||null,
+      valid_till:gv('ct_till')||null,
+      rate_per_kg:parseFloat(gv('ct_ratekg'))||0,
+      rate_per_trip:parseFloat(gv('ct_ratetrip'))||0,
+      min_guaranteed_kg:parseInt(gv('ct_minguarantee'))||0,
+      collection_frequency:document.getElementById('ct_freq').value,
+      payment_terms:document.getElementById('ct_pterms').value,
+      signed_by_generator:gv('ct_siggen')||null,
+      signed_by_company:gv('ct_sigco')||null,
+      company_designation:gv('ct_sigdesig')||null,
+      penalty_clause:gv('ct_penalty')||null,
+      special_conditions:gv('ct_special')||null,
+      status:'Draft'
+    });
+    await sbUpdate('generators',{contract_status:'Draft'},{id:gen});
+    closeModal();success('Contract '+no+' created!');renderContracts();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.editContract=async function(id){
+  var c=safeArr(await sbFetch('gen_contracts',{select:'*',eq:{id:id}}))[0];if(!c)return;
+  var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'+
+    '<div class="sec" style="grid-column:1/-1">Contract Period</div>'+
+    fld('Valid From','<input id="ct_from" type="date" value="'+(c.valid_from||'')+'">',true)+
+    fld('Valid Till','<input id="ct_till" type="date" value="'+(c.valid_till||'')+'">',true)+
+    '<div class="sec" style="grid-column:1/-1">Rates</div>'+
+    fld('Rate per KG (Rs)','<input id="ct_ratekg" type="number" value="'+(c.rate_per_kg||0)+'">',true)+
+    fld('Rate per Trip (Rs)','<input id="ct_ratetrip" type="number" value="'+(c.rate_per_trip||0)+'">') +
+    '<div class="full"><div class="fl">Status</div><select id="ct_status" style="'+selS+'">'+
+    ['Draft','Signed','Expired','Terminated'].map(function(s){return'<option value="'+s+'"'+(s===c.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    fld('Signed By (Generator)','<input id="ct_siggen" value="'+(c.signed_by_generator||'').replace(/"/g,'&quot;')+'">') +
+    fld('Signed By (Our Company)','<input id="ct_sigco" value="'+(c.signed_by_company||'').replace(/"/g,'&quot;')+'">')+
+    '</div>';
+  var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn btn-sm" onclick="printContract(\''+id+'\')">Print</button>'+
+    '<button class="btn btn-g btn-sm" id="sct">Save</button>';
+  modal('Edit Contract — '+c.contract_no,body,foot);
+  setTimeout(function(){
+    var sb=document.getElementById('sct');
+    if(sb)sb.onclick=function(){updateContract(id,c.generator_id);};
+  },80);
+};
+
+window.updateContract=async function(id,genId){
+  try{
+    var status=document.getElementById('ct_status').value;
+    await sbUpdate('gen_contracts',{
+      valid_from:gv('ct_from')||null,valid_till:gv('ct_till')||null,
+      rate_per_kg:parseFloat(gv('ct_ratekg'))||0,
+      rate_per_trip:parseFloat(gv('ct_ratetrip'))||0,
+      status:status,
+      signed_by_generator:gv('ct_siggen')||null,
+      signed_by_company:gv('ct_sigco')||null
+    },{id:id});
+    if(genId)await sbUpdate('generators',{contract_status:status},{id:genId});
+    closeModal();success('Contract updated!');renderContracts();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.printContract=async function(id){
+  var c=safeArr(await sbFetch('gen_contracts',{select:'*,generators(company_name,gen_code,gstin,contact_person,mobile,email,address,city,state,waste_category,avg_waste_per_day)',eq:{id:id}}))[0];
+  if(!c)return;
+  var gen=c.generators||{};
+  var html='<html><head><title>Contract '+c.contract_no+'</title>'+
+    '<style>body{font-family:Arial,sans-serif;font-size:12px;color:#000;padding:20px;max-width:800px;margin:0 auto}'+
+    'h1{font-size:18px;text-align:center;margin-bottom:4px}'+
+    'h2{font-size:14px;margin:16px 0 6px}'+
+    '.logo{text-align:center;margin-bottom:20px}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:12px}'+
+    'td,th{border:1px solid #ccc;padding:7px 10px;font-size:11px}'+
+    'th{background:#f0f0f0;font-weight:700}'+
+    '.sign-row{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:60px}'+
+    '.sign-box{border-top:1px solid #000;padding-top:8px;text-align:center;font-size:11px}'+
+    '.clause{background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:10px;margin-bottom:8px;font-size:11px}'+
+    '@media print{button{display:none}}</style></head><body>'+
+    '<div class="logo"><div style="font-size:24px;font-weight:800;color:#00a651">WTESHL</div>'+
+    '<div style="font-size:11px;color:#666">Waste-to-Energy Solutions</div></div>'+
+    '<h1>WASTE COLLECTION & PROCESSING SERVICE AGREEMENT</h1>'+
+    '<div style="text-align:center;color:#666;margin-bottom:20px">Contract No: <strong>'+c.contract_no+'</strong> | Date: '+( c.contract_date||'-')+'</div>'+
+    '<h2>PARTIES</h2>'+
+    '<table><tr><th>Service Provider</th><th>Generator / Client</th></tr>'+
+    '<tr><td><strong>WTESHL</strong><br>Waste-to-Energy Solutions<br>Authorized Representative</td>'+
+    '<td><strong>'+gen.company_name+'</strong><br>'+gen.gen_code+'<br>'+(gen.address||'')+', '+(gen.city||'')+', '+(gen.state||'')+'<br>'+
+    'GSTIN: '+(gen.gstin||'-')+'<br>Contact: '+gen.contact_person+' | '+gen.mobile+'</td></tr></table>'+
+    '<h2>SCOPE OF SERVICES</h2>'+
+    '<table><tr><th>Parameter</th><th>Details</th></tr>'+
+    '<tr><td>Waste Category</td><td>'+(gen.waste_category||'-')+'</td></tr>'+
+    '<tr><td>Avg Waste per Day</td><td>'+(gen.avg_waste_per_day||'-')+' kg</td></tr>'+
+    '<tr><td>Collection Frequency</td><td>'+(c.collection_frequency||'-')+'</td></tr>'+
+    '<tr><td>Min Guaranteed Quantity</td><td>'+(c.min_guaranteed_kg||0)+' kg/month</td></tr>'+
+    '</table>'+
+    '<h2>COMMERCIAL TERMS</h2>'+
+    '<table><tr><th>Parameter</th><th>Amount</th></tr>'+
+    '<tr><td>Rate per KG</td><td>Rs. '+(c.rate_per_kg||0)+'</td></tr>'+
+    '<tr><td>Rate per Trip</td><td>Rs. '+(c.rate_per_trip||0)+'</td></tr>'+
+    '<tr><td>Payment Terms</td><td>'+(c.payment_terms||'Net 30')+'</td></tr>'+
+    '<tr><td>Contract Valid From</td><td>'+(c.valid_from||'-')+'</td></tr>'+
+    '<tr><td>Contract Valid Till</td><td>'+(c.valid_till||'-')+'</td></tr>'+
+    '</table>'+
+    '<h2>TERMS & CONDITIONS</h2>'+
+    '<div class="clause">1. The Generator shall ensure that waste is properly segregated and placed in designated bins before collection.</div>'+
+    '<div class="clause">2. WTESHL shall collect waste as per the agreed schedule. Emergency collections may be requested at additional cost.</div>'+
+    '<div class="clause">3. All hazardous waste shall be handled as per CPCB/GPCB guidelines and applicable laws.</div>'+
+    '<div class="clause">4. Either party may terminate this agreement with 30 days written notice.</div>'+
+    (c.penalty_clause?'<div class="clause">5. Penalty: '+c.penalty_clause+'</div>':'')+
+    (c.special_conditions?'<div class="clause">Special Conditions: '+c.special_conditions+'</div>':'')+
+    '<div class="sign-row">'+
+    '<div class="sign-box"><br><br>Signature: ________________________<br><br>'+(c.signed_by_generator||'Authorized Signatory')+' (Generator)</div>'+
+    '<div class="sign-box"><br><br>Signature: ________________________<br><br>'+(c.signed_by_company||'Authorized Signatory')+' (WTESHL)</div>'+
+    '</div>'+
+    '<div style="text-align:center;margin-top:20px;font-size:10px;color:#999">This is a computer-generated contract — WTESHL ERP | '+c.contract_no+'</div>'+
+    '<div style="text-align:center;margin-top:10px"><button onclick="window.print()" style="padding:8px 20px;background:#00a651;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">Print Contract</button></div>'+
+    '</body></html>';
+  var w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+// ══════════════════════════════════════════════════════════
+// BATCH 2 — WEIGHBRIDGE
+// ══════════════════════════════════════════════════════════
+async function renderWeighbridge(){
+  var ct=document.getElementById('ct');
+  try{
+    var records=safeArr(await sbFetch('weighbridge',{select:'*,trips(trip_code,trip_date)',order:'weighed_at.desc',limit:50}));
+    var today=new Date().toISOString().split('T')[0];
+    var todayRec=records.filter(function(r){return r.weighed_at&&r.weighed_at.startsWith(today);});
+    var totalToday=todayRec.reduce(function(s,r){return s+(r.net_weight_kg||0);},0);
+
+    var rows=records.map(function(r){
+      var trp=r.trips||{};
+      var varPct=r.variance_pct;
+      var varColor=Math.abs(varPct||0)>5?'#f44336':Math.abs(varPct||0)>2?'#ff9800':'#00e676';
+      return[
+        '<strong style="font-family:Consolas,monospace">'+r.wb_code+'</strong>',
+        trp.trip_code||'-',trp.trip_date||'-',
+        r.gross_weight_kg?r.gross_weight_kg+' kg':'-',
+        r.tare_weight_kg?r.tare_weight_kg+' kg':'-',
+        '<strong style="color:#00e676">'+(r.net_weight_kg||0)+' kg</strong>',
+        r.variance_kg?'<span style="color:'+varColor+'">'+r.variance_kg+' kg ('+(varPct||0).toFixed(1)+'%)</span>':'-',
+        r.weighed_by||'-',
+        new Date(r.weighed_at).toLocaleString('en-IN')
+      ];
+    });
+
+    ct.innerHTML='<div class="sg">'+
+      sc('#2196f3','Today Records',todayRec.length,'')+
+      sc('#00e676','Net Weight Today',totalToday.toFixed(0)+' kg','')+
+      sc('#ff9800','Total Records',records.length,'')+
+      '</div>'+
+      card('Weighbridge Records',
+        '<button class="btn btn-g btn-sm" onclick="newWeighbridge()">+ New Weighing</button>',
+        tbl(['WB Code','Trip','Date','Gross','Tare','Net Weight','Variance','Weighed By','Time'],rows),true);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+
+window.newWeighbridge=async function(){
+  var trips=safeArr(await sbFetch('trips',{select:'id,trip_code,trip_date,total_weight_kg',eq:{status:'In Transit'},order:'trip_date.desc',limit:20}));
+  var tOpts='<option value="">Select Trip</option>'+trips.map(function(t){return'<option value="'+t.id+'" data-wt="'+(t.total_weight_kg||0)+'">'+t.trip_code+' ('+t.trip_date+')</option>';}).join('');
+  var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'+
+    '<div class="full"><div class="fl">Trip *</div><select id="wb_trip" onchange="wbCalcVariance()" style="'+selS+'">'+tOpts+'</select></div>'+
+    '<div class="sec" style="grid-column:1/-1">Weights</div>'+
+    fld('Gross Weight (kg) — Vehicle + Waste',inp('wb_gross','','number'),true)+
+    fld('Tare Weight (kg) — Empty Vehicle',inp('wb_tare','','number'),true)+
+    fld('Net Weight (kg) — Auto Calculated','<input id="wb_net" type="number" style="background:#0f1724;border:1px solid rgba(0,230,118,.3);border-radius:8px;color:#00e676;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit" readonly>') +
+    fld('Driver Reported Weight (kg)',inp('wb_reported','','number'))+
+    fld('Variance','<input id="wb_variance" readonly style="background:#0f1724;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#ff9800;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit">') +
+    fld('Weighed By',inp('wb_by',''),true)+
+    '<div class="full">'+fld('Notes',inp('wb_notes',''))+'</div>'+
+    '</div>';
+  modal('New Weighbridge Entry',body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn btn-g btn-sm" onclick="saveWeighbridge()">Save</button>');
+
+  setTimeout(function(){
+    var gross=document.getElementById('wb_gross');
+    var tare=document.getElementById('wb_tare');
+    if(gross)gross.addEventListener('input',wbCalcNet);
+    if(tare)tare.addEventListener('input',wbCalcNet);
+  },100);
+};
+
+window.wbCalcNet=function(){
+  var gross=parseFloat(document.getElementById('wb_gross').value)||0;
+  var tare=parseFloat(document.getElementById('wb_tare').value)||0;
+  var net=gross-tare;
+  var netEl=document.getElementById('wb_net');
+  if(netEl)netEl.value=net>0?net.toFixed(0):'';
+  // Calculate variance vs trip reported weight
+  var tripSel=document.getElementById('wb_trip');
+  if(tripSel&&tripSel.selectedOptions[0]){
+    var reported=parseFloat(tripSel.selectedOptions[0].getAttribute('data-wt'))||0;
+    if(reported>0&&net>0){
+      var diff=net-reported;
+      var pct=(diff/reported*100);
+      var varEl=document.getElementById('wb_variance');
+      if(varEl)varEl.value=diff.toFixed(0)+' kg ('+pct.toFixed(1)+'%)';
+    }
+  }
+};
+
+window.saveWeighbridge=async function(){
+  var tripId=document.getElementById('wb_trip').value;
+  var gross=parseFloat(gv('wb_gross'))||0;
+  var tare=parseFloat(gv('wb_tare'))||0;
+  var net=gross-tare;
+  var by=gv('wb_by');
+  if(!tripId||!gross||!tare||!by){alert('Trip, Gross Weight, Tare Weight and Weighed By are required.');return;}
+  try{
+    var code=await sbRpc('next_wb_code');
+    var tripSel=document.getElementById('wb_trip');
+    var reported=tripSel&&tripSel.selectedOptions[0]?parseFloat(tripSel.selectedOptions[0].getAttribute('data-wt'))||0:0;
+    var variance=net-reported;
+    var variancePct=reported>0?(variance/reported*100):0;
+    await sbInsert('weighbridge',{
+      wb_code:code,trip_id:tripId,
+      gross_weight_kg:gross,tare_weight_kg:tare,net_weight_kg:net,
+      variance_kg:variance,variance_pct:parseFloat(variancePct.toFixed(2)),
+      weighed_by:by,weighed_at:new Date().toISOString(),
+      notes:gv('wb_notes')||null
+    });
+    // Update trip total weight with verified net weight
+    await sbUpdate('trips',{total_weight_kg:net,status:'Completed'},{id:tripId});
+    closeModal();success('Weighbridge '+code+' recorded! Trip updated with verified weight.');renderWeighbridge();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// BATCH 3 — PAYMENT TRACKING
+// ══════════════════════════════════════════════════════════
+async function renderPayTracking(){
+  var ct=document.getElementById('ct');
+  try{
+    var invoices=safeArr(await sbFetch('invoices',{select:'*,generators(gen_code,company_name)',eq:{status:'Unpaid'},order:'invoice_date.asc'}));
+    var today=new Date();
+    var overdue=invoices.filter(function(i){return i.due_date&&new Date(i.due_date)<today;});
+    var dueThis7=invoices.filter(function(i){if(!i.due_date)return false;var d=new Date(i.due_date);return d>=today&&d<new Date(Date.now()+7*864e5);});
+    var totalOut=invoices.reduce(function(s,i){return s+(parseFloat(i.total_amount)||0);},0);
+    var totalOverdue=overdue.reduce(function(s,i){return s+(parseFloat(i.total_amount)||0);},0);
+
+    var rows=invoices.map(function(inv){
+      var gen=inv.generators||{};
+      var daysOD=inv.due_date?Math.ceil((today-new Date(inv.due_date))/864e5):0;
+      var isOD=daysOD>0;
+      return[
+        '<strong style="font-family:Consolas,monospace">'+inv.invoice_no+'</strong>',
+        '<div style="font-weight:600">'+(gen.company_name||'-')+'</div><div style="font-size:10px;color:#5a7a9a">'+(gen.gen_code||'')+'</div>',
+        inv.invoice_date||'-',
+        '<span style="color:'+(isOD?'#f44336':daysOD<=-7?'#ff9800':'#e2eeff')+'">'+(inv.due_date||'-')+'</span>',
+        isOD?'<span style="color:#f44336;font-weight:700">'+daysOD+' days OD</span>':'<span style="color:#00e676">'+Math.abs(daysOD)+' days left</span>',
+        '<strong>Rs. '+Number(inv.total_amount||0).toLocaleString('en-IN')+'</strong>',
+        inv.gst_amount?'Rs. '+Number(inv.gst_amount).toLocaleString('en-IN'):'',
+        badge(isOD?'r':daysOD<=-7?'a':'g',isOD?'Overdue':'Pending'),
+        '<div style="display:flex;gap:4px">'+
+          '<button class="btn btn-sm" id="sndr'+inv.id+'">Send Reminder</button>'+
+          '<button class="btn btn-g btn-sm" id="mpd'+inv.id+'">Mark Paid</button>'+
+        '</div>'
+      ];
+    });
+
+    // Aging analysis
+    var aging={
+      'Current (not due)':invoices.filter(function(i){return!i.due_date||new Date(i.due_date)>=today;}).length,
+      '1-30 days OD':overdue.filter(function(i){var d=Math.ceil((today-new Date(i.due_date))/864e5);return d>=1&&d<=30;}).length,
+      '31-60 days OD':overdue.filter(function(i){var d=Math.ceil((today-new Date(i.due_date))/864e5);return d>=31&&d<=60;}).length,
+      '60+ days OD':overdue.filter(function(i){return Math.ceil((today-new Date(i.due_date))/864e5)>60;}).length
+    };
+    var agingHtml=Object.keys(aging).map(function(k){
+      var col=k==='Current (not due)'?'#00e676':k.includes('1-30')?'#ff9800':'#f44336';
+      return'<div style="display:flex;justify-content:space-between;padding:8px;background:#0f1724;border-radius:8px;margin-bottom:6px">'+
+        '<span style="font-size:12px;color:#9ab8d4">'+k+'</span>'+
+        '<span style="font-weight:700;color:'+col+'">'+aging[k]+'</span></div>';
+    }).join('');
+
+    ct.innerHTML='<div style="display:grid;grid-template-columns:1fr 3fr;gap:14px">'+
+      '<div>'+
+      '<div class="card" style="margin-bottom:14px"><div class="ch"><span class="ct2">Aging Analysis</span></div><div style="padding:12px">'+agingHtml+'</div></div>'+
+      '<div class="card"><div class="ch"><span class="ct2">Summary</span></div><div style="padding:12px">'+
+      '<div style="margin-bottom:8px"><div style="font-size:10px;color:#5a7a9a">Total Outstanding</div><div style="font-size:18px;font-weight:700;color:#ff9800">Rs. '+Number(totalOut).toLocaleString('en-IN')+'</div></div>'+
+      '<div><div style="font-size:10px;color:#5a7a9a">Overdue Amount</div><div style="font-size:18px;font-weight:700;color:#f44336">Rs. '+Number(totalOverdue).toLocaleString('en-IN')+'</div></div>'+
+      '</div></div>'+
+      '</div>'+
+      '<div>'+card('Payment Tracking',
+        '<button class="btn btn-sm" onclick="renderPayTracking()">Refresh</button>',
+        tbl(['Invoice','Generator','Date','Due Date','Status','Amount','GST','Flag',''],rows),true)+
+      '</div></div>';
+
+    setTimeout(function(){
+      document.querySelectorAll('[id^="sndr"]').forEach(function(b){var id=b.id.slice(4);b.onclick=function(){sendPaymentReminder(id);};});
+      document.querySelectorAll('[id^="mpd"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){markInvPaid(id);};});
+    },150);
+  }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+}
+
+window.sendPaymentReminder=async function(invoiceId){
+  var inv=safeArr(await sbFetch('invoices',{select:'*,generators(company_name,email,contact_person)',eq:{id:invoiceId}}))[0];
+  if(!inv)return;
+  var gen=inv.generators||{};
+  var s=localStorage.getItem('ej_service');
+  var t=localStorage.getItem('ej_template');
+  var k=localStorage.getItem('ej_pubkey');
+  if(!s||!t||!k){alert('Configure EmailJS in User Management first to send reminders.');return;}
+  try{
+    emailjs.init(k);
+    await emailjs.send(s,t,{
+      to_email:gen.email||'',
+      contact_name:gen.contact_person||gen.company_name,
+      company_name:gen.company_name,
+      invoice_no:inv.invoice_no,
+      amount:'Rs. '+Number(inv.total_amount||0).toLocaleString('en-IN'),
+      due_date:inv.due_date||'-',
+      login_url:window.location.origin
+    });
+    success('Payment reminder sent to '+gen.company_name+'!');
+  }catch(e){
+    var msg=e&&e.text?e.text:e.message||'Unknown error';
+    alert('Email error: '+msg);
+  }
+};
+
+window.markInvPaid=async function(id){
+  var mode=prompt('Payment mode?\n1. Cash\n2. Bank Transfer\n3. UPI\n4. Cheque');
+  if(!mode)return;
+  var modes={'1':'Cash','2':'Bank Transfer','3':'UPI','4':'Cheque'};
+  try{
+    await sbUpdate('invoices',{status:'Paid',paid_on:new Date().toISOString().split('T')[0],payment_mode:modes[mode]||mode},{id:id});
+    success('Invoice marked as Paid!');renderPayTracking();
+  }catch(e){alert('Error: '+e.message);}
+};
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
