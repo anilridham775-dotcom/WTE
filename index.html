@@ -213,6 +213,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(16,185,129,.5);box-sha
 /* Copy flash */
 .copy-flash{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:9px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:99999;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:0 4px 20px rgba(16,185,129,.4)}
 .copy-flash.show{opacity:1}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* Login */
 .login-input{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:inherit;outline:none;transition:border-color .15s}
@@ -892,19 +893,86 @@ function initERP(){
   if(ubBtn)ubBtn.onclick=function(){if(confirm('Logout?'))doLogout();};window.addEventListener('resize',setTblWrapHeights);
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────
 async function renderDash(){
   var ct=document.getElementById('ct');
   try{
-    var[gens_r,bins_r,trips_r,vehicles_r,drivers_r]=await Promise.all([sbFetch('generators',{select:'id,is_active'}),sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)',order:'current_fill_pct.desc'}),sbFetch('trips',{select:'id,trip_code,status,trip_date,vehicle_id,driver_id',order:'created_at.desc',limit:5}),sbFetch('vehicles',{select:'id,reg_no,current_fuel_pct,status',eq:{status:'Active'}}),sbFetch('drivers',{select:'id,full_name',order:'full_name.asc'})]);
-    var gens=safeArr(gens_r).filter(function(g){return g.is_active;});var bins=safeArr(bins_r);var trips=safeArr(trips_r);var vehicles=safeArr(vehicles_r);
-    var critical=bins.filter(function(b){return b.current_fill_pct>=80;});
-    ct.innerHTML=(critical.length?'<div class="alert al-r">🔴 '+critical.length+' bin(s) at ≥80% — immediate pickup required.</div>':'')
-      +'<div class="sg">'+sc('#00e676','Active Generators',gens.length,'')+sc('#2196f3','Total Bins',bins.length,critical.length+' critical')+sc('#ff9800','In Transit',trips.filter(function(t){return t.status==='In Transit';}).length,'')+sc('#00e676','Vehicles',vehicles.length,'')+sc('#f44336','Critical Bins',critical.length,'≥80%')+'</div>'
-    var vMap2={};safeArr(vehicles_r).forEach(function(v){vMap2[v.id]=v.reg_no;});
-    var dMap2={};safeArr(drivers_r).forEach(function(d){dMap2[d.id]=d.full_name;});
-      +'<div class="two">'+card('🚛 Recent Trips','<button class="btn btn-sm" onclick="go(\'trips\')">All</button>',tbl(['Trip','Vehicle','Driver','Status'],trips.map(function(t){return['<strong style="font-family:Consolas,monospace;color:#00e676">'+t.trip_code+'</strong>','<span style="font-family:Consolas,monospace;font-size:11px">'+(vMap2[t.vehicle_id]||t.vehicle_id||'-')+'</span>',(dMap2[t.driver_id]||t.driver_id||'-'),badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)];})),true)
-      +card('📊 Bin Fill Levels','<button class="btn btn-sm" onclick="go(\'bins\')">All</button>',bins.slice(0,6).map(function(b){return'<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><strong style="font-family:Consolas,monospace">'+b.bin_code+'</strong> <span style="color:#5a7a9a">'+(b.generators&&b.generators.company_name||'')+'</span></span><span style="font-family:Consolas,monospace;font-weight:700;color:'+fc(b.current_fill_pct||0)+'">'+(b.current_fill_pct||0)+'%</span></div>'+prog(b.current_fill_pct||0)+'</div>';}).join(''))+'</div>';
+    var[gens_r,bins_r,trips_r,vehicles_r,drivers_r,issues_r]=await Promise.all([
+      sbFetch('generators',{select:'id,is_active'}),
+      sbFetch('bins',{select:'id,bin_code,current_fill_pct,zone,generators(company_name)',order:'current_fill_pct.desc'}),
+      sbFetch('trips',{select:'id,trip_code,status,trip_date,vehicle_id,driver_id',order:'created_at.desc',limit:8}),
+      sbFetch('vehicles',{select:'id,reg_no,status',eq:{status:'Active'}}),
+      sbFetch('drivers',{select:'id,full_name',order:'full_name.asc'}),
+      sbFetch('operational_issues',{select:'id,status,severity',eq:{status:'Open'}})
+    ]);
+    var gens=safeArr(gens_r).filter(function(g){return g.is_active;});
+    var bins=safeArr(bins_r);var trips=safeArr(trips_r);var vehicles=safeArr(vehicles_r);
+    var vMap={};vehicles.forEach(function(v){vMap[v.id]=v.reg_no;});
+    var dMap={};safeArr(drivers_r).forEach(function(d){dMap[d.id]=d.full_name;});
+    var issues=safeArr(issues_r);
+    var critical=bins.filter(function(b){return b.current_fill_pct>=95;});
+    var warning=bins.filter(function(b){return b.current_fill_pct>=80&&b.current_fill_pct<95;});
+    var activeTrips=trips.filter(function(t){return t.status==='In Transit'||t.status==='Dispatched';});
+    var today=new Date().toISOString().split('T')[0];
+    var todayTrips=trips.filter(function(t){return t.trip_date===today;});
+    var criticalIssues=issues.filter(function(i){return i.severity==='Critical';});
+    var h='';
+    if(critical.length>0){
+      h+='<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">'
+        +'<div style="display:flex;align-items:center;gap:10px">'
+        +'<div style="width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;animation:pulse 1.5s infinite"></div>'
+        +'<span style="font-size:13px;font-weight:600;color:#fca5a5">'+critical.length+' bin(s) at 95%+ fill — immediate pickup required</span>'
+        +'</div>'
+        +'<button class="btn btn-sm" style="border-color:rgba(239,68,68,.3);color:#ef4444" onclick="go(\'autoplanner\')">View Planner</button>'
+        +'</div>';
+    }
+    h+='<div class="sg">'
+      +sc('var(--accent)','Active Generators',gens.length,'Registered & active')
+      +sc('var(--blue)','Total Bins',bins.length,warning.length+' need attention')
+      +sc('var(--orange)','Active Trips',activeTrips.length,todayTrips.length+' today')
+      +sc('var(--accent)','Fleet Ready',vehicles.length,'Active vehicles')
+      +sc('var(--red)','Critical Bins',critical.length,'>=95% fill')
+      +sc('var(--purple)','Open Issues',issues.length,criticalIssues.length+' critical')
+      +'</div>';
+    h+='<div class="two">';
+    h+=card('Recent Trips','<button class="btn btn-sm" onclick="go(\'trips\')">View All</button>',
+      tbl(['Trip','Vehicle','Driver','Date','Status'],
+        trips.slice(0,6).map(function(t){
+          return['<strong style="font-family:Consolas,monospace;color:var(--accent)">'+t.trip_code+'</strong>',
+            '<span style="font-family:Consolas,monospace;font-size:11px">'+(vMap[t.vehicle_id]||'-')+'</span>',
+            dMap[t.driver_id]||'-',t.trip_date||'-',
+            badge(t.status==='In Transit'?'a':t.status==='Completed'?'g':t.status==='Dispatched'?'b':'gr',t.status)];
+        })
+      ),true
+    );
+    var binHtml='';
+    bins.slice(0,8).forEach(function(b){
+      var pct=b.current_fill_pct||0;
+      var col=pct>=95?'var(--red)':pct>=80?'var(--orange)':pct>=60?'var(--blue)':'var(--accent)';
+      binHtml+='<div style="margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">'
+        +'<span><strong style="font-family:Consolas,monospace;color:var(--text)">'+b.bin_code+'</strong>'
+        +' <span style="color:var(--text3);font-size:11px">'+(b.generators&&b.generators.company_name||b.zone||'')+'</span></span>'
+        +'<span style="font-family:Consolas,monospace;font-weight:700;color:'+col+'">'+pct+'%</span>'
+        +'</div>'
+        +'<div style="height:6px;background:var(--surface3,#1e2d47);border-radius:3px;overflow:hidden">'
+        +'<div style="height:6px;width:'+Math.min(100,pct)+'%;background:'+col+';border-radius:3px"></div>'
+        +'</div></div>';
+    });
+    h+=card('Bin Fill Levels','<button class="btn btn-sm" onclick="go(\'bins\')">All Bins</button>','<div style="padding:14px">'+binHtml+'</div>');
+    h+='</div>';
+    h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">';
+    [{icon:'🤝',label:'Onboarding',sub:'BD pipeline',page:'onboarding',c:'var(--accent)'},
+     {icon:'📄',label:'Contracts',sub:'Agreements',page:'contracts',c:'var(--blue)'},
+     {icon:'⚖️',label:'Weighbridge',sub:'Weight entry',page:'weighbridge',c:'var(--orange)'},
+     {icon:'📊',label:'CEO View',sub:'Executive',page:'ceodash',c:'var(--purple)'}
+    ].forEach(function(a){
+      h+='<div data-page="'+a.page+'" onclick="go(this.dataset.page)"'
+        +'<div style="font-size:28px;margin-bottom:8px">'+a.icon+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px">'+a.label+'</div>'
+        +'<div style="font-size:11px;color:var(--text3)">'+a.sub+'</div></div>';
+    });
+    h+='</div>';
+    ct.innerHTML=h;
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 async function renderBoiler(){
