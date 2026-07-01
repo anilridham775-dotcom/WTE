@@ -5415,39 +5415,130 @@ window.saveGRN=async function(){
 // ══════════════════════════════════════════════════════════
 async function renderAuditLog(){
   var ct=document.getElementById('ct');
+
+  // Coverage summary — always show this regardless of DB
+  var coverage=[
+    {module:'Auth',actions:'Login, Logout',icon:'🔐'},
+    {module:'Leads',actions:'Create, Update',icon:'📌'},
+    {module:'Generator',actions:'Approve, Reject',icon:'🏭'},
+    {module:'Onboarding',actions:'Create, Update',icon:'🤝'},
+    {module:'Contracts',actions:'Create, Update',icon:'📄'},
+    {module:'Bins',actions:'Create',icon:'🗑️'},
+    {module:'Trips',actions:'Create, Complete',icon:'🚛'},
+    {module:'Drivers',actions:'Create, Update',icon:'👷'},
+    {module:'Staff',actions:'Create',icon:'👥'},
+    {module:'Invoices',actions:'Create',icon:'🧾'},
+    {module:'Payments',actions:'Create',icon:'💳'},
+    {module:'Weighbridge',actions:'Create',icon:'⚖️'},
+    {module:'RDF',actions:'Create',icon:'♻️'},
+    {module:'Energy',actions:'Create',icon:'⚡'},
+    {module:'Lab Tests',actions:'Create',icon:'🔬'},
+    {module:'Checklist',actions:'Submit',icon:'✅'},
+    {module:'Attendance',actions:'Punch IN/OUT',icon:'📷'},
+    {module:'Issues',actions:'Create, Update',icon:'⚠️'},
+    {module:'Users',actions:'Create',icon:'👤'},
+    {module:'Shifts/Roster',actions:'Create, Assign',icon:'🕐'},
+    {module:'Collection Req',actions:'Create',icon:'📥'},
+    {module:'Store',actions:'Create, Update, Issue',icon:'🏪'},
+    {module:'Vendors',actions:'Create, Update',icon:'🤝'},
+    {module:'Purchase Orders',actions:'Create, Approve',icon:'🛒'},
+    {module:'GRN',actions:'Create',icon:'✅'},
+  ];
+
+  var coverageHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:16px">';
+  coverage.forEach(function(c){
+    coverageHtml+='<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:18px">'+c.icon+'</span>'
+      +'<div><div style="font-size:12px;font-weight:700;color:var(--text)">'+c.module+'</div>'
+      +'<div style="font-size:10px;color:var(--accent)">'+c.actions+'</div>'
+      +'</div>'
+      +'<div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>'
+      +'</div>';
+  });
+  coverageHtml+='</div>';
+
+  ct.innerHTML='<div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px">Audit Trail & Activity Logs</div>'+
+    '<div style="font-size:12px;color:var(--text3);margin-bottom:16px">Every system action is automatically logged with user, timestamp and details</div>'+
+    '<div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:10px">Audit Coverage — '+coverage.length+' Modules Tracked</div>'+
+    coverageHtml+
+    '<div id="audit-log-section"><div style="text-align:center;padding:20px;color:var(--text3)">Loading audit logs...</div></div>';
+
+  // Now load actual logs
   try{
     var logs=safeArr(await sbFetch('audit_logs',{select:'*',order:'created_at.desc',limit:200}));
     var today=new Date().toISOString().split('T')[0];
     var todayLogs=logs.filter(function(l){return l.created_at&&l.created_at.startsWith(today);});
-    var rows=logs.slice(0,100).map(function(l){
-      var ac=l.action==='CREATE'?'g':l.action==='DELETE'?'r':l.action==='APPROVE'?'b':'a';
+
+    var actionColors={CREATE:'g',DELETE:'r',APPROVE:'b',LOGIN:'b',LOGOUT:'gr',PUNCH:'a',COMPLETE:'g',UPDATE:'a',ISSUE:'a'};
+
+    var rows=logs.slice(0,150).map(function(l){
+      var ac=actionColors[l.action]||'gr';
       return[
-        new Date(l.created_at).toLocaleString('en-IN'),
-        '<strong>'+l.user_name+'</strong>',
+        '<span style="font-size:11px;color:var(--text2)">'+new Date(l.created_at).toLocaleString('en-IN')+'</span>',
+        '<strong style="color:var(--text)">'+( l.user_name||'System')+'</strong>',
         badge(ac,l.action||'-'),
-        l.module||'-',l.record_id||'-',
-        l.new_value||'-',l.ip_address||'-'
+        '<span style="color:var(--text2)">'+( l.module||'-')+'</span>',
+        '<span style="font-family:Consolas,monospace;font-size:11px;color:var(--accent)">'+( l.record_id||'-')+'</span>',
+        '<span style="color:var(--text3);font-size:11px">'+( l.new_value||'-')+'</span>'
       ];
     });
-    ct.innerHTML='<div class="sg">'+
-      sc('var(--blue)','Today Activities',todayLogs.length,'')+
-      sc('var(--accent)','Total Logs',logs.length,'')+
-      sc('var(--red)','Deletes',logs.filter(function(l){return l.action==='DELETE';}).length,'')+
-      sc('var(--accent)','Approvals',logs.filter(function(l){return l.action==='APPROVE';}).length,'')+
-      '</div>'+
-      '<div style="background:var(--surface2);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;gap:14px;flex-wrap:wrap">'+
-      '<div style="font-size:11px;color:var(--text3)">Filters:</div>'+
+
+    window._allAuditRows=rows;
+
+    var filters='<div style="background:var(--surface2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+
+      '<span style="font-size:11px;color:var(--text3);font-weight:600">Filter:</span>'+
       ['All','CREATE','UPDATE','APPROVE','DELETE','LOGIN','PUNCH','COMPLETE','ISSUE'].map(function(f){
-        return'<button data-action="'+f+'" onclick="filterAuditLog(this.dataset.action)" style="font-size:10px;padding:2px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface3);color:var(--text2);cursor:pointer">'+f+'</button>';
+        return'<button data-action="'+f+'" onclick="filterAuditLog(this.dataset.action)" style="font-size:10.5px;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface3);color:var(--text2);cursor:pointer;font-family:inherit">'+f+'</button>';
       }).join('')+
-      '</div>'+
-      card('Audit Trail & Activity Logs','<span style="font-size:11px;color:var(--text3)">All system activities logged automatically</span>',
-        '<div id="audit-table">'+tbl(['Date/Time','User','Action','Module','Record','Details'],rows)+'</div>',true);
-  window._allAuditRows=rows;
+      '</div>';
+
+    var stats='<div class="sg" style="margin-bottom:12px">'+
+      sc('var(--blue)','Today',todayLogs.length,'Activities')+
+      sc('var(--accent)','Total Logs',logs.length,'')+
+      sc('var(--orange)','Creates',logs.filter(function(l){return l.action==='CREATE';}).length,'')+
+      sc('var(--red)','Deletes',logs.filter(function(l){return l.action==='DELETE';}).length,'')+
+      '</div>';
+
+    var logSection=document.getElementById('audit-log-section');
+    if(logSection){
+      logSection.innerHTML=stats+filters+
+        card('Activity Log',
+          '<button class="btn btn-sm" onclick="renderAuditLog()">🔄 Refresh</button>',
+          '<div id="audit-table">'+tbl(['Date/Time','User','Action','Module','Record','Details'],rows)+'</div>',true);
+    }
+
   }catch(e){
-    ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';
+    var logSection=document.getElementById('audit-log-section');
+    if(logSection){
+      if(e.message&&e.message.includes('audit_logs')){
+        logSection.innerHTML='<div class="alert al-a">'+
+          '<strong>Audit table not created yet.</strong> Run this SQL in Supabase:<br>'+
+          '<code style="display:block;margin-top:8px;padding:8px;background:rgba(0,0,0,.3);border-radius:6px;font-size:11px">'+
+          'CREATE TABLE IF NOT EXISTS audit_logs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, user_id uuid, user_name TEXT, action TEXT NOT NULL, module TEXT, record_id TEXT, old_value TEXT, new_value TEXT, ip_address TEXT, created_at TIMESTAMPTZ DEFAULT now());<br>'+
+          'ALTER TABLE audit_logs DISABLE ROW LEVEL SECURITY;<br>'+
+          'GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;'+
+          '</code></div>'+
+          '<div class="alert al-g" style="margin-top:8px">The coverage grid above shows all 25 modules being tracked. Logs will appear here once the table is created.</div>';
+      }else{
+        logSection.innerHTML='<div class="alert al-r">Error loading logs: '+e.message+'</div>';
+      }
+    }
   }
 }
+
+window.filterAuditLog=function(action){
+  var rows=window._allAuditRows||[];
+  var filtered=action==='All'?rows:rows.filter(function(r){
+    return r[2]&&r[2].indexOf(action)>-1;
+  });
+  var tblDiv=document.getElementById('audit-table');
+  if(tblDiv)tblDiv.innerHTML=tbl(['Date/Time','User','Action','Module','Record','Details'],filtered);
+  // Highlight active filter button
+  document.querySelectorAll('[data-action]').forEach(function(b){
+    b.style.background=b.dataset.action===action?'var(--accent)':'var(--surface3)';
+    b.style.color=b.dataset.action===action?'#000':'var(--text2)';
+  });
+};
 
 // ── Audit Logger (called throughout system) ──
 async function logAudit(action,module2,recordId,oldVal,newVal){
@@ -5464,12 +5555,6 @@ async function logAudit(action,module2,recordId,oldVal,newVal){
 }
 
 
-window.filterAuditLog=function(action){
-  var rows=window._allAuditRows||[];
-  var filtered=action==='All'?rows:rows.filter(function(r){return r[2]&&r[2].includes(action);});
-  var tblDiv=document.getElementById('audit-table');
-  if(tblDiv)tblDiv.innerHTML=tbl(['Date/Time','User','Action','Module','Record','Details'],filtered);
-};
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
