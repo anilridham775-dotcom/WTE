@@ -750,12 +750,12 @@ function locBtn(latId,lngId,statusId,mapsId){
 // ── AUTH & ROUTING ────────────────────────────────────────
 var CURRENT_USER=null,DRIVER_LOCATION=null,DRIVER_RECORD=null,CHECKLIST_DONE_TODAY=false;
 var ROLE_ACCESS={
-  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking','leads','collectionreq','rdf','energy','esg','compliance','ceodash','lab','financedash','store','vendors','po','grn','procurement','auditlog','stockissue'],
-  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking','leads','collectionreq','rdf','energy','esg','compliance','ceodash','lab','financedash','store','vendors','po','grn','procurement','auditlog','stockissue'],
+  admin:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','staff','roles','reports','users','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking','leads','collectionreq','rdf','energy','esg','compliance','ceodash','lab','financedash','store','segregation','yardgate','vendors','po','grn','procurement','auditlog','stockissue'],
+  manager:['dashboard','generators','gen-requests','autoplanner','smarttrip','sites','trips','billing','payments','bins','fillalerts','inspection','boiler','vehicles','checklist','drivers','cleaning','pm','rm','schedule','fuel','tyres','qrlocations','attendance','reports','incentive','payroll','advances','shifts','roster','issues','tracking','onboarding','contracts','weighbridge','paytracking','leads','collectionreq','rdf','energy','esg','compliance','ceodash','lab','financedash','store','segregation','yardgate','vendors','po','grn','procurement','auditlog','stockissue'],
   inspector:['dashboard','inspection','trips','billing','bins','fillalerts','boiler','issues'],
   driver:[],generator:['dashboard','bins','fillalerts'],
 };
-var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues',tracking:'Live Vehicle Tracking',onboarding:'Generator Onboarding',contracts:'Generator Contracts',weighbridge:'Weighbridge',paytracking:'Payment Tracking',leads:'Lead Management',collectionreq:'Collection Requests',rdf:'RDF Production',energy:'Energy Management',esg:'ESG & Carbon Credits',compliance:'Compliance Reports',ceodash:'CEO Dashboard',lab:'Laboratory Testing',financedash:'Finance Dashboard',store:'Store Management',vendors:'Vendor Management',po:'Purchase Orders',grn:'Goods Receipt (GRN)',procurement:'Procurement',auditlog:'Audit Trail & Logs',stockissue:'Stock Issue'};
+var PAGE_TITLES={dashboard:'Operations Dashboard',generators:'Generator Registry','gen-requests':'Generator Requests',autoplanner:'Auto Trip Planner',smarttrip:'Smart Trip Planner',sites:'Processing Sites',trips:'Trip & Lift Plans',billing:'Billing & Receipts',payments:'Payment Records',bins:'Bin Management',fillalerts:'Fill Alerts',inspection:'Yard Inspection',boiler:'Boiler & Steam',vehicles:'Vehicle Registry',checklist:'Pre-Trip Checklist',drivers:'Driver Registry',cleaning:'Vehicle Cleaning',pm:'Preventive Maintenance',rm:'Reactive Maintenance',schedule:'Maintenance Schedule',fuel:'Fuel Management',tyres:'Tyre Management',qrlocations:'QR Code Locations',attendance:'Attendance Records',staff:'Staff Master',roles:'Role Permissions',reports:'Reports & Export',users:'User Management',incentive:'Incentive Rate Master',payroll:'Payroll Management',advances:'Staff Advances',shifts:'Shift Master',roster:'Weekly Shift Roster',issues:'Operational Issues',tracking:'Live Vehicle Tracking',onboarding:'Generator Onboarding',contracts:'Generator Contracts',weighbridge:'Weighbridge',paytracking:'Payment Tracking',leads:'Lead Management',collectionreq:'Collection Requests',rdf:'RDF Production',energy:'Energy Management',esg:'ESG & Carbon Credits',compliance:'Compliance Reports',ceodash:'CEO Dashboard',lab:'Laboratory Testing',financedash:'Finance Dashboard',store:'Store Management',segregation:'Segregation & Storage',yardgate:'Yard Gate Management',vendors:'Vendor Management',po:'Purchase Orders',grn:'Goods Receipt (GRN)',procurement:'Procurement',auditlog:'Audit Trail & Logs',stockissue:'Stock Issue'};
 var NAV=[
   {s:'Operations',items:[{id:'dashboard',l:'Dashboard',i:'⬡'},{id:'generators',l:'Generator Registry',i:'🏭'},{id:'gen-requests',l:'Generator Requests',i:'📋'},{id:'autoplanner',l:'Auto Trip Planner',i:'🤖'},{id:'smarttrip',l:'Smart Trip Planner',i:'🧠'},{id:'trips',l:'Trip & Lift Plans',i:'📍'},{id:'billing',l:'Billing & Receipts',i:'🧾'},{id:'payments',l:'Payment Records',i:'💳'}]},
   {s:'Dustbin Management',items:[{id:'bins',l:'Bin Management',i:'🗑'},{id:'fillalerts',l:'Fill Alerts',i:'⚠️'}]},
@@ -781,7 +781,7 @@ function go(page){
     '<div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px"></div>'+
     '<div style="font-size:13px">Loading '+PAGE_TITLES[page]+'...</div>'+
     '</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking,onboarding:renderOnboarding,contracts:renderContracts,weighbridge:renderWeighbridge,paytracking:renderPayTracking,leads:renderLeads,collectionreq:renderCollectionReq,rdf:renderRDF,energy:renderEnergy,esg:renderESG,compliance:renderCompliance,ceodash:renderCEODash,lab:renderLab,financedash:renderFinanceDash,store:renderStore,vendors:renderVendors,po:renderProcurement,grn:renderGRN,procurement:renderProcurement,auditlog:renderAuditLog,stockissue:renderStockIssue};
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking,onboarding:renderOnboarding,contracts:renderContracts,weighbridge:renderWeighbridge,paytracking:renderPayTracking,leads:renderLeads,collectionreq:renderCollectionReq,rdf:renderRDF,energy:renderEnergy,esg:renderESG,compliance:renderCompliance,ceodash:renderCEODash,lab:renderLab,financedash:renderFinanceDash,store:renderStore,segregation:renderSegregation,yardgate:renderYardGate,vendors:renderVendors,po:renderProcurement,grn:renderGRN,procurement:renderProcurement,auditlog:renderAuditLog,stockissue:renderStockIssue};
   if(allPages[page]){
     try{
       var result=allPages[page]();
@@ -1253,7 +1253,7 @@ window.editBoilerOp=async function(id){
     +'<div class="full">'+fld('Notes','<textarea id="bo_notes" rows="2">'+(b.notes||'')+'</textarea>')+'</div>'
     +'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sbo">Save</button>';
-  modal('Edit Boiler Op — '+b.op_code,body,foot);
+  modal('Edit Boiler Op —'+b.op_code,body,foot);
   setTimeout(function(){document.getElementById('bo_status').value=b.status||'Running';var s=document.getElementById('sbo');if(s)s.onclick=function(){updateBoilerOp(id);};},50);
 };
 window.updateBoilerOp=async function(id){
@@ -1326,7 +1326,7 @@ window.editCrusherOp=async function(id){
     +'<div class="full">'+fld('Notes','<textarea id="co_notes" rows="2">'+(c.notes||'')+'</textarea>')+'</div>'
     +'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sco">Save</button>';
-  modal('Edit Crusher Op — '+c.op_code,body,foot);
+  modal('Edit Crusher Op —'+c.op_code,body,foot);
   setTimeout(function(){document.getElementById('co_status').value=c.status||'Running';document.getElementById('co_mat').value=c.material_type||'Mixed Solid Waste';var s=document.getElementById('sco');if(s)s.onclick=function(){updateCrusherOp(id);};},50);
 };
 window.updateCrusherOp=async function(id){
@@ -1400,7 +1400,7 @@ window.editGen=async function(id){
   var g=(await sbFetch('generators',{select:'*',eq:{id:id}}))[0];if(!g)return;
   var body='<div class="fg">'+fld('Company Name','<input id="g_name" value="'+g.company_name.replace(/"/g,'&quot;')+'">',true)+fld('Industry',sel('g_industry',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Cement','Refinery','Power Plant','Other']))+fld('Contact','<input id="g_contact" value="'+(g.contact_person||'').replace(/"/g,'&quot;')+'">',true)+fld('Mobile','<input id="g_mobile" value="'+(g.mobile||'')+'">',true)+fld('Email','<input id="g_email" value="'+(g.email||'')+'">',)+fld('GSTIN','<input id="g_gstin" value="'+(g.gstin||'')+'">')+fld('City','<input id="g_city" value="'+(g.city||'')+'">')+'<div class="sec">Location — Search by address or use GPS</div>'+locPickerRow('g_lat','g_lng','gen-loc-status','gen-maps-link',g.latitude,g.longitude)+fld('Waste Category',sel('g_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']))+fld('Status',sel('g_active',['Active','Inactive']))+'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sgbtn">Save Changes</button>';
-  modal('Edit — '+g.gen_code,body,foot);
+  modal('Edit —'+g.gen_code,body,foot);
   setTimeout(function(){document.getElementById('g_industry').value=g.industry_type||'';document.getElementById('g_cat').value=g.waste_category||'';document.getElementById('g_active').value=g.is_active?'Active':'Inactive';var sb=document.getElementById('sgbtn');if(sb){var gid=id;sb.onclick=function(){updateGen(gid);};}},50);
 };
 window.updateGen=async function(id){
@@ -1435,7 +1435,9 @@ window.newDriver=function(){
     +'<div class="sec" style="grid-column:1/-1">🪪 Driving Licence</div>'
     +fld('DL Number',inp('d_dl'),true)
     +fld('DL Expiry',inp('d_dlexp','','date'),true)
-    +fld('Police Verified',sel('d_police',['Pending','Verified']))
+    +fld('Police Verified',sel('d_police',['Pending','Verified']))+
+    fld('Training Status',sel('d_training',['Not Started','Induction Done','Safety Training Done','Fully Trained']))+
+    fld('PPE Issued',sel('d_ppe',['Yes','No','Partial']))
     +'<div class="sec" style="grid-column:1/-1">💰 HR / Payroll</div>'
     +fld('Department',sel('d_dept',['Fleet','Operations','Admin']))
     +fld('Basic Salary ₹',inp('d_salary','','number'),true)
@@ -1538,7 +1540,7 @@ window.editDriver=async function(id){
   h.push('</div>');
 
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sde">Save Changes</button>';
-  modal('Edit Driver — '+d.driver_code,h.join(''),foot);
+  modal('Edit Driver —'+d.driver_code,h.join(''),foot);
 
   setTimeout(function(){
     var bg=document.getElementById('ed_blood');
@@ -1633,7 +1635,7 @@ window.editVeh=async function(id){
   var v=(await sbFetch('vehicles',{select:'*',eq:{id:id}}))[0];if(!v)return;
   var body='<div class="fg">'+fld('Reg No','<input id="v_reg" value="'+v.reg_no+'" readonly style="opacity:.6">',true)+fld('Make','<input id="v_make" value="'+(v.make||'')+'">',true)+fld('Model','<input id="v_model" value="'+(v.model||'')+'">',true)+fld('Current Fuel %','<input id="v_fuelpct" type="number" min="0" max="100" value="'+(v.current_fuel_pct||0)+'">')+fld('Status',sel('v_status',['Active','In Maintenance','Off Road','Retired']))+fld('Fitness','<input id="v_fit" type="date" value="'+(v.fitness_expiry||'')+'">',)+fld('Insurance','<input id="v_ins" type="date" value="'+(v.insurance_expiry||'')+'">',)+fld('PUC','<input id="v_puc" type="date" value="'+(v.puc_expiry||'')+'">')+'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sve">Save</button>';
-  modal('Edit — '+v.reg_no,body,foot);
+  modal('Edit —'+v.reg_no,body,foot);
   setTimeout(function(){document.getElementById('v_status').value=v.status||'Active';var sb=document.getElementById('sve');if(sb){var vid=id;sb.onclick=function(){saveVehEdit(vid);};}},50);
 };
 window.saveVehEdit=async function(id){
@@ -1662,7 +1664,7 @@ async function renderFillAlerts(){
   }catch(e){ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
 }
 window.updateFill=function(id,code){
-  modal('Update Fill — '+code,'<div class="fg">'+fld('Fill Level %',inp('f_pct','','number'),true)+fld('Weight (kg)',inp('f_kg','','number'))+fld('Source',sel('f_src',['MANUAL','ESTIMATED','SENSOR']))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="dufbtn">Save</button>');
+  modal('Update Fill —'+code,'<div class="fg">'+fld('Fill Level %',inp('f_pct','','number'),true)+fld('Weight (kg)',inp('f_kg','','number'))+fld('Source',sel('f_src',['MANUAL','ESTIMATED','SENSOR']))+'</div>','<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="dufbtn">Save</button>');
   setTimeout(function(){var b=document.getElementById('dufbtn');if(b){var bid=id;b.onclick=function(){doUpdateFill(bid);};}},50);
 };
 window.doUpdateFill=async function(id){
@@ -2324,7 +2326,7 @@ async function exportReport(key){
       rows=[['Date','Vehicle','Litres','Rate/L','Total Cost','Odometer km','Fuel Type','Station','Notes']];
       data.forEach(function(f){rows.push([f.fill_date||'',f.vehicles&&f.vehicles.reg_no||'',f.litres||'',f.rate_per_litre||'',f.total_cost||'',f.odometer_km||'',f.fuel_type||'',f.station_name||'',f.notes||'']);});
     }else if(key==='binfill'){
-      var data=safeArr(await sbFetch('bin_fill_readings',{select:'*,bins(bin_code,generator_id,generators(company_name))',order:'reading_time.desc',limit:500}));
+      var data=safeArr(await sbFetch('bins',{select:'*,bins(bin_code,generator_id,generators(company_name))',order:'reading_time.desc',limit:500}));
       rows=[['Reading Time','Bin Code','Generator','Fill %','Reading By']];
       data.forEach(function(r){rows.push([r.reading_time||'',r.bins&&r.bins.bin_code||'',r.bins&&r.bins.generators&&r.bins.generators.company_name||'',r.fill_pct||'',r.recorded_by||'']);});
     }else if(key==='invoices'){
@@ -2455,7 +2457,7 @@ window.editIncentiveRate=async function(id){
     +'<div class="full">'+fld('Notes',inp('im_notes',r.notes||''))+'</div>'
     +'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="seim">Save</button>';
-  modal('Edit Rate — '+r.im_code,body,foot);
+  modal('Edit Rate —'+r.im_code,body,foot);
   setTimeout(function(){
     document.getElementById('im_to').value=r.applicable_to||'Driver';
     document.getElementById('im_veh').value=r.vehicle_type||'Any';
@@ -2545,7 +2547,7 @@ window.editAdvance=async function(id){
     +'<div class="full">'+fld('Notes',inp('adv_notes',a.reason||''))+'</div>'
     +'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sadv">Update</button>';
-  modal('Update Advance — '+a.adv_code,body,foot);
+  modal('Update Advance —'+a.adv_code,body,foot);
   setTimeout(function(){
     document.getElementById('adv_status').value=a.status||'Pending';
     var s=document.getElementById('sadv');if(s)s.onclick=function(){updateAdvance(id,a.amount);};
@@ -2858,7 +2860,7 @@ window.viewPayslip=async function(id){
     +(p.paid_on?'<div style="text-align:center;font-size:11px;color:#666;margin-bottom:12px">Paid on: '+p.paid_on+' via '+(p.payment_mode||'-')+'</div>':'')
     +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — Steam House ERP</div>'
     +'</div>';
-  modal('💰 Payslip — '+(st.full_name||''),html,
+  modal('Payslip —'+(st.full_name||''),html,
     '<button class="btn btn-sm" onclick="closeModal()">Close</button>'
     +'<button class="btn btn-g btn-sm" onclick="printPayslip()">🖨️ Print</button>'
     +(p.status==="Draft"?'<button class="btn btn-sm" onclick="approvePayroll(\''+id+'\')">✅ Approve</button>':''));
@@ -2944,7 +2946,7 @@ window.editShift=async function(id){
     +fld('Status',sel('sh_status',['Active','Inactive']))
     +'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="svsh">Save</button>';
-  modal('Edit Shift — '+s.shift_name,body,foot);
+  modal('Edit Shift —'+s.shift_name,body,foot);
   setTimeout(function(){
     document.getElementById('sh_overnight').value=s.is_overnight?'Yes':'No';
     document.getElementById('sh_status').value=s.status||'Active';
@@ -3452,7 +3454,7 @@ window.editOnboarding=async function(id){
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
     '<button class="btn btn-sm" onclick="viewOnboarding(\''+id+'\')">Photos</button>'+
     '<button class="btn btn-g btn-sm" id="sob">Save</button>';
-  modal('Edit Onboarding — '+r.onboard_code,body,foot);
+  modal('Edit Onboarding —'+r.onboard_code,body,foot);
   setTimeout(function(){
     document.getElementById('ob_vdone').value=r.visit_done?'true':'false';
     var sb=document.getElementById('sob');
@@ -3530,7 +3532,7 @@ window.viewOnboarding=async function(id){
     '<button onclick="addSitePhoto(\''+id+'\',\''+r.generator_id+'\')" class="btn btn-g btn-sm">+ Add Photo</button>'+
     '</div></div>'+
     '</div>';
-  modal('Site Visit — '+r.onboard_code,body,
+  modal('Site Visit —'+r.onboard_code,body,
     '<button class="btn btn-sm" onclick="closeModal()">Close</button>'+
     '<button class="btn btn-g btn-sm" onclick="closeModal();generateContract(\''+id+'\',\''+r.generator_id+'\')">Generate Contract</button>');
 };
@@ -3689,7 +3691,7 @@ window.editContract=async function(id){
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
     '<button class="btn btn-sm" onclick="printContract(\''+id+'\')">Print</button>'+
     '<button class="btn btn-g btn-sm" id="sct">Save</button>';
-  modal('Edit Contract — '+c.contract_no,body,foot);
+  modal('Edit Contract —'+c.contract_no,body,foot);
   setTimeout(function(){
     var sb=document.getElementById('sct');
     if(sb)sb.onclick=function(){updateContract(id,c.generator_id);};
@@ -4082,7 +4084,7 @@ window.editLead=async function(id){
     '<div class="full">'+fld('Notes','<textarea id="ld_notes" rows="2">'+(l.notes||'')+'</textarea>')+'</div>'+
     '</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sld">Save</button>';
-  modal('Edit Lead — '+l.lead_no,body,foot);
+  modal('Edit Lead —'+l.lead_no,body,foot);
   setTimeout(function(){var sb=document.getElementById('sld');if(sb)sb.onclick=function(){updateLead(id);};},50);
 };
 window.updateLead=async function(id){
@@ -4151,7 +4153,7 @@ window.newCollectionReq=async function(){
   var body='<div class="fg">'+
     '<div class="full"><div class="fl">Generator *</div><select id="cr_gen" onchange="crLoadBins()" style="'+selS+'"><option value="">Select</option>'+gens.map(function(g){return'<option value="'+g.id+'">'+g.gen_code+' — '+g.company_name+'</option>';}).join('')+'</select></div>'+
     '<div class="full"><div class="fl">Bin *</div><select id="cr_bin" style="'+selS+'"><option value="">Select generator first</option></select></div>'+
-    '<div class="full"><div class="fl">Priority *</div><select id="cr_priority" onchange="crUpdatePickup()" style="'+selS+'">'+['Critical','High','Normal','Low'].map(function(p){return'<option value="'+p+'">'+p+'</option>';}).join('')+'</select></div>'+
+    '<div class="full"><div class="fl">Priority *</div><select id="cr_priority" onchange="crUpdatePickup()" style="'+selS+'">'+['Critical (< 4 hrs)','High (< 12 hrs)','Normal (< 24 hrs)','Low (< 48 hrs)'].map(function(p,i){return'<option value="'+['Critical','High','Normal','Low'][i]+'"'+(i===2?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div>'+
     fld('Source',sel('cr_source',['Manual Entry','Generator App','WhatsApp','Call Centre','Auto Trigger'])) +
     fld('Pickup By','<input id="cr_pickup" type="datetime-local" value="'+new Date(now.getTime()+24*3600000).toISOString().slice(0,16)+'">')+
     '<div class="full">'+fld('Notes',inp('cr_notes',''))+'</div>'+
@@ -4187,7 +4189,7 @@ window.updateCollectionReq=async function(id){
   var selS='background:#1e3048;border:1px solid rgba(100,160,255,.15);border-radius:8px;color:#e2eeff;padding:7px 10px;font-size:12.5px;width:100%;font-family:inherit';
   var body='<div class="fg"><div class="full"><div class="fl">Status</div><select id="cr_status" style="'+selS+'">'+['Open','Assigned','In Progress','Completed','Cancelled'].map(function(s){return'<option value="'+s+'"'+(s===r.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+fld('Notes',inp('cr_notes2',r.notes||''))+'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sucr">Update</button>';
-  modal('Update Request — '+r.req_no,body,foot);
+  modal('Update Request —'+r.req_no,body,foot);
   setTimeout(function(){var sb=document.getElementById('sucr');if(sb)sb.onclick=async function(){await sbUpdate('collection_requests',{status:document.getElementById('cr_status').value,notes:gv('cr_notes2')||null},{id:id});closeModal();success('Updated!');renderCollectionReq();};},50);
 };
 
@@ -4285,7 +4287,7 @@ window.editRDFBatch=async function(id){
     ['Planned','In Progress','Completed'].map(function(s){return'<option value="'+s+'"'+(s===b.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
     '</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="srdf">Save</button>';
-  modal('Edit RDF Batch — '+b.batch_no,body,foot);
+  modal('Edit RDF Batch —'+b.batch_no,body,foot);
   setTimeout(function(){var sb=document.getElementById('srdf');if(sb)sb.onclick=async function(){
     var inp2=parseFloat(gv('rdf_input'))||0;var out=parseFloat(gv('rdf_output'))||0;var lossPct=inp2>0?Math.round((1-out/inp2)*100):0;
     await sbUpdate('rdf_batches',{batch_date:gv('rdf_date'),waste_input_kg:inp2,moisture_pct:parseFloat(gv('rdf_moisture'))||null,rdf_output_kg:out,ash_kg:parseFloat(gv('rdf_ash'))||null,loss_pct:lossPct,calorific_value:parseFloat(gv('rdf_cv'))||null,status:document.getElementById('rdf_status').value,operator:gv('rdf_op')||null},{id:id});
@@ -4407,6 +4409,8 @@ window.newLabTest=async function(){
     '<div class="full"><div class="fl">Sample Type</div><select id="lb_stype" style="'+selS+'">'+['Incoming Waste','RDF Sample','Ash Sample','Processed Waste'].map(function(s){return'<option value="'+s+'">'+s+'</option>';}).join('')+'</select></div>'+
     '<div class="sec" style="grid-column:1/-1">Test Results</div>'+
     fld('Moisture %',inp('lb_moisture','','number'))+
+    fld('Contamination %',inp('lb_contamination','','number'))+
+    fld('Physical Inspection',sel('lb_physical',['Pass','Fail','Partial']))+
     fld('Ash %',inp('lb_ash','','number'))+
     fld('Sulphur %',inp('lb_sulphur','','number'))+
     fld('Chlorine %',inp('lb_chlorine','','number'))+
@@ -4423,7 +4427,9 @@ window.saveLabTest=async function(){
     var n=safeArr(await sbFetch('lab_tests',{select:'id'})).length+1;
     var lab_no='LAB-'+new Date().toISOString().split('T')[0].replace(/-/g,'')+'-'+String(n).padStart(3,'0');
     var tripEl=document.getElementById('lb_trip');
-    await sbInsert('lab_tests',{lab_no:lab_no,test_date:gv('lb_date'),trip_id:tripEl&&tripEl.value?tripEl.value:null,sample_type:document.getElementById('lb_stype').value,moisture_pct:parseFloat(gv('lb_moisture'))||null,ash_pct:parseFloat(gv('lb_ash'))||null,sulphur_pct:parseFloat(gv('lb_sulphur'))||null,chlorine_pct:parseFloat(gv('lb_chlorine'))||null,calorific_value:parseFloat(cv),result:document.getElementById('lb_result').value,tested_by:gv('lb_by')||null,notes:gv('lb_notes')||null});
+    await sbInsert('lab_tests',{lab_no:lab_no,test_date:gv('lb_date'),trip_id:tripEl&&tripEl.value?tripEl.value:null,sample_type:document.getElementById('lb_stype').value,moisture_pct:parseFloat(gv('lb_moisture'))||null,
+      contamination_pct:parseFloat(gv('lb_contamination'))||null,
+      physical_inspection:document.getElementById('lb_physical')?document.getElementById('lb_physical').value:null,ash_pct:parseFloat(gv('lb_ash'))||null,sulphur_pct:parseFloat(gv('lb_sulphur'))||null,chlorine_pct:parseFloat(gv('lb_chlorine'))||null,calorific_value:parseFloat(cv),result:document.getElementById('lb_result').value,tested_by:gv('lb_by')||null,notes:gv('lb_notes')||null});
     closeModal();success('Lab test '+lab_no+' recorded!');renderLab();
   }catch(e){alert('Error: '+e.message);}
 };
@@ -4700,7 +4706,7 @@ window.newBinInspection=async function(binId,binCode){
     fld('Cleaning Required',sel('bi_clean',['No','Yes - Done','Yes - Pending']))+
     '<div class="full">'+fld('Remarks',inp('bi_remarks',''))+'</div>'+
     '</div>';
-  modal('Bin Inspection — '+binCode,body,
+  modal('Bin Inspection —'+binCode,body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
     '<button class="btn btn-g btn-sm" data-bid="'+binId+'" onclick="saveBinInspection(this.dataset.bid)">Save Inspection</button>');
 };
@@ -5007,7 +5013,7 @@ window.editStoreItem=async function(id){
     fld('Location','<input id="si_loc" value="'+(item.location||'').replace(/"/g,'&quot;')+'">')+
     '</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="ssi">Save</button>';
-  modal('Edit Item — '+item.item_code,body,foot);
+  modal('Edit Item —'+item.item_code,body,foot);
   setTimeout(function(){var sb=document.getElementById('ssi');if(sb)sb.onclick=async function(){
     await sbUpdate('store_items',{item_name:gv('si_name'),current_qty:parseFloat(gv('si_qty'))||0,reorder_level:parseFloat(gv('si_reorder'))||5,unit_cost:parseFloat(gv('si_cost'))||0,location:gv('si_loc')||null,category:document.getElementById('si_cat').value},{id:id});
     logAudit('UPDATE','Store',item.item_code,null,gv('si_name'));
@@ -5023,7 +5029,7 @@ window.issueItem=async function(id){
     fld('Department',sel('iss_dept',['Operations','Fleet','Maintenance','Yard','Admin']))+
     fld('Purpose / Reference',inp('iss_ref',''))+
     '</div>';
-  modal('Issue Item — '+item.item_code,body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="confirmIssue(\''+id+'\',\''+item.current_qty+'\')">Confirm Issue</button>');
+  modal('Issue Item —'+item.item_code,body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="confirmIssue(\''+id+'\',\''+item.current_qty+'\')">Confirm Issue</button>');
 };
 window.confirmIssue=async function(id,available){
   var qty=parseFloat(gv('iss_qty'))||0;
@@ -5147,7 +5153,7 @@ window.editVendor=async function(id){
     '<div><div class="fl">Status</div><select id="v_status" style="'+selS+'"><option value="Active"'+(v.status==='Active'?' selected':'')+'>Active</option><option value="Inactive"'+(v.status==='Inactive'?' selected':'')+'>Inactive</option><option value="Blacklisted">Blacklisted</option></select></div>'+
     '</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" id="sv">Save</button>';
-  modal('Edit Vendor — '+v.vendor_code,body,foot);
+  modal('Edit Vendor —'+v.vendor_code,body,foot);
   setTimeout(function(){var sb=document.getElementById('sv');if(sb)sb.onclick=async function(){
     await sbUpdate('vendors',{vendor_name:gv('v_name'),contact_person:gv('v_contact')||null,mobile:gv('v_mobile')||null,city:gv('v_city')||null,gstin:gv('v_gstin')||null,rating:parseInt(gv('v_rating'))||3,status:document.getElementById('v_status').value},{id:id});
     logAudit('UPDATE','Vendor',v.vendor_code,null,gv('v_name'));
@@ -5333,7 +5339,7 @@ window.viewPO=async function(id){
     '</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Close</button>'+
     (po.status==='Draft'?'<button class="btn btn-g btn-sm" id="apppo">Approve PO</button>':'');
-  modal('PO Details — '+po.po_no,body,foot);
+  modal('PO Details —'+po.po_no,body,foot);
   setTimeout(function(){
     var ab=document.getElementById('apppo');
     if(ab)ab.onclick=async function(){
@@ -5555,6 +5561,334 @@ async function logAudit(action,module2,recordId,oldVal,newVal){
 }
 
 
+
+// ══════════════════════════════════════════════════════════
+// MODULE 13 — SEGREGATION & STORAGE MANAGEMENT
+// ══════════════════════════════════════════════════════════
+async function renderSegregation(){
+  var ct=document.getElementById('ct');
+  try{
+    var records=safeArr(await sbFetch('segregation_records',{select:'*,trips(trip_code,trip_date)',order:'created_at.desc',limit:50}));
+    var today=new Date().toISOString().split('T')[0];
+    var todayRec=records.filter(function(r){return r.created_at&&r.created_at.startsWith(today);});
+    var totalCombustible=records.reduce(function(s,r){return s+(r.combustible_kg||0);},0);
+    var totalRecyclable=records.reduce(function(s,r){return s+(r.recyclable_kg||0);},0);
+    var totalRDF=records.reduce(function(s,r){return s+(r.rdf_storage_kg||0);},0);
+
+    var rows=records.map(function(r){
+      var trp=r.trips||{};
+      var total=(r.combustible_kg||0)+(r.recyclable_kg||0)+(r.inert_kg||0)+(r.moisture_rich_kg||0)+(r.reject_kg||0);
+      return[
+        '<strong style="font-family:Consolas,monospace;color:var(--accent)">'+r.seg_code+'</strong>',
+        trp.trip_code||'-',r.seg_date||'-',
+        '<span style="color:#ff6b35">'+(r.combustible_kg||0)+'kg</span>',
+        '<span style="color:var(--accent)">'+(r.recyclable_kg||0)+'kg</span>',
+        (r.inert_kg||0)+'kg',
+        '<span style="color:var(--blue)">'+(r.moisture_rich_kg||0)+'kg</span>',
+        '<span style="color:var(--red)">'+(r.reject_kg||0)+'kg</span>',
+        '<strong>'+(total)+'kg</strong>',
+        r.storage_location||'-',r.operator||'-'
+      ];
+    });
+
+    // Storage yard status
+    var storageYard=[
+      {type:'RDF Storage',qty:totalRDF,color:'#ff6b35',icon:'♻️'},
+      {type:'Combustible',qty:totalCombustible,color:'var(--orange)',icon:'🔥'},
+      {type:'Recyclable',qty:totalRecyclable,color:'var(--accent)',icon:'🔄'},
+      {type:'Raw Waste',qty:records.reduce(function(s,r){return s+(r.raw_waste_kg||0);},0),color:'var(--text3)',icon:'🗑️'},
+      {type:'Hazardous',qty:records.reduce(function(s,r){return s+(r.hazardous_kg||0);},0),color:'var(--red)',icon:'⚠️'},
+      {type:'Reject/Landfill',qty:records.reduce(function(s,r){return s+(r.reject_kg||0);},0),color:'var(--purple)',icon:'🚮'},
+    ];
+
+    var storageHtml='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">';
+    storageYard.forEach(function(s){
+      storageHtml+='<div style="background:var(--surface);border:1px solid var(--border);border-left:4px solid '+s.color+';border-radius:12px;padding:14px">'
+        +'<div style="font-size:20px;margin-bottom:6px">'+s.icon+'</div>'
+        +'<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">'+s.type+'</div>'
+        +'<div style="font-size:22px;font-weight:800;color:'+s.color+';font-family:Consolas,monospace;margin-top:4px">'+s.qty.toLocaleString('en-IN')+'</div>'
+        +'<div style="font-size:10px;color:var(--text3)">kg total</div>'
+        +'</div>';
+    });
+    storageHtml+='</div>';
+
+    ct.innerHTML='<div class="sg">'+
+      sc('var(--orange)','Today Batches',todayRec.length,'')+
+      sc('#ff6b35','Combustible',totalCombustible+'kg','')+
+      sc('var(--accent)','Recyclable',totalRecyclable+'kg','')+
+      sc('var(--red)','Reject',records.reduce(function(s,r){return s+(r.reject_kg||0);},0)+'kg','')+
+      '</div>'+
+      '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Storage Yard Status</div>'+
+      storageHtml+
+      card('Segregation Records',
+        '<button class="btn btn-g btn-sm" onclick="newSegregation()">+ New Segregation</button>',
+        tbl(['Seg Code','Trip','Date','Combustible','Recyclable','Inert','Moisture Rich','Reject','Total','Location','Operator'],rows),true);
+  }catch(e){
+    if(e.message&&e.message.includes('segregation_records')){
+      ct.innerHTML='<div class="alert al-a">Run SQL: <code>'+
+        'CREATE TABLE IF NOT EXISTS segregation_records (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, seg_code TEXT UNIQUE, trip_id uuid REFERENCES trips(id), seg_date DATE, combustible_kg NUMERIC DEFAULT 0, recyclable_kg NUMERIC DEFAULT 0, inert_kg NUMERIC DEFAULT 0, moisture_rich_kg NUMERIC DEFAULT 0, reject_kg NUMERIC DEFAULT 0, hazardous_kg NUMERIC DEFAULT 0, raw_waste_kg NUMERIC DEFAULT 0, rdf_storage_kg NUMERIC DEFAULT 0, storage_location TEXT, moisture_content_pct NUMERIC, operator TEXT, notes TEXT, created_at TIMESTAMPTZ DEFAULT now()); ALTER TABLE segregation_records DISABLE ROW LEVEL SECURITY; GRANT ALL ON ALL TABLES IN SCHEMA public TO anon,authenticated,service_role;'+
+        '</code></div>';
+    }else{ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+  }
+}
+window.newSegregation=async function(){
+  var trips=safeArr(await sbFetch('trips',{select:'id,trip_code,total_weight_kg',eq:{status:'Completed'},order:'trip_date.desc',limit:30}));
+  var selS='background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 11px;font-size:12.5px;width:100%;font-family:inherit';
+  var today=new Date().toISOString().split('T')[0];
+  var body='<div class="fg">'+
+    '<div class="full"><div class="fl">Trip Reference</div><select id="seg_trip" style="'+selS+'"><option value="">No Trip Reference</option>'+
+    trips.map(function(t){return'<option value="'+t.id+'">'+t.trip_code+' ('+( t.total_weight_kg||0)+'kg)</option>';}).join('')+'</select></div>'+
+    fld('Segregation Date','<input id="seg_date" type="date" value="'+today+'">',true)+
+    '<div class="sec" style="grid-column:1/-1">Segregation Weights (kg)</div>'+
+    fld('🔥 Combustible (kg)',inp('seg_comb','0','number'),true)+
+    fld('🔄 Recyclable (kg)',inp('seg_recy','0','number'),true)+
+    fld('⬜ Inert (kg)',inp('seg_inert','0','number'))+
+    fld('💧 Moisture Rich (kg)',inp('seg_moist','0','number'))+
+    fld('🚮 Reject/Landfill (kg)',inp('seg_reject','0','number'))+
+    fld('⚠️ Hazardous (kg)',inp('seg_hazard','0','number'))+
+    '<div class="sec" style="grid-column:1/-1">Storage</div>'+
+    fld('RDF Storage (kg)',inp('seg_rdf','0','number'))+
+    fld('Moisture Content %',inp('seg_mc','','number'))+
+    fld('Storage Location',inp('seg_loc','Yard A'))+
+    fld('Operator',inp('seg_op',''))+
+    '<div class="full">'+fld('Notes',inp('seg_notes',''))+'</div>'+
+    '</div>';
+  modal('New Segregation Record',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveSegregation()">Save</button>');
+};
+window.saveSegregation=async function(){
+  try{
+    var n=safeArr(await sbFetch('segregation_records',{select:'id'})).length+1;
+    var code='SEG-'+new Date().toISOString().split('T')[0].replace(/-/g,'')+'-'+String(n).padStart(3,'0');
+    var tripEl=document.getElementById('seg_trip');
+    await sbInsert('segregation_records',{
+      seg_code:code,trip_id:tripEl&&tripEl.value?tripEl.value:null,
+      seg_date:gv('seg_date'),
+      combustible_kg:parseFloat(gv('seg_comb'))||0,
+      recyclable_kg:parseFloat(gv('seg_recy'))||0,
+      inert_kg:parseFloat(gv('seg_inert'))||0,
+      moisture_rich_kg:parseFloat(gv('seg_moist'))||0,
+      reject_kg:parseFloat(gv('seg_reject'))||0,
+      hazardous_kg:parseFloat(gv('seg_hazard'))||0,
+      rdf_storage_kg:parseFloat(gv('seg_rdf'))||0,
+      moisture_content_pct:parseFloat(gv('seg_mc'))||null,
+      storage_location:gv('seg_loc')||null,
+      operator:gv('seg_op')||null,
+      notes:gv('seg_notes')||null
+    });
+    logAudit('CREATE','Segregation',code,null,'Combustible: '+gv('seg_comb')+'kg');
+    closeModal();success('Segregation '+code+' recorded!');renderSegregation();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+// ══════════════════════════════════════════════════════════
+// YARD GATE MANAGEMENT (M11)
+// ══════════════════════════════════════════════════════════
+async function renderYardGate(){
+  var ct=document.getElementById('ct');
+  try{
+    var entries=safeArr(await sbFetch('yard_gate_entries',{select:'*,trips(trip_code),vehicles(reg_no),drivers(full_name)',order:'gate_in_time.desc',limit:50}));
+    var today=new Date().toISOString().split('T')[0];
+    var todayIn=entries.filter(function(e){return e.gate_in_time&&e.gate_in_time.startsWith(today);});
+    var pending=entries.filter(function(e){return !e.gate_out_time;});
+
+    var rows=entries.map(function(e){
+      var trp=e.trips||{};var veh=e.vehicles||{};var drv=e.drivers||{};
+      var duration=e.gate_out_time?Math.round((new Date(e.gate_out_time)-new Date(e.gate_in_time))/60000):null;
+      return[
+        '<strong style="font-family:Consolas,monospace;color:var(--accent)">'+e.gate_no+'</strong>',
+        trp.trip_code||'-',veh.reg_no||'-',drv.full_name||'-',
+        e.gate_in_time?new Date(e.gate_in_time).toLocaleTimeString('en-IN'):'-',
+        e.gross_weight_kg?e.gross_weight_kg+'kg':'-',
+        e.tare_weight_kg?e.tare_weight_kg+'kg':'-',
+        e.net_weight_kg?'<strong style="color:var(--accent)">'+e.net_weight_kg+'kg</strong>':'-',
+        e.waste_type||'-',
+        e.gate_out_time?new Date(e.gate_out_time).toLocaleTimeString('en-IN'):'<span style="color:var(--orange)">In Yard</span>',
+        duration?duration+' min':'-',
+        e.seal_no||'-',
+        '<div style="display:flex;gap:4px">'+
+          (!e.gross_weight_kg?'<button class="btn btn-sm" id="gwt'+e.id+'">Weigh</button>':'')+
+          (!e.gate_out_time?'<button class="btn btn-sm" id="gex'+e.id+'">Exit</button>':'')+
+          '<button class="btn btn-sm" id="pws'+e.id+'">Slip</button>'+
+        '</div>'
+      ];
+    });
+
+    ct.innerHTML='<div class="sg">'+
+      sc('var(--accent)','Today Entries',todayIn.length,'')+
+      sc('var(--orange)','Currently In Yard',pending.length,'')+
+      sc('var(--blue)','Total Entries',entries.length,'')+
+      '</div>'+
+      card('Yard Gate Management',
+        '<button class="btn btn-g btn-sm" onclick="newGateEntry()">+ Gate Entry</button>',
+        tbl(['Gate No','Trip','Vehicle','Driver','Gate In','Gross','Tare','Net Wt','Waste Type','Gate Out','Duration','Seal No',''],rows),true);
+
+    setTimeout(function(){
+      document.querySelectorAll('[id^="gwt"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){recordGrossWeight(id);};});
+      document.querySelectorAll('[id^="gex"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){recordGateExit(id);};});
+      document.querySelectorAll('[id^="pws"]').forEach(function(b){var id=b.id.slice(3);b.onclick=function(){printWeighmentSlip(id);};});
+    },150);
+  }catch(e){
+    if(e.message&&e.message.includes('yard_gate')){
+      ct.innerHTML='<div class="alert al-a">Run SQL: <code>CREATE TABLE IF NOT EXISTS yard_gate_entries (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, gate_no TEXT UNIQUE, trip_id uuid REFERENCES trips(id), vehicle_id uuid REFERENCES vehicles(id), driver_id uuid REFERENCES drivers(id), gate_in_time TIMESTAMPTZ, gate_out_time TIMESTAMPTZ, gross_weight_kg NUMERIC, tare_weight_kg NUMERIC, net_weight_kg NUMERIC, waste_type TEXT, waste_category TEXT, photo_url TEXT, seal_no TEXT, driver_name TEXT, created_at TIMESTAMPTZ DEFAULT now()); ALTER TABLE yard_gate_entries DISABLE ROW LEVEL SECURITY; GRANT ALL ON ALL TABLES IN SCHEMA public TO anon,authenticated,service_role;</code></div>';
+    }else{ct.innerHTML='<div class="alert al-r">Error: '+e.message+'</div>';}
+  }
+}
+
+window.newGateEntry=async function(){
+  var trips=safeArr(await sbFetch('trips',{select:'id,trip_code,vehicle_id,driver_id',eq:{status:'In Transit'},order:'created_at.desc'}));
+  var vehicles=safeArr(await sbFetch('vehicles',{select:'id,reg_no',eq:{status:'Active'}}));
+  var drivers=safeArr(await sbFetch('drivers',{select:'id,full_name',eq:{status:'Active'}}));
+  var selS='background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 11px;font-size:12.5px;width:100%;font-family:inherit';
+  var body='<div class="fg">'+
+    '<div class="full"><div class="fl">Trip (In Transit)</div><select id="ge_trip" onchange="geLoadTrip()" style="'+selS+'"><option value="">Select Trip</option>'+
+    trips.map(function(t){return'<option value="'+t.id+'" data-vid="'+t.vehicle_id+'" data-did="'+t.driver_id+'">'+t.trip_code+'</option>';}).join('')+'</select></div>'+
+    '<div><div class="fl">Vehicle</div><select id="ge_veh" style="'+selS+'"><option value="">Select</option>'+
+    vehicles.map(function(v){return'<option value="'+v.id+'">'+v.reg_no+'</option>';}).join('')+'</select></div>'+
+    '<div><div class="fl">Driver</div><select id="ge_drv" style="'+selS+'"><option value="">Select</option>'+
+    drivers.map(function(d){return'<option value="'+d.id+'">'+d.full_name+'</option>';}).join('')+'</select></div>'+
+    fld('Waste Type',sel('ge_wtype',['Municipal Solid Waste','Industrial Waste','Hazardous','Mixed','Plastic','Textile','Food Waste']))+
+    fld('Gross Weight (kg)',inp('ge_gross','','number'))+
+    fld('Photo URL',inp('ge_photo',''))+
+    '</div>';
+  modal('Gate Entry',body,'<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-g btn-sm" onclick="saveGateEntry()">Gate IN</button>');
+  setTimeout(function(){
+    var ts=document.getElementById('ge_trip');
+    if(ts)ts.addEventListener('change',function(){
+      var opt=ts.selectedOptions[0];
+      if(opt){
+        var vid=opt.getAttribute('data-vid');
+        var did=opt.getAttribute('data-did');
+        var vs=document.getElementById('ge_veh');if(vs&&vid)vs.value=vid;
+        var ds=document.getElementById('ge_drv');if(ds&&did)ds.value=did;
+      }
+    });
+  },50);
+};
+
+window.saveGateEntry=async function(){
+  try{
+    var n=safeArr(await sbFetch('yard_gate_entries',{select:'id'})).length+1;
+    var gate_no='GATE-'+new Date().toISOString().split('T')[0].replace(/-/g,'')+'-'+String(n).padStart(3,'0');
+    var tripEl=document.getElementById('ge_trip');
+    var vehEl=document.getElementById('ge_veh');
+    var drvEl=document.getElementById('ge_drv');
+    await sbInsert('yard_gate_entries',{
+      gate_no:gate_no,
+      trip_id:tripEl&&tripEl.value?tripEl.value:null,
+      vehicle_id:vehEl&&vehEl.value?vehEl.value:null,
+      driver_id:drvEl&&drvEl.value?drvEl.value:null,
+      waste_type:document.getElementById('ge_wtype').value,
+      gross_weight_kg:parseFloat(gv('ge_gross'))||null,
+      photo_url:gv('ge_photo')||null,
+      gate_in_time:new Date().toISOString()
+    });
+    // Update trip status to Yard Entry
+    if(tripEl&&tripEl.value)await sbUpdate('trips',{status:'Yard Entry'},{id:tripEl.value});
+    logAudit('CREATE','YardGate',gate_no,null,'Gate IN recorded');
+    closeModal();success('Gate Entry '+gate_no+' recorded!');renderYardGate();
+  }catch(e){alert('Error: '+e.message);}
+};
+
+window.recordGrossWeight=async function(id){
+  var entry=safeArr(await sbFetch('yard_gate_entries',{select:'*',eq:{id:id}}))[0];if(!entry)return;
+  var body='<div class="fg">'+
+    fld('Gross Weight (kg) — Vehicle + Waste',inp('gw_gross',entry.gross_weight_kg||'','number'),true)+
+    fld('Tare Weight (kg) — Empty Vehicle',inp('gw_tare','','number'),true)+
+    '<div class="full"><div style="background:var(--surface2);border-radius:10px;padding:12px;font-size:13px">Net Weight = Gross - Tare (auto calculated)</div></div>'+
+    '</div>';
+  modal('Record Weights —'+entry.gate_no,body,
+    '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn btn-g btn-sm" data-wid="'+id+'" onclick="saveWeights(this.dataset.wid)">Save Weights</button>');
+};
+window.saveWeights=async function(id){
+  var gross=parseFloat(gv('gw_gross'))||0;
+  var tare=parseFloat(gv('gw_tare'))||0;
+  var net=gross-tare;
+  if(net<=0){alert('Net weight must be positive. Check Gross and Tare values.');return;}
+  try{
+    var entry=safeArr(await sbFetch('yard_gate_entries',{select:'trip_id',eq:{id:id}}))[0];
+    await sbUpdate('yard_gate_entries',{gross_weight_kg:gross,tare_weight_kg:tare,net_weight_kg:net},{id:id});
+    if(entry&&entry.trip_id)await sbUpdate('trips',{total_weight_kg:net},{id:entry.trip_id});
+    closeModal();success('Weights recorded! Net: '+net+'kg');renderYardGate();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.recordGateExit=async function(id){
+  var sealNo='SL-'+Math.floor(Math.random()*99999).toString().padStart(5,'0');
+  var entry=safeArr(await sbFetch('yard_gate_entries',{select:'*,trips(trip_id)',eq:{id:id}}))[0];
+  if(!confirm('Record Gate Exit for '+entry.gate_no+'? Seal No: '+sealNo))return;
+  try{
+    await sbUpdate('yard_gate_entries',{gate_out_time:new Date().toISOString(),seal_no:sealNo},{id:id});
+    if(entry&&entry.trip_id)await sbUpdate('trips',{status:'Completed'},{id:entry.trip_id});
+    logAudit('CREATE','YardGate',entry.gate_no,null,'Gate EXIT with seal '+sealNo);
+    success('Gate Exit recorded! Seal: '+sealNo);renderYardGate();
+  }catch(e){alert('Error: '+e.message);}
+};
+window.printWeighmentSlip=async function(id){
+  var e=safeArr(await sbFetch('yard_gate_entries',{select:'*,trips(trip_code),vehicles(reg_no),drivers(full_name)',eq:{id:id}}))[0];
+  if(!e)return;
+  var trp=e.trips||{};var veh=e.vehicles||{};var drv=e.drivers||{};
+  var html='<html><head><title>Weighment Slip '+e.gate_no+'</title>'+
+    '<style>body{font-family:Arial,sans-serif;font-size:12px;padding:20px;max-width:400px;margin:0 auto}'+
+    'h1{font-size:16px;text-align:center}.logo{text-align:center;margin-bottom:10px}'+
+    'table{width:100%;border-collapse:collapse}td{border:1px solid #ccc;padding:6px 8px}'+
+    '.wt{font-size:18px;font-weight:bold;text-align:center;color:#000}'+
+    '@media print{button{display:none}}</style></head><body>'+
+    '<div class="logo"><div style="font-size:22px;font-weight:900"><span style="color:#F47B20">steam</span><span style="color:#2E7D32">house</span></div>'+
+    '<div style="font-size:10px;color:#666;margin-top:2px">Waste-to-Energy Digital Platform</div></div>'+
+    '<hr><h1>WEIGHMENT SLIP</h1>'+
+    '<table>'+
+    '<tr><td><b>Slip No</b></td><td>'+e.gate_no+'</td></tr>'+
+    '<tr><td><b>Trip Code</b></td><td>'+(trp.trip_code||'-')+'</td></tr>'+
+    '<tr><td><b>Vehicle</b></td><td>'+(veh.reg_no||'-')+'</td></tr>'+
+    '<tr><td><b>Driver</b></td><td>'+(drv.full_name||'-')+'</td></tr>'+
+    '<tr><td><b>Gate In</b></td><td>'+(e.gate_in_time?new Date(e.gate_in_time).toLocaleString('en-IN'):'-')+'</td></tr>'+
+    '<tr><td><b>Gate Out</b></td><td>'+(e.gate_out_time?new Date(e.gate_out_time).toLocaleString('en-IN'):'-')+'</td></tr>'+
+    '<tr><td><b>Waste Type</b></td><td>'+(e.waste_type||'-')+'</td></tr>'+
+    '</table>'+
+    '<br><table>'+
+    '<tr><td style="background:#f0f0f0"><b>GROSS WEIGHT</b></td><td class="wt">'+(e.gross_weight_kg||0)+' kg</td></tr>'+
+    '<tr><td style="background:#f0f0f0"><b>TARE WEIGHT</b></td><td class="wt">'+(e.tare_weight_kg||0)+' kg</td></tr>'+
+    '<tr><td style="background:#e8f5e9"><b>NET WEIGHT</b></td><td class="wt" style="color:#2E7D32;font-size:22px">'+(e.net_weight_kg||0)+' kg</td></tr>'+
+    '</table>'+
+    (e.seal_no?'<div style="margin-top:10px;padding:8px;border:2px solid #000;text-align:center"><b>SEAL NO: '+e.seal_no+'</b></div>':'')+
+    '<br><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">'+
+    '<div style="border-top:1px solid #000;padding-top:5px;text-align:center;font-size:10px">Driver Signature</div>'+
+    '<div style="border-top:1px solid #000;padding-top:5px;text-align:center;font-size:10px">Weighbridge Operator</div>'+
+    '</div>'+
+    '<div style="text-align:center;margin-top:10px"><button onclick="window.print()" style="padding:6px 16px;background:#2E7D32;color:#fff;border:none;border-radius:4px;cursor:pointer">Print Slip</button></div>'+
+    '</body></html>';
+  var w=window.open('','_blank');w.document.write(html);w.document.close();
+};
+
+// ══════════════════════════════════════════════════════════
+// BD ASSIGNMENT (Enhanced from M02)
+// ══════════════════════════════════════════════════════════
+window.autoAssignBD=async function(leadId){
+  var lead=safeArr(await sbFetch('leads',{select:'*',eq:{id:leadId}}))[0];if(!lead)return;
+  // Get all staff who are BD type
+  var bdStaff=safeArr(await sbFetch('staff_profiles',{select:'*',eq:{designation_type:'BD'},order:'full_name.asc'}));
+  if(!bdStaff.length){alert('No BD staff found. Add staff with designation type BD first.');return;}
+  // Get workload - count active leads per BD
+  var allLeads=safeArr(await sbFetch('leads',{select:'assigned_bd,status'}));
+  var workload={};
+  bdStaff.forEach(function(s){workload[s.full_name]=0;});
+  allLeads.forEach(function(l){
+    if(l.assigned_bd&&l.status!=='Converted'&&l.status!=='Rejected'&&workload[l.assigned_bd]!==undefined){
+      workload[l.assigned_bd]++;
+    }
+  });
+  // Assign to BD with lowest workload in same city/zone
+  var sameCityBD=bdStaff.filter(function(s){return s.city&&lead.city&&s.city.toLowerCase()===lead.city.toLowerCase();});
+  var poolToAssign=sameCityBD.length>0?sameCityBD:bdStaff;
+  var bestBD=poolToAssign.reduce(function(best,s){
+    return (workload[s.full_name]||0)<(workload[best.full_name]||0)?s:best;
+  },poolToAssign[0]);
+
+  await sbUpdate('leads',{assigned_bd:bestBD.full_name,status:'Assigned'},{id:leadId});
+  logAudit('ASSIGN','Lead',leadId,null,'Auto-assigned to '+bestBD.full_name+' (workload: '+workload[bestBD.full_name]+')');
+  success('Auto-assigned to '+bestBD.full_name+' (city match: '+(sameCityBD.length>0?'Yes':'No')+', workload: '+workload[bestBD.full_name]+' leads)');
+  renderLeads();
+};
 async function renderUsers(){
   var ct=document.getElementById('ct');
   try{var data=safeArr(await sbFetch('user_roles',{select:'*',order:'created_at.desc'}));
@@ -5848,7 +6182,7 @@ window.editGenRequest=async function(id){
   var r=(await sbFetch('generator_requests',{select:'*',eq:{id:id}}))[0];if(!r)return;
   var body='<div class="fg">'+fld('Company Name','<input id="er_name" value="'+r.company_name.replace(/"/g,'&quot;')+'">',true)+fld('Industry',sel('er_ind',['Chemical','Petrochemical','Textile','Pharmaceutical','Metal/Foundry','Food Processing','Cement','Refinery','Power Plant','Other']))+fld('Contact','<input id="er_contact" value="'+(r.contact_person||'')+'">',true)+fld('Mobile','<input id="er_mobile" value="'+(r.mobile||'')+'">',true)+fld('Email','<input id="er_email" value="'+(r.email||'')+'">',)+fld('City','<input id="er_city" value="'+(r.city||'')+'">',true)+fld('State','<input id="er_state" value="'+(r.state||'')+'">')+'<div class="full">'+fld('Address','<input id="er_addr" value="'+(r.address||'').replace(/"/g,'&quot;')+'">',true)+'</div>'+'<div class="sec">Location — Search by address or use GPS</div>'+locPickerRow('g_lat','g_lng','gen-loc-status','gen-maps-link',r.latitude,r.longitude)+fld('Waste Category',sel('er_cat',['Hazardous','Non-Hazardous','Mixed','Biomedical']))+'</div>';
   var foot='<button class="btn btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" id="segrbtn">Save Only</button><button class="btn btn-g btn-sm" id="seapbtn">Save & Approve</button>';
-  modal('Edit Request — '+r.request_code,body,foot);
+  modal('Edit Request —'+r.request_code,body,foot);
   setTimeout(function(){document.getElementById('er_ind').value=r.industry_type||'';document.getElementById('er_cat').value=r.waste_category||'';var sb=document.getElementById('segrbtn');if(sb)sb.onclick=function(){saveEditGenRequest(id);};var ab=document.getElementById('seapbtn');if(ab)ab.onclick=function(){saveEditAndApprove(id);};},50);
 };
 window.saveEditGenRequest=async function(id){
@@ -5934,10 +6268,13 @@ async function sendGPSPing(tripId){
         recorded_at:new Date().toISOString()
       });
       // Check speed violation (>60 km/h)
-      if(speed&&speed>16.7){ // 60 km/h = 16.7 m/s
-        console.warn('SPEED VIOLATION: '+Math.round(speed*3.6)+' km/h on trip '+tripId);
-        // Could trigger alert here
+      var speedKmh=speed?Math.round(speed*3.6):0;
+      if(speedKmh>60){
+        console.warn('SPEED VIOLATION: '+speedKmh+' km/h on trip '+tripId);
+        await logAudit('ALERT','GPS',tripId,null,'Speed violation: '+speedKmh+' km/h');
       }
+      // Geofence check — panic button support
+      if(DRIVER_LOCATION){DRIVER_LOCATION.speed_kmh=speedKmh;}
       // Auto-detect stage based on GPS proximity to known locations
       await autoDetectTripStage(tripId,lat,lng);
       // Check route deviation
@@ -6935,7 +7272,7 @@ window.viewPersonProfile=async function(driverId){
        +'<button class="btn btn-sm" onclick="closeModal();createDriverLogin(\''+driverId+'\')">Create Login</button>'
        +'</div>')
     +'</div>';
-  modal('👤 '+driver.full_name+' — Full Profile',html,'<button class="btn btn-sm" onclick="closeModal()">Close</button>');
+  modal(''+driver.full_name+' — Full Profile',html,'<button class="btn btn-sm" onclick="closeModal()">Close</button>');
 };
 
 // Create login for existing driver who has no login yet
@@ -6945,7 +7282,7 @@ window.createDriverLogin=async function(driverId){
     +fld('Email',inp('cdl_email',driver.mobile?'':'','email'),true)
     +fld('PIN',inp('cdl_pin','','password'),true)
     +'</div>';
-  modal('Create Login — '+driver.full_name,body,
+  modal('Create Login —'+driver.full_name,body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" onclick="saveDriverLogin(\''+driverId+'\')">Create</button>');
 };
@@ -7715,7 +8052,7 @@ window.quickPlanBin=async function(binId,binCode){
     '<div class="full"><div class="fl">Driver</div><select id="qp_drv" style="'+selS+'">'+dOpts+'</select></div>'+
     fld('Trip Date','<input id="qp_date" type="date" value="'+today+'">',true)+
     '</div>';
-  modal('Quick Plan — '+binCode,body,
+  modal('Quick Plan —'+binCode,body,
     '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'+
     '<button class="btn btn-g btn-sm" data-bid="'+binId+'" onclick="saveQuickPlan(this.dataset.bid)">Create Trip</button>');
 };
@@ -8076,7 +8413,7 @@ window.editSite = async function(id) {
 
   var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" id="svsite">Save Changes</button>';
-  modal('Edit Site — '+s.site_code, body, foot);
+  modal('Edit Site —'+s.site_code, body, foot);
   setTimeout(function(){
     document.getElementById('st_type').value = s.site_type||'Yard';
     document.getElementById('st_active').value = String(s.is_active);
@@ -8533,7 +8870,7 @@ window.editQRLocation = async function(id) {
     +'</div>';
   var foot = '<button class="btn btn-sm" onclick="closeModal()">Cancel</button>'
     +'<button class="btn btn-g btn-sm" id="sqebtn">Save Changes</button>';
-  modal('Edit QR — ' + loc.qr_code, body, foot);
+  modal('Edit QR —' + loc.qr_code, body, foot);
   setTimeout(function(){
     document.getElementById('ql_type').value = loc.location_type || 'Yard';
     document.getElementById('ql_active').value = String(loc.is_active);
