@@ -305,6 +305,7 @@ input:focus,select:focus,textarea:focus{
 /* ── ANIMATIONS ── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
 #ct > *{animation:fadeIn .2s ease}
 
 /* ── COPY FLASH ── */
@@ -776,10 +777,27 @@ function go(page){
   CUR=page;document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
   var ni=document.getElementById('ni-'+page);if(ni)ni.classList.add('on');
   var ptEl=document.getElementById('ptitle');if(ptEl)ptEl.textContent=PAGE_TITLES[page]||page;
-  var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:20px;color:#5a7a9a;text-align:center">Loading...</div>';
-  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking,onboarding:renderOnboarding,contracts:renderContracts,weighbridge:renderWeighbridge,paytracking:renderPayTracking,leads:renderLeads,collectionreq:renderCollectionReq,rdf:renderRDF,energy:renderEnergy,esg:renderESG,compliance:renderCompliance,ceodash:renderCEODash,lab:renderLab,financedash:renderFinanceDash,store:renderStore,vendors:renderVendors,po:renderPO,grn:renderGRN,procurement:renderProcurement,auditlog:renderAuditLog,stockissue:renderStockIssue};
-  if(allPages[page])allPages[page]();
-  else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:#5a7a9a"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>'+PAGE_TITLES[page]+'</div></div>';
+  var ct=document.getElementById('ct');if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">'+
+    '<div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px"></div>'+
+    '<div style="font-size:13px">Loading '+PAGE_TITLES[page]+'...</div>'+
+    '</div>';
+  var allPages={dashboard:renderDash,generators:renderGenerators,'gen-requests':renderGenRequests,autoplanner:renderAutoPlanner,smarttrip:renderSmartTripPlanner,sites:renderSites,trips:renderTrips,billing:renderBilling,payments:renderPayments,bins:renderBins,fillalerts:renderFillAlerts,inspection:renderInspection,boiler:renderBoiler,vehicles:renderVehicles,checklist:renderChecklist,drivers:renderDrivers,cleaning:renderCleaning,pm:renderPM,rm:renderRM,schedule:renderSchedule,fuel:renderFuel,tyres:renderTyres,qrlocations:renderQRLocations,attendance:renderAttendance,staff:renderStaff,roles:renderRoles,reports:renderReports,users:renderUsers,incentive:renderIncentive,payroll:renderPayroll,advances:renderAdvances,shifts:renderShifts,roster:renderRoster,issues:renderIssues,tracking:renderTracking,onboarding:renderOnboarding,contracts:renderContracts,weighbridge:renderWeighbridge,paytracking:renderPayTracking,leads:renderLeads,collectionreq:renderCollectionReq,rdf:renderRDF,energy:renderEnergy,esg:renderESG,compliance:renderCompliance,ceodash:renderCEODash,lab:renderLab,financedash:renderFinanceDash,store:renderStore,vendors:renderVendors,po:renderProcurement,grn:renderGRN,procurement:renderProcurement,auditlog:renderAuditLog,stockissue:renderStockIssue};
+  if(allPages[page]){
+    try{
+      var result=allPages[page]();
+      if(result&&result.catch){
+        result.catch(function(err){
+          var ct2=document.getElementById('ct');
+          if(ct2)ct2.innerHTML='<div class="alert al-r">Error loading '+page+': '+err.message+'</div>';
+          console.error('Page error ['+page+']:',err);
+        });
+      }
+    }catch(err){
+      var ct2=document.getElementById('ct');
+      if(ct2)ct2.innerHTML='<div class="alert al-r">Error loading '+page+': '+err.message+'</div>';
+      console.error('Page error ['+page+']:',err);
+    }
+  }else if(ct)ct.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">🚧</div><div>Module coming soon</div></div>';
   setTimeout(function(){wireButtons();setTblWrapHeights();},200);
 }
 
@@ -826,7 +844,7 @@ async function otpSend(user, otp){
     otp_code:     otp,
     valid_until:  'midnight tonight — same OTP valid all day',
     login_url:    window.location.origin,
-    company_name: 'WTESHL Pro'
+    company_name: 'Steam House'
   });
   if(!result||result.status!==200) throw new Error('EmailJS status: '+(result?result.status:'no response'));
 }
@@ -1016,7 +1034,7 @@ function doLogout(){
 }
 function initERP(){
   document.body.innerHTML='';document.body.style.cssText='';document.body.style.margin='0';
-  document.body.innerHTML='<div id="app" style="display:flex;height:100vh;width:100%;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px"><div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0"><div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:22px;margin-bottom:4px"></div><div style="font-size:13px;font-weight:900"><span style=\"color:#F47B20\">steam</span><span style=\"color:#2E7D32\">house</span></div><div style="font-size:8px;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">WTE Digital Platform</div></div><div style="flex:1;padding:6px 0" id="nav"></div><div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'+(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div><button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#1e3048;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button></div></div><div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0"><div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div><div style="font-size:11px;color:#5a7a9a">WTESHL Waste-to-Energy ERP · Live</div></div><div style="display:flex;align-items:center;gap:10px"><div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#0f1724;border-radius:20px">🟢 All Systems Online</div><button class="btn btn-g btn-sm" onclick="go(\'trips\')">+ New Trip</button></div></div><div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div></div></div><div id="modal-container"></div>';
+  document.body.innerHTML='<div id="app" style="display:flex;height:100vh;width:100%;overflow:hidden;background:#0f1724;color:#e2eeff;font-family:Segoe UI,Arial,sans-serif;font-size:13px"><div id="sb" style="width:232px;min-width:232px;background:#162033;border-right:1px solid rgba(100,160,255,.1);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0"><div style="padding:16px 16px 12px;border-bottom:1px solid rgba(100,160,255,.1)"><div style="font-size:22px;margin-bottom:4px"></div><div style="font-size:13px;font-weight:900"><span style=\"color:#F47B20\">steam</span><span style=\"color:#2E7D32\">house</span></div><div style="font-size:8px;color:#5a7a9a;text-transform:uppercase;letter-spacing:1px">WTE Digital Platform</div></div><div style="flex:1;padding:6px 0" id="nav"></div><div style="padding:10px 14px;border-top:1px solid rgba(100,160,255,.1)"><div style="font-size:11px;color:#5a7a9a;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#00e676;margin-right:5px"></span>'+(CURRENT_USER?CURRENT_USER.full_name+' · '+CURRENT_USER.role:'System')+'</div><button onclick="doLogout()" style="width:100%;padding:5px 0;border-radius:6px;border:1px solid rgba(100,160,255,.15);background:#1e3048;color:#5a7a9a;cursor:pointer;font-size:11px;font-family:inherit">Sign Out</button></div></div><div id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0"><div id="tb" style="background:#162033;border-bottom:1px solid rgba(100,160,255,.1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div><div style="font-size:14px;font-weight:600;color:#e2eeff" id="ptitle">Operations Dashboard</div><div style="font-size:11px;color:#5a7a9a">Steam House — Waste-to-Energy Digital Platform</div></div><div style="display:flex;align-items:center;gap:10px"><div style="font-size:11px;color:#5a7a9a;padding:3px 10px;background:#0f1724;border-radius:20px">🟢 All Systems Online</div><button class="btn btn-g btn-sm" onclick="go(\'trips\')">+ New Trip</button></div></div><div id="ct" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;background:#0f1724"></div></div></div><div id="modal-container"></div>';
   buildNav();go('dashboard');
   var unEl=document.getElementById('tb-user-name');
   if(unEl&&CURRENT_USER)unEl.textContent=CURRENT_USER.full_name||CURRENT_USER.email||'Admin';
@@ -2805,7 +2823,7 @@ window.viewPayslip=async function(id){
   var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
   var html='<div id="payslip-print" style="background:#fff;color:#000;padding:24px;border-radius:8px;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #00a651;padding-bottom:12px;margin-bottom:16px">'
-    +'<div><div style="font-size:20px;font-weight:800;color:#00a651">♻️ WTESHL Pro</div><div style="font-size:11px;color:#666">Waste-to-Energy ERP</div></div>'
+    +'<div><div style="font-size:20px;font-weight:800;color:#00a651">♻️ Steam House</div><div style="font-size:11px;color:#666">Waste-to-Energy ERP</div></div>'
     +'<div style="text-align:right"><div style="font-size:14px;font-weight:700">PAYSLIP</div><div style="font-size:12px;color:#666">'+MONTHS[p.month]+' '+p.year+'</div><div style="font-size:11px;color:#999">'+p.payroll_code+'</div></div>'
     +'</div>'
     +'<div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
@@ -2838,7 +2856,7 @@ window.viewPayslip=async function(id){
     +'<tfoot><tr style="background:#00a651;color:#fff"><td style="padding:12px;font-size:15px;font-weight:800">NET PAYABLE</td><td style="padding:12px;text-align:right;font-size:18px;font-weight:800">₹'+Number(p.net_pay||0).toLocaleString('en-IN')+'</td></tr></tfoot>'
     +'</table>'
     +(p.paid_on?'<div style="text-align:center;font-size:11px;color:#666;margin-bottom:12px">Paid on: '+p.paid_on+' via '+(p.payment_mode||'-')+'</div>':'')
-    +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — WTESHL Pro ERP</div>'
+    +'<div style="text-align:center;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:10px">This is a computer-generated payslip — Steam House ERP</div>'
     +'</div>';
   modal('💰 Payslip — '+(st.full_name||''),html,
     '<button class="btn btn-sm" onclick="closeModal()">Close</button>'
@@ -3711,13 +3729,13 @@ window.printContract=async function(id){
     '.sign-box{border-top:1px solid #000;padding-top:8px;text-align:center;font-size:11px}'+
     '.clause{background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:10px;margin-bottom:8px;font-size:11px}'+
     '@media print{button{display:none}}</style></head><body>'+
-    '<div class="logo"><div style="font-size:24px;font-weight:800;color:#00a651">WTESHL</div>'+
+    '<div class="logo"><div style="font-size:24px;font-weight:800;color:#00a651">Steam House</div>'+
     '<div style="font-size:11px;color:#666">Waste-to-Energy Solutions</div></div>'+
     '<h1>WASTE COLLECTION & PROCESSING SERVICE AGREEMENT</h1>'+
     '<div style="text-align:center;color:#666;margin-bottom:20px">Contract No: <strong>'+c.contract_no+'</strong> | Date: '+( c.contract_date||'-')+'</div>'+
     '<h2>PARTIES</h2>'+
     '<table><tr><th>Service Provider</th><th>Generator / Client</th></tr>'+
-    '<tr><td><strong>WTESHL</strong><br>Waste-to-Energy Solutions<br>Authorized Representative</td>'+
+    '<tr><td><strong>Steam House</strong><br>Waste-to-Energy Solutions<br>Authorized Representative</td>'+
     '<td><strong>'+gen.company_name+'</strong><br>'+gen.gen_code+'<br>'+(gen.address||'')+', '+(gen.city||'')+', '+(gen.state||'')+'<br>'+
     'GSTIN: '+(gen.gstin||'-')+'<br>Contact: '+gen.contact_person+' | '+gen.mobile+'</td></tr></table>'+
     '<h2>SCOPE OF SERVICES</h2>'+
@@ -3737,16 +3755,16 @@ window.printContract=async function(id){
     '</table>'+
     '<h2>TERMS & CONDITIONS</h2>'+
     '<div class="clause">1. The Generator shall ensure that waste is properly segregated and placed in designated bins before collection.</div>'+
-    '<div class="clause">2. WTESHL shall collect waste as per the agreed schedule. Emergency collections may be requested at additional cost.</div>'+
+    '<div class="clause">2. Steam House shall collect waste as per the agreed schedule. Emergency collections may be requested at additional cost.</div>'+
     '<div class="clause">3. All hazardous waste shall be handled as per CPCB/GPCB guidelines and applicable laws.</div>'+
     '<div class="clause">4. Either party may terminate this agreement with 30 days written notice.</div>'+
     (c.penalty_clause?'<div class="clause">5. Penalty: '+c.penalty_clause+'</div>':'')+
     (c.special_conditions?'<div class="clause">Special Conditions: '+c.special_conditions+'</div>':'')+
     '<div class="sign-row">'+
     '<div class="sign-box"><br><br>Signature: ________________________<br><br>'+(c.signed_by_generator||'Authorized Signatory')+' (Generator)</div>'+
-    '<div class="sign-box"><br><br>Signature: ________________________<br><br>'+(c.signed_by_company||'Authorized Signatory')+' (WTESHL)</div>'+
+    '<div class="sign-box"><br><br>Signature: ________________________<br><br>'+(c.signed_by_company||'Authorized Signatory')+' (Steam House)</div>'+
     '</div>'+
-    '<div style="text-align:center;margin-top:20px;font-size:10px;color:#999">This is a computer-generated contract — WTESHL ERP | '+c.contract_no+'</div>'+
+    '<div style="text-align:center;margin-top:20px;font-size:10px;color:#999">This is a computer-generated contract — Steam House ERP | '+c.contract_no+'</div>'+
     '<div style="text-align:center;margin-top:10px"><button onclick="window.print()" style="padding:8px 20px;background:#00a651;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">Print Contract</button></div>'+
     '</body></html>';
   var w=window.open('','_blank');
@@ -4493,7 +4511,7 @@ window.exportESGReport=function(){
   var today=new Date().toISOString().split('T')[0];
   var csv=[['Metric','Value','Unit']];
   csv.push(['Report Date',today,'']);
-  csv.push(['Generated By','WTESHL Pro ERP','']);
+  csv.push(['Generated By','Steam House ERP','']);
   // Note: actual values would be filled from the computed data
   var blob=new Blob([csv.map(function(r){return r.join(',');}).join('\n')],{type:'text/csv'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='esg-report-'+today+'.csv';a.click();
@@ -4616,7 +4634,7 @@ async function renderCEODash(){
       // Header
       '<div style="background:linear-gradient(135deg,#0a1628,#162033);border:1px solid rgba(0,230,118,.2);border-radius:16px;padding:20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">'+
         '<div><div style="font-size:22px;font-weight:800;color:#00e676">CEO Dashboard</div>'+
-        '<div style="font-size:13px;color:#8ab0d0;margin-top:4px">WTESHL Pro · '+now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div></div>'+
+        '<div style="font-size:13px;color:#8ab0d0;margin-top:4px">Steam House · '+now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div></div>'+
         '<div style="text-align:right"><div style="font-size:11px;color:#5a7a9a">Last updated</div><div style="font-size:13px;color:#e2eeff">'+now.toLocaleTimeString('en-IN')+'</div></div>'+
       '</div>'+
 
@@ -5917,7 +5935,7 @@ async function showDriverApp(){
   document.body.innerHTML=
     '<div class="drv-app" style="height:100vh;display:flex;flex-direction:column;overflow:hidden">'
     +'<div class="drv-header">'
-    +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">♻️ WTESHL Pro</div>'
+    +'<div><div style="font-family:Consolas,monospace;font-size:14px;font-weight:700;color:#00e676">♻️ Steam House</div>'
     +'<div style="font-size:11px;color:#8ab0d0" id="drv-subtitle">'+user.full_name+'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px">'
     +'<div id="gps-badge" style="font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,152,0,.15);color:#ff9800">📍 GPS...</div>'
@@ -6712,14 +6730,14 @@ window.driverQRPunch=async function(punchType){
 // ── GENERATOR PORTAL ──────────────────────────────────────
 function showGeneratorPortal(){
   var user=CURRENT_USER;document.body.innerHTML='';document.body.style.cssText='font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
-  document.body.innerHTML='<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)"><div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ WTESHL</div><div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div><button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button></div><div id="gen-portal-content" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px"></div>';
+  document.body.innerHTML='<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)"><div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ Steam House</div><div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div><button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button></div><div id="gen-portal-content" style="padding:16px;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px"></div>';
   renderGeneratorPortal();
 }
 async function renderGeneratorPortal(){
   var gpc=document.getElementById('gen-portal-content');if(!gpc)return;
   gpc.innerHTML='<div style="text-align:center;padding:20px;color:#8ab0d0">Loading...</div>';
   try{var user=CURRENT_USER;var gens=await sbFetch('generators',{select:'*',eq:{email:user.email}});var gen=safeArr(gens)[0];
-  if(!gen){gpc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">🏭</div><div style="font-size:15px;font-weight:600">No Generator Found</div><div style="font-size:12px;color:#8ab0d0;margin-top:8px">Contact WTESHL support.</div></div>';return;}
+  if(!gen){gpc.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:12px">🏭</div><div style="font-size:15px;font-weight:600">No Generator Found</div><div style="font-size:12px;color:#8ab0d0;margin-top:8px">Contact Steam House support.</div></div>';return;}
   var bins=safeArr(await sbFetch('bins',{select:'*',eq:{generator_id:gen.id},order:'bin_code'}));
   var html='<div style="background:#162033;border:1px solid rgba(100,160,255,.1);border-radius:12px;padding:14px"><div style="font-size:16px;font-weight:700;color:#e2eeff;margin-bottom:4px">🏭 '+gen.company_name+'</div><div style="font-size:12px;color:#8ab0d0">'+gen.gen_code+' · '+gen.industry_type+'</div>'+(gen.city?'<div style="font-size:12px;color:#8ab0d0">📍 '+gen.city+'</div>':'')+(gen.latitude&&gen.longitude?'<div style="margin-top:6px"><a href="https://www.google.com/maps?q='+gen.latitude+','+gen.longitude+'" target="_blank" style="font-size:11px;color:#00e676;text-decoration:none">📍 View on Google Maps →</a></div>':'')+'</div>';
   if(bins.length===0){html+='<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet.</div>';}
@@ -7282,7 +7300,7 @@ function showPublicGenForm() {
   document.body.innerHTML = '<div style="width:560px;max-width:100%;background:#162033;border:1px solid rgba(100,160,255,.15);border-radius:16px;padding:28px">'
     +'<div style="text-align:center;margin-bottom:24px">'
     +'<div style="font-size:36px;margin-bottom:8px">♻️</div>'
-    +'<div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#00e676">WTESHL Pro</div>'
+    +'<div style="font-family:Consolas,monospace;font-size:18px;font-weight:700;color:#00e676">Steam House</div>'
     +'<div style="font-size:13px;color:#8ab0d0;margin-top:4px">Waste Generator Registration</div>'
     +'</div>'
     +'<div id="pub-msg"></div>'
@@ -7639,7 +7657,7 @@ function showGeneratorPortal() {
   document.body.style.cssText = 'font-family:Segoe UI,Arial,sans-serif;background:#0f1724;color:#e2eeff;margin:0;min-height:100vh';
   document.body.innerHTML =
     '<div style="background:#162033;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(100,160,255,.1)">'
-    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ WTESHL</div>'
+    +'<div><div style="font-family:Consolas,monospace;font-size:15px;font-weight:700;color:#00e676">♻️ Steam House</div>'
     +'<div style="font-size:11px;color:#8ab0d0">Generator Portal · '+user.full_name+'</div></div>'
     +'<button onclick="doLogout()" style="background:none;border:1px solid rgba(100,160,255,.15);color:#8ab0d0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Logout</button>'
     +'</div>'
@@ -7662,7 +7680,7 @@ async function renderGeneratorPortal() {
       gpc.innerHTML = '<div style="text-align:center;padding:40px">'
         +'<div style="font-size:48px;margin-bottom:12px">🏭</div>'
         +'<div style="font-size:15px;font-weight:600;color:#e2eeff">No Generator Found</div>'
-        +'<div style="font-size:12px;color:#8ab0d0;margin-top:8px">Your account is not linked to a generator profile. Please contact WTESHL support.</div>'
+        +'<div style="font-size:12px;color:#8ab0d0;margin-top:8px">Your account is not linked to a generator profile. Please contact Steam House support.</div>'
         +'</div>';
       return;
     }
@@ -7686,7 +7704,7 @@ async function renderGeneratorPortal() {
     html += '<div style="font-size:13px;font-weight:600;color:#e2eeff;margin:4px 0 8px">Your Bins</div>';
 
     if(bins.length === 0) {
-      html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet. Contact WTESHL.</div>';
+      html += '<div style="background:#162033;border-radius:10px;padding:20px;text-align:center;color:#8ab0d0">No bins allocated yet. Contact Steam House.</div>';
     } else {
       bins.forEach(function(b) {
         var fillColor = b.current_fill_pct >= 95 ? '#f44336' : b.current_fill_pct >= 80 ? '#ff9800' : b.current_fill_pct >= 60 ? '#2196f3' : '#00e676';
@@ -8475,7 +8493,7 @@ window.printQR = function(code, name) {
     +'@media print{body{-webkit-print-color-adjust:exact}}'
     +'</style></head><body>'
     +'<div class="card">'
-    +'<div class="brand">♻️ WTESHL Pro</div>'
+    +'<div class="brand">♻️ Steam House</div>'
     +'<div class="sub">Attendance QR Code</div>'
     +svg
     +'<div class="code">'+code+'</div>'
